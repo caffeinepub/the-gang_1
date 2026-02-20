@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 27,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -110,6 +110,198 @@
       "title": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
       "reqIds": [
         "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-react-sensory-cortex-tab-file-ingestion-logic-use-the-filereader-api-to-read-standard-text-files-txt-csv-json-as-text-and-extract-exactly-the-first-5-000-characters-into-a-variable-named-previewstring-for-images-or-unsupported-binary-files-set-previewstring-to-binary-image-data",
+      "title": "In the React 'Sensory Cortex' tab file ingestion logic, use the FileReader API to read standard text files (.txt, .csv, .json) as text and extract exactly the first 5,000 characters into a variable named previewString. For images or unsupported binary files, set previewString to 'Binary Image Data'.",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-react-sensory-cortex-tab-immediately-after-the-1-8mb-chunk-upload-loop-completes-100-call-the-backend-route-document-function-with-two-arguments-file-name-and-the-previewstring-extracted-in-req-52",
+      "title": "In the React 'Sensory Cortex' tab, immediately after the 1.8MB chunk upload loop completes 100%, call the backend route_document function with two arguments: file.name and the previewString extracted in REQ-52.",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-react-component-for-the-sensory-cortex-ui-featuring-a-large-high-contrast-drag-and-drop-file-upload-area-for-desktop-implement-ondrop-and-ondragover-event-handlers-to-capture-dropped-files-maintain-the-technical-sophisticated-theme-using-dark-grays-sharp-edges-and-emergency-vehicle-highlight-colors-avoiding-purple-and-blue",
+      "title": "Create a new React component for the Sensory Cortex UI featuring a large, high-contrast drag-and-drop file upload area. For desktop, implement onDrop and onDragOver event handlers to capture dropped files. Maintain the technical, sophisticated theme using dark grays, sharp edges, and emergency vehicle highlight colors (avoiding purple and blue).",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-take-photo-button-to-the-sensory-cortex-interface-using-input-type-file-accept-image-capture-environment-to-enable-mobile-camera-capture-also-add-a-select-file-button-using-a-standard-file-input-to-allow-users-to-pick-files-from-their-device-on-any-platform",
+      "title": "Add a 'Take Photo' button to the Sensory Cortex interface using <input type='file' accept='image/*' capture='environment'> to enable mobile camera capture. Also add a 'Select File' button using a standard file input to allow users to pick files from their device on any platform.",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-sequential-chunking-engine-in-the-sensory-cortex-component-using-a-for-of-loop-to-handle-file-uploads-slice-each-file-into-chunks-of-exactly-1-800-000-bytes-use-await-on-each-upload-chunk-backend-call-and-do-not-send-the-next-chunk-until-the-previous-upload-is-confirmed-this-sequential-approach-prevents-wasm-heap-overflow",
+      "title": "Implement a sequential chunking engine in the Sensory Cortex component using a for...of loop to handle file uploads. Slice each file into chunks of exactly 1,800,000 bytes. Use await on each upload_chunk backend call and do not send the next chunk until the previous upload is confirmed. This sequential approach prevents Wasm heap overflow.",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-real-time-progress-bar-to-the-sensory-cortex-interface-that-displays-the-upload-percentage-based-on-the-number-of-chunks-successfully-written-to-stable-memory-update-the-progress-bar-after-each-chunk-upload-confirms",
+      "title": "Add a real-time progress bar to the Sensory Cortex interface that displays the upload percentage based on the number of chunks successfully written to Stable Memory. Update the progress bar after each chunk upload confirms.",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-a-file-upload-reaches-100-completion-in-the-sensory-cortex-interface-read-the-first-5-000-characters-of-the-uploaded-file-immediately-call-the-backend-route-document-function-with-two-arguments-the-filename-and-the-extracted-5-000-character-text-preview",
+      "title": "After a file upload reaches 100% completion in the Sensory Cortex interface, read the first 5,000 characters of the uploaded file. Immediately call the backend route_document function with two arguments: the filename and the extracted 5,000-character text preview.",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-visual-notification-in-the-sensory-cortex-interface-after-the-route-document-call-completes-the-notification-must-show-the-message-format-document-filename-routed-to-agent-name-via-sensory-cortex-where-agent-name-is-the-value-returned-by-the-backend-routing-logic",
+      "title": "Display a visual notification in the Sensory Cortex interface after the route_document call completes. The notification must show the message format: 'Document [filename] routed to [Agent Name] via Sensory Cortex' where Agent Name is the value returned by the backend routing logic.",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-ensure-the-sensory-cortex-tab-is-visible-and-clickable-in-the-navigation-bar-the-tab-should-be-positioned-alongside-the-boardroom-debate-tab-with-clear-visual-indication-of-which-tab-is-currently-active",
+      "title": "In frontend/src/App.tsx, ensure the Sensory Cortex tab is visible and clickable in the navigation bar. The tab should be positioned alongside the Boardroom Debate tab with clear visual indication of which tab is currently active.",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensorycortextab-component-frontend-src-components-sensorycortextab-tsx-ensure-all-file-upload-controls-are-prominently-displayed-and-functional-the-drag-and-drop-area-must-be-large-and-visually-distinct-the-take-photo-button-must-be-visible-with-a-camera-icon-and-the-select-file-button-must-be-visible-and-accessible",
+      "title": "In the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx), ensure all file upload controls are prominently displayed and functional: the drag-and-drop area must be large and visually distinct, the 'Take Photo' button must be visible with a camera icon, and the 'Select File' button must be visible and accessible.",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-visual-feedback-to-the-sensory-cortex-tab-button-to-indicate-when-the-sensory-cortex-interface-is-the-active-view-use-consistent-styling-that-matches-the-boardroom-tab-s-active-state-pattern",
+      "title": "Add visual feedback to the Sensory Cortex tab button to indicate when the Sensory Cortex interface is the active view. Use consistent styling that matches the Boardroom tab's active state pattern.",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-create-a-react-state-variable-named-activetab-using-usestate-defaulting-to-the-string-value-boardroom",
+      "title": "In frontend/src/App.tsx, create a React state variable named activeTab using useState, defaulting to the string value 'boardroom'",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-at-the-top-of-the-app-tsx-render-output-create-a-navigation-header-section-containing-three-button-elements-labeled-boardroom-sensory-cortex-and-swarm-health-that-update-the-activetab-state-to-boardroom-sensory-and-health-respectively-when-clicked",
+      "title": "At the top of the App.tsx render output, create a Navigation Header section containing three button elements labeled 'Boardroom', 'Sensory Cortex', and 'Swarm Health' that update the activeTab state to 'boardroom', 'sensory', and 'health' respectively when clicked",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-high-contrast-styling-to-the-navigation-buttons-using-the-tactical-dark-aesthetic-use-background-color-1a1a1a-for-the-navigation-bar-bright-green-39ff14-or-amber-text-color-for-active-buttons-sharp-0px-border-radius-on-all-button-elements-and-clear-visual-differentiation-between-active-and-inactive-buttons",
+      "title": "Apply high-contrast styling to the navigation buttons using the tactical dark aesthetic: use background color #1a1a1a for the navigation bar, bright green (#39FF14) or amber text color for active buttons, sharp 0px border-radius on all button elements, and clear visual differentiation between active and inactive buttons",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-main-render-block-of-app-tsx-implement-conditional-rendering-logic-using-switch-statement-or-if-else-that-displays-the-boardroom-debate-voice-assistant-interface-when-activetab-equals-boardroom-displays-the-sensory-cortex-file-ingestion-ui-when-activetab-equals-sensory-and-displays-the-c2-dashboard-swarm-health-when-activetab-equals-health",
+      "title": "In the main render block of App.tsx, implement conditional rendering logic using switch statement or if/else that displays the Boardroom Debate voice assistant interface when activeTab equals 'boardroom', displays the Sensory Cortex file ingestion UI when activeTab equals 'sensory', and displays the C2 Dashboard (Swarm Health) when activeTab equals 'health'",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensory-cortex-interface-create-a-large-drag-and-drop-zone-implemented-as-a-div-element-with-a-dashed-border-implement-ondrop-and-ondragover-event-handlers-to-capture-dropped-files-from-desktop-users",
+      "title": "In the Sensory Cortex interface, create a large drag-and-drop zone implemented as a div element with a dashed border. Implement onDrop and onDragOver event handlers to capture dropped files from desktop users",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensory-cortex-interface-add-a-hidden-file-input-element-with-type-file-accept-image-capture-environment-and-id-camerainput-styled-with-display-none-create-a-large-visible-button-labeled-take-photo-that-triggers-a-click-on-the-hidden-file-input-when-pressed",
+      "title": "In the Sensory Cortex interface, add a hidden file input element with type='file', accept='image/*', capture='environment', and id='cameraInput' styled with display: none. Create a large visible button labeled '📷 TAKE PHOTO' that triggers a click on the hidden file input when pressed",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensory-cortex-interface-implement-a-sequential-chunking-engine-using-a-for-of-loop-that-starts-immediately-when-a-file-is-dropped-or-selected-slice-each-file-into-chunks-of-exactly-1-800-000-bytes-use-await-on-each-upload-chunk-backend-call-and-do-not-send-the-next-chunk-until-the-previous-upload-is-confirmed",
+      "title": "In the Sensory Cortex interface, implement a sequential chunking engine using a for...of loop that starts immediately when a file is dropped or selected. Slice each file into chunks of exactly 1,800,000 bytes, use await on each upload_chunk backend call, and do not send the next chunk until the previous upload is confirmed",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensory-cortex-interface-add-a-real-time-progress-bar-element-that-displays-upload-percentage-calculated-as-currentchunk-totalchunks-100-update-the-progress-bar-after-each-chunk-upload-confirms-completion",
+      "title": "In the Sensory Cortex interface, add a real-time progress bar element that displays upload percentage calculated as (currentChunk / totalChunks) * 100. Update the progress bar after each chunk upload confirms completion",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-tactical-dark-aesthetic-styling-throughout-the-sensory-cortex-interface-use-dark-background-color-1a1a1a-bright-green-39ff14-or-amber-text-for-data-display-sharp-edges-with-0px-border-radius-on-all-elements-and-avoid-using-blue-or-purple-colors",
+      "title": "Apply tactical dark aesthetic styling throughout the Sensory Cortex interface: use dark background color #1a1a1a, bright green (#39FF14) or amber text for data display, sharp edges with 0px border-radius on all elements, and avoid using blue or purple colors",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-react-component-or-section-within-the-existing-swarm-health-tab-frontend-src-app-tsx-that-displays-a-data-table-listing-all-9-ai-agents-robby-skippy-the-architect-deep-thought-glados-vincent-janet-the-librarian-and-sensory-cortex-with-their-names-prominently-displayed",
+      "title": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-toggle-switch-ui-component-next-to-each-agent-in-the-swarm-health-data-table-that-triggers-the-backend-toggle-agent-status-function-when-clicked-the-toggle-must-pass-the-agent-s-name-and-the-new-enabled-disabled-status-to-the-backend-function",
+      "title": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
+      "reqIds": [
+        "REQ-77"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-visual-status-indicators-in-the-swarm-health-agent-table-use-a-green-indicator-color-39ff14-for-enabled-agents-and-a-red-indicator-for-disabled-agents-the-indicator-should-be-clearly-visible-and-update-in-real-time-based-on-the-agent-s-is-enabled-status",
+      "title": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-in-frontend-src-hooks-usequeries-ts-for-the-toggle-agent-status-backend-function-that-accepts-agent-name-and-status-parameters-and-invalidates-the-agent-status-query-after-successful-execution",
+      "title": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+      "reqIds": [
+        "REQ-79"
       ],
       "version": 1
     }
@@ -520,6 +712,254 @@
       "summary": "When the emergency override is triggered in start_boardroom_debate, immediately set current_speaker to 'Skippy_Emergency', append the text 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to the transcript, and set is_debating to false",
       "reqIds": [
         "REQ-42"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-62",
+      "summary": "Add emergency_mode boolean field to DebateState type in The_Orchestrator backend and initialize it as false",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Implement 'Steel Rain' trigger in start_boardroom_debate that sets current_state.emergency_mode = true when user_prompt contains 'Steel Rain'",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Implement persistent emergency routing in start_boardroom_debate: when emergency_mode is true, only call await Skippy.ask_agent(user_prompt), append response to transcript, and return early without calling GLaDOS or Robby",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Implement 'Stand Down' command in start_boardroom_debate that sets emergency_mode = false, appends 'Emergency Override lifted. Returning to Boardroom protocol.' to transcript, sets is_debating = false, and returns early",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-66",
+      "summary": "Add a new boolean field called emergency_mode to the DebateState type in backend/main.mo and initialize it as false in the current_state variable",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-67",
+      "summary": "In the start_boardroom_debate function, detect if user_prompt contains the text 'Steel Rain' and if found, set current_state.emergency_mode = true",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-68",
+      "summary": "Implement persistent emergency routing in start_boardroom_debate: immediately after initial setup, check if current_state.emergency_mode is true. If true, only call await Skippy.ask_agent(user_prompt), append Skippy's response to the transcript, and return early without calling GLaDOS or Robby",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "In start_boardroom_debate, check if user_prompt contains the exact phrase 'Stand Down'. If found, set current_state.emergency_mode = false, append 'Emergency Override lifted. Returning to Boardroom protocol.' to the transcript, set is_debating = false, and return early",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-70",
+      "summary": "Define Sensory_Cortex external Actor interface with ask_agent signature in The_Orchestrator backend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-71",
+      "summary": "Add File_Registry (HashMap or array) in The_Orchestrator to track uploaded files with filename, size, and assigned_agent fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-72",
+      "summary": "Create public update function route_document(filename, file_preview) in The_Orchestrator that calls Sensory_Cortex.ask_agent to determine target agent and saves result to File_Registry",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-73",
+      "summary": "Update React 'Sensory Cortex' tab to extract first 5,000 characters from text files (.txt, .csv, .json) using FileReader API as previewString before chunking",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-74",
+      "summary": "Call backend route_document(filename, previewString) immediately after 1.8MB chunk upload completes 100% in React frontend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Define a new external Actor interface named Sensory_Cortex in The_Orchestrator backend with the function signature: ask_agent : shared (Text) -> async Text",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Add a mutable File_Registry to The_Orchestrator backend to track uploaded files. Each record must store filename (Text), size (Nat), and assigned_agent (Text). Use HashMap or array data structure.",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-77",
+      "summary": "Create a public update function called route_document in The_Orchestrator that accepts filename (Text) and file_preview (Text) parameters. The function must call await Sensory_Cortex.ask_agent with the prompt: 'Analyze this text and reply with ONLY the target agent name (Skippy, The_Architect, or Staging): ' concatenated with file_preview.",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-78",
+      "summary": "In the route_document function, save the agent name returned by Sensory_Cortex.ask_agent into the File_Registry for the specified filename. Store the filename, file size, and the returned agent name as the assigned_agent field.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-79",
+      "summary": "In the route_document function, append a system message to current_state.transcript with the format: 'SYSTEM: File [' concatenated with filename concatenated with '] processed and routed to ' concatenated with the agent name returned by Sensory_Cortex.",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-80",
+      "summary": "Refactor App.js to include tabbed navigation with 'Boardroom' and 'Sensory Cortex' buttons using simple state toggle",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-81",
+      "summary": "Create Sensory Cortex UI with large, high-contrast drag-and-drop area for file upload",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-82",
+      "summary": "Add 'Take Photo' button using <input type='file' accept='image/*' capture='environment'> for mobile camera capture",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-83",
+      "summary": "Add 'Select File' button for standard file picker on all devices",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-84",
+      "summary": "Style Sensory Cortex interface with dark grays, sharp edges, and emergency vehicle highlights (no purple/blue)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-85",
+      "summary": "Implement sequential chunking engine using for...of loop with exactly 1,800,000 byte chunks",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-86",
+      "summary": "Use await on each upload_chunk call to prevent Wasm heap overflow - do not send next chunk until previous one is confirmed",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-87",
+      "summary": "Add real-time progress bar showing percentage of file successfully written to Stable Memory",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-88",
+      "summary": "After file reaches 100% upload, read first 5,000 characters and call backend route_document(filename, first5KText)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-89",
+      "summary": "Display visual notification: 'Document [X] routed to [Agent Name] via Sensory Cortex' after routing completes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-90",
+      "summary": "Refactor frontend/src/App.tsx to include a navigation bar at the top with two tab buttons labeled 'Boardroom' and 'Sensory Cortex'. Use React state to toggle between displaying the Boardroom Debate interface (current voice UI) and the new Sensory Cortex interface.",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-91",
+      "summary": "Update internal Agent data structure in The_Orchestrator backend to include is_enabled (Bool) field, defaulting to true",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-92",
+      "summary": "Create public update function toggle_agent_status(agent_name: Text, status: Bool) in The_Orchestrator that requires Admin authentication and updates agent is_enabled field",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-93",
+      "summary": "Add if (agent.is_enabled) check in start_boardroom_debate before each agent's ask_agent call; if disabled, bypass agent and append '[Agent Name] is currently offline. Bypassing routing segment.' to transcript",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-94",
+      "summary": "Build C2 Dashboard UI in 'Swarm Health' tab displaying data table of all 9 AI agents with Toggle/Switch component per agent that calls toggle_agent_status backend function",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-95",
+      "summary": "Implement visual indicators in Swarm Health UI: green indicator for enabled agents, red indicator for disabled agents",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-96",
+      "summary": "Update the internal Agent data structure in The_Orchestrator backend (backend/main.mo) to include a new boolean field named is_enabled with a default value of true for each agent",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-97",
+      "summary": "Create a public update function named toggle_agent_status in The_Orchestrator backend that accepts agent_name (Text) and status (Bool) parameters, verifies the caller is the Admin Principal using an assertion, and updates the specified agent's is_enabled field to the provided status value",
+      "reqIds": [
+        "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-98",
+      "summary": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
+      "reqIds": [
+        "REQ-75"
       ],
       "status": "pending"
     }

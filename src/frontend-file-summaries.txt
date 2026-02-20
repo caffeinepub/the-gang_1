@@ -1,13 +1,15 @@
 {
-  "frontend/src/App.tsx": "Main voice assistant application with Internet Identity authentication, prominent login/logout button in header, push-to-talk interface, live debate monitoring, interrupt controls, and authentication status badges with visual feedback for locked content.",
+  "frontend/src/App.tsx": "Main application component with tabbed navigation (boardroom/sensory/health), tactical dark aesthetic, Internet Identity authentication, and complete Swarm Health tab rendering the AgentRegistryTable component with C2 dashboard interface.",
   "frontend/src/index.css": "Updated design system with neutral grayscale OKLCH color palette suitable for a technical backend infrastructure project, supporting both light and dark modes.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for polling debate status every 500ms (useDebateStatus), starting boardroom debates, and aborting debates via backend actor methods.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for debate status polling, boardroom debate operations with placeholder Principal arguments for agent canisters, document routing, agent status management with useGetAgentStatuses query and useToggleAgentStatus mutation for C2 dashboard functionality.",
   "frontend/src/hooks/useSpeechRecognition.ts": "Custom hook managing browser's native SpeechRecognition API with start/stop controls, transcript capture, and error handling for push-to-talk functionality.",
   "frontend/src/hooks/useSpeechSynthesis.ts": "Custom hook managing browser's native SpeechSynthesis API with British Male voice preference for Robby's responses and speech cancellation support.",
   "frontend/src/hooks/useWakeWordStub.ts": "Commented-out placeholder hook for future Porcupine wake-word detection integration with TODO comment as specified.",
   "frontend/src/utils/transcriptParser.ts": "Utility function that strips HTML table tags and converts product links to clickable anchor tags for safe transcript rendering.",
   "frontend/src/components/PushToTalkButton.tsx": "Push-to-talk button component using SpeechRecognition API with visual feedback during recording and automatic transcript capture on completion.",
   "frontend/src/components/InterruptButton.tsx": "Prominent interrupt button that cancels active speech synthesis and calls backend abort_debate function to stop the debate immediately.",
-  "frontend/src/components/DebateDisplay.tsx": "Real-time debate display component with High-Stakes UI lock that blurs/hides Robby's transcript and disables Text-to-Speech when user is not authenticated, showing authentication required overlay with lock icon for premium content.",
-  "frontend/src/main.tsx": "Application entry point with QueryClientProvider and Sonner Toaster for toast notifications."
+  "frontend/src/components/DebateDisplay.tsx": "Real-time debate display component with High-Stakes UI lock for Robby's content, emergency mode badge indicator, and authentication-gated Text-to-Speech functionality.",
+  "frontend/src/main.tsx": "Application entry point with QueryClientProvider and Sonner Toaster for toast notifications.",
+  "frontend/src/components/SensoryCortexTab.tsx": "File ingestion interface with tactical dark aesthetic, large drag-and-drop zone with dashed borders, mobile camera capture button, file selection button, sequential 1,800,000-byte chunking engine with real-time progress bar, automatic upload on file selection, and document routing with visual notifications.",
+  "frontend/src/components/AgentRegistryTable.tsx": "Agent registry table component displaying all 9 AI agents with real-time status indicators (green for online, red for offline), kill switch toggles using shadcn Switch component, and tactical dark aesthetic with sharp edges matching the app theme."
 }

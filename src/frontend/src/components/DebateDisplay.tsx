@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { User, FileText, Lock } from 'lucide-react';
+import { User, FileText, Lock, AlertTriangle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { parseTranscript } from '../utils/transcriptParser';
@@ -78,6 +78,12 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
         <div className="flex items-center justify-between">
           <CardTitle>Live Debate Monitor</CardTitle>
           <div className="flex items-center gap-2">
+            {debateState.emergencyMode && (
+              <Badge variant="destructive" className="gap-1.5">
+                <AlertTriangle className="h-3 w-3" />
+                Emergency
+              </Badge>
+            )}
             {isRobbyLocked && (
               <Badge variant="outline" className="gap-1.5 border-primary/50 text-primary">
                 <Lock className="h-3 w-3" />

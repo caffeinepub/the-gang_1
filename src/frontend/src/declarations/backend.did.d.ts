@@ -12,13 +12,64 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export interface DebateState {
   'isDebating' : boolean,
+  'emergencyMode' : boolean,
   'transcript' : string,
   'currentSpeaker' : string,
 }
+export interface FileMetadata {
+  'assignedAgent' : string,
+  'size' : bigint,
+  'filename' : string,
+}
+export interface SensoryCortex { 'askAgent' : ActorMethod<[string], string> }
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'abortDebate' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getFileRegistry' : ActorMethod<[], Array<[string, FileMetadata]>>,
   'getStatus' : ActorMethod<[], DebateState>,
-  'startBoardroomDebate' : ActorMethod<[string], undefined>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'initializeAgents' : ActorMethod<[], undefined>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'routeDocument' : ActorMethod<[string, string, bigint, Principal], string>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'startBoardroomDebate' : ActorMethod<
+    [string, Principal, Principal, Principal],
+    undefined
+  >,
+  'toggleAgentStatus' : ActorMethod<[string, boolean], undefined>,
   'topUpSwarm' : ActorMethod<[Principal, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

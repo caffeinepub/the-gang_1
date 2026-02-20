@@ -1,158 +1,155 @@
 {
   "kind": "build_request",
-  "title": "Add Internet Identity authentication, cycle management, and emergency override",
+  "title": "Implement Agent Registry with Kill Switches and C2 Dashboard",
   "projectName": "The Gang",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-36",
-      "text": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+      "id": "REQ-73",
+      "text": "Update the internal Agent data structure in The_Orchestrator backend (backend/main.mo) to include a new boolean field named is_enabled with a default value of true for each agent",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Update the internal Agent data structure to include a boolean field: is_enabled (default to true)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Agent type or record includes is_enabled : Bool field",
+        "All existing agents are initialized with is_enabled = true",
+        "The field is properly persisted in stable storage"
+      ]
+    },
+    {
+      "id": "REQ-74",
+      "text": "Create a public update function named toggle_agent_status in The_Orchestrator backend that accepts agent_name (Text) and status (Bool) parameters, verifies the caller is the Admin Principal using an assertion, and updates the specified agent's is_enabled field to the provided status value",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Create a public update function called toggle_agent_status(agent_name: Text, status: Bool) that requires the caller to be the Admin."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Function signature is: public shared(msg) func toggle_agent_status(agent_name : Text, status : Bool) : async ()",
+        "Function includes admin authorization check using msg.caller",
+        "Function updates the is_enabled field for the matching agent_name",
+        "Function traps or returns an error if agent_name is not found"
+      ]
+    },
+    {
+      "id": "REQ-75",
+      "text": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Inside the start_boardroom_debate function, before calling any agent's ask_agent function, add an if (agent.is_enabled) check.",
+          "If the agent is disabled, the Orchestrator must bypass them and append this system message to the transcript: '[Agent Name] is currently offline. Bypassing routing segment.'"
+        ]
+      },
+      "acceptanceCriteria": [
+        "is_enabled check is performed before each agent's ask_agent call",
+        "When agent is disabled, the inter-canister call is skipped entirely",
+        "System message with format '[Agent Name] is currently offline. Bypassing routing segment.' is appended to transcript",
+        "The debate flow continues to the next enabled agent"
+      ]
+    },
+    {
+      "id": "REQ-76",
+      "text": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Integrate the @dfinity/auth-client package into the React frontend.",
-          "Add a prominent 'Login with Internet Identity' button to the dashboard."
+          "In the 'Swarm Health' tab, build a data table listing all 9 AI agents."
         ]
       },
       "acceptanceCriteria": [
-        "The @dfinity/auth-client package is installed and imported in the frontend",
-        "A prominent 'Login with Internet Identity' button is visible on the dashboard",
-        "Clicking the button initiates the Internet Identity authentication flow",
-        "User's authentication state is tracked and persists across sessions"
+        "All 9 agents are listed in the table with their exact names",
+        "The table is visible when activeTab equals 'health'",
+        "The table uses the tactical dark aesthetic with sharp edges"
       ]
     },
     {
-      "id": "REQ-37",
-      "text": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+      "id": "REQ-77",
+      "text": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Create a 'High-Stakes' UI lock: The transcript output from the \"Robby\" agent must be hidden/blurred, and the Text-to-Speech must be disabled, unless the user is actively authenticated via Internet Identity."
+          "Add a Toggle/Switch UI component next to each agent that triggers the toggle_agent_status backend function."
         ]
       },
       "acceptanceCriteria": [
-        "When user is not authenticated, Robby's portions of the transcript are hidden or blurred in the UI",
-        "When user is not authenticated, the SpeechSynthesis API does not speak Robby's responses",
-        "When user is authenticated via Internet Identity, Robby's transcript is fully visible and TTS functions normally",
-        "The UI provides visual feedback indicating that authentication is required to access Robby's output"
+        "Each agent row has a toggle/switch control",
+        "Clicking the toggle calls the backend toggle_agent_status function with correct agent_name and status parameters",
+        "The toggle state reflects the current is_enabled status of the agent",
+        "Toggle interactions are authenticated via Internet Identity"
       ]
     },
     {
-      "id": "REQ-38",
-      "text": "Import ExperimentalCycles module in the Motoko backend main actor file",
-      "target": "backend",
+      "id": "REQ-78",
+      "text": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Import ExperimentalCycles in the Motoko backend."
+          "Use a green visual indicator for enabled agents and a red indicator for disabled ones."
         ]
       },
       "acceptanceCriteria": [
-        "The ExperimentalCycles module is imported at the top of backend/main.mo",
-        "The import statement follows Motoko syntax conventions"
+        "Green indicator (#39FF14) is displayed when agent is enabled",
+        "Red indicator is displayed when agent is disabled",
+        "Visual indicator updates immediately when toggle is clicked",
+        "Styling is consistent with the tactical dark theme"
       ]
     },
     {
-      "id": "REQ-39",
-      "text": "Create a public update function called top_up_swarm in the backend that accepts target_canister (Principal) and amount (Nat) parameters, uses ExperimentalCycles.add(amount) to attach cycles from The_Orchestrator's balance, and sends those cycles to the target_canister",
-      "target": "backend",
+      "id": "REQ-79",
+      "text": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Create a public update function called top_up_swarm(target_canister: Principal, amount: Nat).",
-          "This function must use ExperimentalCycles.add(amount) to attach cycles from the Orchestrator's balance, and then execute a call to send those cycles to the target_canister."
+          "Add a Toggle/Switch UI component next to each agent that triggers the toggle_agent_status backend function."
         ]
       },
       "acceptanceCriteria": [
-        "The top_up_swarm function is defined as a public update function",
-        "The function signature matches: top_up_swarm(target_canister: Principal, amount: Nat)",
-        "The function calls ExperimentalCycles.add(amount) before making the inter-canister call",
-        "The function successfully transfers cycles to the target_canister",
-        "The function returns an appropriate result or error message"
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "text": "Add an assertion in the top_up_swarm function to ensure only an authenticated admin Principal can trigger the cycle top-up operation",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Add an assert to ensure only an authenticated admin (your Principal) can trigger this top-up."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The function checks the caller's Principal ID using the msg.caller value",
-        "An assert statement verifies that msg.caller matches the configured admin Principal",
-        "If the caller is not the admin, the function traps with an appropriate error message",
-        "The admin Principal ID is stored in the canister's state or as a constant"
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "text": "Add an emergency override intercept at the beginning of the start_boardroom_debate update function that checks if user_prompt contains the exact string 'HEM_Override_Key', and if found, bypasses the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Inside your existing start_boardroom_debate update function, right at the beginning, add a string intercept for the emergency override.",
-          "Check if the user_prompt contains the exact string \"HEM_Override_Key\".",
-          "If it does, bypass the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The check for 'HEM_Override_Key' occurs at the very beginning of start_boardroom_debate, before any other logic",
-        "The check uses exact string matching (case-sensitive)",
-        "If the override key is detected, no inter-canister calls are made to Skippy, GLaDOS, or Robby",
-        "The emergency override path is completely independent of the normal debate flow"
-      ]
-    },
-    {
-      "id": "REQ-42",
-      "text": "When the emergency override is triggered in start_boardroom_debate, immediately set current_speaker to 'Skippy_Emergency', append the text 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to the transcript, and set is_debating to false",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Immediately set current_speaker = \"Skippy_Emergency\", append the text \"NCD-16 Override Recognized. Drop the snark. What is the emergency?\" to the transcript, and set is_debating = false."
-        ]
-      },
-      "acceptanceCriteria": [
-        "When 'HEM_Override_Key' is detected, current_state.current_speaker is set to 'Skippy_Emergency'",
-        "The exact message 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' is appended to current_state.transcript",
-        "current_state.is_debating is set to false",
-        "The function returns immediately after setting these values, without executing any further logic"
+        "Mutation hook is exported from useQueries.ts",
+        "Hook properly handles authenticated actor from useActor",
+        "Successful mutations invalidate relevant queries to refresh agent status",
+        "Error handling is implemented for failed toggle operations"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing useInternetIdentity hook located at frontend/src/hooks/useInternetIdentity.ts",
-    "Do not modify the existing useActor hook located at frontend/src/hooks/useActor.ts",
-    "The emergency override check must occur before any inter-canister calls in start_boardroom_debate",
-    "The top_up_swarm function must only be callable by the authenticated admin Principal"
+    "Do not implement cycle or fuel management in this phase",
+    "Maintain single-actor architecture in backend/main.mo",
+    "Do not modify immutable frontend paths (useInternetIdentity hooks, useActor.ts, main.tsx, components/ui)",
+    "Admin authorization must use the existing admin Principal verification pattern",
+    "Preserve existing emergency mode and debate routing logic"
   ],
   "nonGoals": [
-    "Implementing custom authentication mechanisms beyond Internet Identity",
-    "Creating a UI for managing multiple admin principals",
-    "Implementing cycle monitoring or automatic top-up logic",
-    "Adding additional emergency override keys or multi-factor authentication",
-    "Modifying the existing debate flow beyond the emergency override intercept"
+    "Cycle balance monitoring or display",
+    "Automated refueling logic",
+    "ExperimentalCycles integration for agent top-ups",
+    "Main Tank deposit functionality",
+    "Cycle gauge or progress bar components"
   ],
   "imageRequirements": {
     "required": [],

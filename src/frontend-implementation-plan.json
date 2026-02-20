@@ -1,39 +1,87 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add Internet Identity authentication, cycle management, and emergency override",
+  "title": "Agent Registry with Kill Switches and C2 Dashboard",
   "requirements": [
     {
-      "id": "REQ-36",
-      "summary": "Integrate Internet Identity authentication with prominent login button on dashboard",
+      "id": "REQ-76",
+      "summary": "Create agent registry table in Swarm Health tab displaying all 9 AI agents",
       "acceptanceCriteria": [
-        "The @dfinity/auth-client package is installed and imported in the frontend",
-        "A prominent 'Login with Internet Identity' button is visible on the dashboard",
-        "Clicking the button initiates the Internet Identity authentication flow",
-        "User's authentication state is tracked and persists across sessions"
+        "All 9 agents are listed in the table with their exact names",
+        "The table is visible when activeTab equals 'health'",
+        "The table uses the tactical dark aesthetic with sharp edges"
       ],
       "file_operations": [
         {
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "operation": "create",
+          "description": "Create a new React component that renders a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex). Display agent names prominently with tactical dark styling using sharp edges and the existing color palette. Use a table layout with proper column headers. Include status indicators and toggle controls for each agent row (will be populated by REQ-77 and REQ-78)."
+        },
+        {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a prominent 'Login with Internet Identity' button to the dashboard UI. Import and use the useInternetIdentity hook to access login() and isAuthenticated state. Position the login button prominently in the header or top section of the App component. Display the user's authentication status and provide visual feedback when authenticated. The button should be disabled when already authenticated and show appropriate text based on auth state."
+          "description": "Import and render the AgentRegistryTable component within the Swarm Health tab section. Add the component inside the conditional block where activeTab equals 'health', below the existing tab title. Maintain the existing layout structure and tactical dark styling. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-37",
-      "summary": "Implement High-Stakes UI lock in DebateDisplay: hide Robby's transcript and disable TTS unless authenticated",
+      "id": "REQ-77",
+      "summary": "Add toggle switch UI for each agent that calls backend toggle_agent_status function",
       "acceptanceCriteria": [
-        "When user is not authenticated, Robby's portions of the transcript are hidden or blurred in the UI",
-        "When user is not authenticated, the SpeechSynthesis API does not speak Robby's responses",
-        "When user is authenticated via Internet Identity, Robby's transcript is fully visible and TTS functions normally",
-        "The UI provides visual feedback indicating that authentication is required to access Robby's output"
+        "Each agent row has a toggle/switch control",
+        "Clicking the toggle calls the backend toggle_agent_status function with correct agent_name and status parameters",
+        "The toggle state reflects the current is_enabled status of the agent",
+        "Toggle interactions are authenticated via Internet Identity"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/DebateDisplay.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Implement High-Stakes UI lock for Robby's output based on authentication state. Import useInternetIdentity hook to access isAuthenticated state. When current_speaker is 'Robby' and user is not authenticated, apply blur filter to the transcript display (e.g., blur(8px)) and overlay a message indicating 'Authentication required to view Robby's responses'. Conditionally prevent the useSpeechSynthesis speak() function from being called for Robby's responses when not authenticated. When authenticated, display Robby's transcript normally and enable TTS. Add visual indicator (lock icon or badge) showing authentication is required for premium content."
+          "description": "Add a React Query mutation hook named useToggleAgentStatus that accepts agent_name (string) and status (boolean) parameters. The mutation should call actor.toggleAgentStatus(agent_name, status) using the authenticated actor from useActor. Include proper error handling for failed toggle operations. After successful execution, invalidate the agent status query to refresh the agent list. Follow the existing mutation patterns in this file."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a React Query query hook named useGetAgentStatuses that fetches the current enabled/disabled status for all agents. This query should be refetched periodically (similar to the debate status polling pattern) to ensure the UI reflects the latest agent states. The query should use the authenticated actor and be enabled only when the actor is available."
+        },
+        {
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "operation": "modify",
+          "description": "Import and use the useToggleAgentStatus mutation hook and useGetAgentStatuses query hook from useQueries. Add a toggle/switch UI component (using shadcn/ui Switch component) next to each agent name in the table. Wire the toggle's onChange handler to trigger the useToggleAgentStatus mutation with the agent's name and new status. Ensure the toggle's checked state reflects the current is_enabled status from the query. Display loading state during toggle operations. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-78",
+      "summary": "Implement visual status indicators showing enabled (green #39FF14) and disabled (red) states",
+      "acceptanceCriteria": [
+        "Green indicator (#39FF14) is displayed when agent is enabled",
+        "Red indicator is displayed when agent is disabled",
+        "Visual indicator updates immediately when toggle is clicked",
+        "Styling is consistent with the tactical dark theme"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "operation": "modify",
+          "description": "Add a visual status indicator column to the agent table. For each agent, render a circular or badge-style indicator that displays green (#39FF14) when the agent is enabled and red when disabled. The indicator should use inline styles or Tailwind classes to apply the exact colors. Ensure the indicator updates in real-time when the toggle state changes by reacting to the agent status query data. Position the indicator prominently (e.g., as the first column or next to the agent name) and ensure it is clearly visible against the dark background."
+        }
+      ]
+    },
+    {
+      "id": "REQ-79",
+      "summary": "Create React Query mutation hook for toggle_agent_status with query invalidation",
+      "acceptanceCriteria": [
+        "Mutation hook is exported from useQueries.ts",
+        "Hook properly handles authenticated actor from useActor",
+        "Successful mutations invalidate relevant queries to refresh agent status",
+        "Error handling is implemented for failed toggle operations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Ensure the useToggleAgentStatus mutation hook created in REQ-77 is properly exported from useQueries.ts. Verify that it uses the authenticated actor from useActor, includes proper error handling with try-catch blocks, and invalidates the agent status query using queryClient.invalidateQueries after successful execution. Follow the existing mutation patterns (e.g., useStartDebate, useAbortDebate) for consistency in error handling and query invalidation."
         }
       ]
     }

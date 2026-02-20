@@ -2,38 +2,88 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-integrate-the-dfinity-auth-client-package-into-the-react-frontend-and-add-a-prominent-login-with-internet-identity-button-to-the-dashboard",
-      "featureTitle": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+      "featureId": "feature-create-a-new-react-component-or-section-within-the-existing-swarm-health-tab-frontend-src-app-tsx-that-displays-a-data-table-listing-all-9-ai-agents-robby-skippy-the-architect-deep-thought-glados-vincent-janet-the-librarian-and-sensory-cortex-with-their-names-prominently-displayed",
+      "featureTitle": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/AgentRegistryTable.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-36"
+        "REQ-76"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-high-stakes-ui-lock-in-the-debatedisplay-component-hide-or-blur-the-transcript-output-from-robby-and-disable-the-text-to-speech-functionality-unless-the-user-is-actively-authenticated-via-internet-identity",
-      "featureTitle": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+      "featureId": "feature-add-a-toggle-switch-ui-component-next-to-each-agent-in-the-swarm-health-data-table-that-triggers-the-backend-toggle-agent-status-function-when-clicked-the-toggle-must-pass-the-agent-s-name-and-the-new-enabled-disabled-status-to-the-backend-function",
+      "featureTitle": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
       "files": [
-        "frontend/src/components/DebateDisplay.tsx"
+        "frontend/src/components/AgentRegistryTable.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-37"
+        "REQ-77"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-visual-status-indicators-in-the-swarm-health-agent-table-use-a-green-indicator-color-39ff14-for-enabled-agents-and-a-red-indicator-for-disabled-agents-the-indicator-should-be-clearly-visible-and-update-in-real-time-based-on-the-agent-s-is-enabled-status",
+      "featureTitle": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+      "files": [
+        "frontend/src/components/AgentRegistryTable.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-78"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-react-query-mutation-hook-in-frontend-src-hooks-usequeries-ts-for-the-toggle-agent-status-backend-function-that-accepts-agent-name-and-status-parameters-and-invalidates-the-agent-status-query-after-successful-execution",
+      "featureTitle": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-79"
       ],
       "confidence": "high"
     }

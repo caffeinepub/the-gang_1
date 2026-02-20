@@ -1,87 +1,107 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T19:30:59.556Z",
+  "generatedAt": "2026-02-20T21:51:07.745Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 7,
-    "implemented": 2,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-36",
-        "summary": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+        "id": "REQ-73",
+        "summary": "Update the internal Agent data structure in The_Orchestrator backend (backend/main.mo) to include a new boolean field named is_enabled with a default value of true for each agent",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-74",
+        "summary": "Create a public update function named toggle_agent_status in The_Orchestrator backend that accepts agent_name (Text) and status (Bool) parameters, verifies the caller is the Admin Principal using an assertion, and updates the specified agent's is_enabled field to the provided status value",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-75",
+        "summary": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-76",
+        "summary": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/AgentRegistryTable.tsx",
           "frontend/src/App.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/AgentRegistryTable.tsx",
           "frontend/src/App.tsx"
         ]
       },
       {
-        "id": "REQ-37",
-        "summary": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+        "id": "REQ-77",
+        "summary": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/DebateDisplay.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/AgentRegistryTable.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/DebateDisplay.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/AgentRegistryTable.tsx"
         ]
       },
       {
-        "id": "REQ-38",
-        "summary": "Import ExperimentalCycles module in the Motoko backend main actor file",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-78",
+        "summary": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/AgentRegistryTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/AgentRegistryTable.tsx"
+        ]
       },
       {
-        "id": "REQ-39",
-        "summary": "Create a public update function called top_up_swarm in the backend that accepts target_canister (Principal) and amount (Nat) parameters, uses ExperimentalCycles.add(amount) to attach cycles from The_Orchestrator's balance, and sends those cycles to the target_canister",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-40",
-        "summary": "Add an assertion in the top_up_swarm function to ensure only an authenticated admin Principal can trigger the cycle top-up operation",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-41",
-        "summary": "Add an emergency override intercept at the beginning of the start_boardroom_debate update function that checks if user_prompt contains the exact string 'HEM_Override_Key', and if found, bypasses the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-42",
-        "summary": "When the emergency override is triggered in start_boardroom_debate, immediately set current_speaker to 'Skippy_Emergency', append the text 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to the transcript, and set is_debating to false",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-79",
+        "summary": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
       }
     ]
   },
   "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/DebateDisplay.tsx",
+    "frontend/src/components/AgentRegistryTable.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/utils/urlParams.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

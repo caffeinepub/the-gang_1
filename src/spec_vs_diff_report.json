@@ -1,71 +1,73 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T19:30:59.553Z",
-  "summary": "The diff partially implements the BuildRequest but is missing critical backend cycle management logic and frontend authentication state management. Several requirements are incomplete or not implemented at all.",
+  "generatedAt": "2026-02-20T21:51:07.741Z",
+  "summary": "The diff implements a comprehensive Agent Registry with kill switches and C2 dashboard. Backend changes include adding is_enabled field to Agent type, toggle_agent_status function with admin authorization, and routing guardrail logic in start_boardroom_debate. Frontend implements the AgentRegistryTable component with status indicators, toggle switches, and React Query hooks. However, several requirements have missing or incomplete implementations.",
   "missing_requirements": [
     {
-      "id": "REQ-36",
-      "requirement": "Install and import @dfinity/auth-client package in the frontend",
-      "reason": "While the UI shows login/logout buttons and uses useInternetIdentity hook, there is no evidence in the diff of @dfinity/auth-client package.json installation or import statements in any frontend files",
-      "evidence": []
-    },
-    {
-      "id": "REQ-38",
-      "requirement": "Import ExperimentalCycles module in backend/main.mo",
-      "reason": "The backend/main.mo file shows imports for Principal, Text, and Migration modules, but there is no import statement for ExperimentalCycles module",
+      "id": "REQ-75",
+      "requirement": "Add routing guardrail logic in the start_boardroom_debate function: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call and append system message '[Agent Name] is currently offline. Bypassing routing segment.' to transcript",
+      "reason": "The backend/main.mo diff is truncated and does not show the start_boardroom_debate function implementation. Cannot verify that is_enabled checks are performed before agent calls or that offline messages are appended to transcript.",
       "evidence": [
         "backend/main.mo"
       ]
     },
     {
-      "id": "REQ-39",
-      "requirement": "Implement top_up_swarm function with ExperimentalCycles.add(amount) and actual cycle transfer logic",
-      "reason": "The topUpSwarm function exists but only contains 'ignore targetCanister; ignore amount;' - it does not call ExperimentalCycles.add(amount), does not make inter-canister calls, and does not transfer cycles to the target canister",
+      "id": "REQ-79",
+      "requirement": "Successful mutations invalidate relevant queries to refresh agent status",
+      "reason": "The useToggleAgentStatus mutation in useQueries.ts is truncated and does not show the onSuccess handler that should invalidate the agentStatuses query. Cannot verify query invalidation is implemented.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "requirement": "Add assertion to top_up_swarm to ensure only authenticated admin Principal can trigger cycle top-up",
-      "reason": "The topUpSwarm function has no assert statement, no msg.caller check, no admin Principal verification, and no stored admin Principal ID in state or constants",
-      "evidence": [
-        "backend/main.mo"
+        "frontend/src/hooks/useQueries.ts"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Migration module and migration.mo file created",
-      "reason": "BuildRequest does not mention creating a migration system or migration.mo file. The added backend/migration.mo file and its import in main.mo were not requested",
+      "description": "Migration module created for agent persistence with old/new actor types",
+      "reason": "BuildRequest does not mention creating a migration.mo file or implementing state migration logic with OldActor/NewActor types. REQ-73 only requires adding is_enabled field, not a full migration system.",
       "evidence": [
-        "backend/migration.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "description": "URL parameter utilities for extracting and persisting parameters from hash-based routing",
+      "reason": "BuildRequest does not request URL parameter management utilities. The urlParams.ts file with functions like getUrlParameter, storeSessionParameter, getPersistedUrlParameter was not requested in any requirement.",
+      "evidence": [
+        "frontend/src/utils/urlParams.ts"
+      ]
+    },
+    {
+      "description": "userProfiles Map and user profile management functions (getCallerUserProfile, getUserProfile, saveCallerUserProfile)",
+      "reason": "BuildRequest does not request user profile management functionality. These functions and the userProfiles state were added without being specified in any requirement.",
+      "evidence": [
         "backend/main.mo"
       ]
     },
     {
-      "description": "Changed function names from snake_case to camelCase",
-      "reason": "BuildRequest references specific function names like 'start_boardroom_debate', 'top_up_swarm', and 'abort_debate' in snake_case. The diff shows these implemented as 'startBoardroomDebate', 'topUpSwarm', and 'abortDebate' in camelCase, which was not requested",
+      "description": "Static hardcoded agent list in useGetAgentStatuses instead of backend query",
+      "reason": "REQ-76/77/78 expect the agent data to come from the backend, but the implementation creates a static list of 9 agents with hardcoded IDs and assumes all are enabled. The comment admits backend doesn't have a getAgents function yet but this should have been implemented per REQ-73's AC about proper persistence.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/hooks/useQueries.ts"
       ]
     },
     {
-      "description": "Added Badge component with Shield icon for authenticated state in header",
-      "reason": "While authentication status display is reasonable, the BuildRequest does not specify adding a Badge with Shield icon showing 'Authenticated' status in the header",
+      "description": "getSecretParameter utility and _initializeAccessControlWithSecret call in useActor",
+      "reason": "BuildRequest does not mention secret parameter extraction or special access control initialization with caffeineAdminToken. The constraint specifies using existing admin Principal verification pattern, not URL-based secret tokens.",
       "evidence": [
-        "frontend/src/App.tsx"
+        "frontend/src/hooks/useActor.ts"
       ]
     }
   ],
-  "confidence": 0.85,
+  "confidence": 0.75,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/DebateDisplay.tsx",
+    "frontend/src/components/AgentRegistryTable.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/utils/urlParams.ts",
     "project_state.json"
   ]
 }
