@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 31,
+  "projectStateVersion": 35,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -15,9 +15,9 @@
     "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
   ],
   "known_issues": [
-    "Sensory Cortex UI incorrectly includes Principal input field and validation logic that blocks uploads",
-    "Upload button disabled by Principal validation instead of only checking if file is selected",
-    "Upload flow should route chunks to The_Orchestrator, not directly to Sensory Cortex canister"
+    "Swarm Health dashboard displaying static mock data instead of real backend state",
+    "Agent toggle switches in Swarm Health not connected to backend toggle_agent_status function",
+    "Swarm Health table not dynamically rendering from backend agent registry query"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -370,6 +370,102 @@
       "title": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
       "reqIds": [
         "REQ-87"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-sensorycortextab-tsx-ensure-the-backend-actor-is-properly-imported-and-available-in-component-scope-if-the-app-uses-useactor-hook-or-actorprovider-context-destructure-the-backend-actor-from-it-at-the-top-of-the-component-function",
+      "title": "In frontend/src/components/SensoryCortexTab.tsx, ensure the backend actor is properly imported and available in component scope. If the app uses useActor() hook or ActorProvider context, destructure the backend actor from it at the top of the component function.",
+      "reqIds": [
+        "REQ-88"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-ensure-the-backend-actor-is-properly-imported-and-available-in-component-scope-if-the-app-uses-useactor-hook-or-actorprovider-context-destructure-the-backend-actor-from-it-at-the-top-of-the-component-function",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, ensure the backend actor is properly imported and available in component scope. If the app uses useActor() hook or ActorProvider context, destructure the backend actor from it at the top of the component function.",
+      "reqIds": [
+        "REQ-89"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-sensorycortextab-tsx-add-a-guard-clause-at-the-beginning-of-the-component-render-logic-that-checks-if-backend-is-null-or-undefined-if-backend-is-not-initialized-return-early-with-a-loading-message-div-initializing-connection-to-the-orchestrator-div",
+      "title": "In frontend/src/components/SensoryCortexTab.tsx, add a guard clause at the beginning of the component render logic that checks if backend is null or undefined. If backend is not initialized, return early with a loading message: <div>Initializing connection to The Orchestrator...</div>",
+      "reqIds": [
+        "REQ-90"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-add-a-guard-clause-at-the-beginning-of-the-component-render-logic-that-checks-if-backend-is-null-or-undefined-if-backend-is-not-initialized-return-early-with-a-loading-message-div-initializing-connection-to-the-orchestrator-div",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, add a guard clause at the beginning of the component render logic that checks if backend is null or undefined. If backend is not initialized, return early with a loading message: <div>Initializing connection to The Orchestrator...</div>",
+      "reqIds": [
+        "REQ-91"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-handleupload-function-within-frontend-src-components-sensorycortextab-tsx-ensure-the-initialized-backend-actor-is-properly-accessible-and-used-for-all-backend-upload-chunk-calls-during-the-sequential-chunking-loop-verify-that-the-backend-variable-is-in-scope-and-not-shadowed-or-undefined-when-handleupload-executes",
+      "title": "In the handleUpload function within frontend/src/components/SensoryCortexTab.tsx, ensure the initialized backend actor is properly accessible and used for all backend.upload_chunk() calls during the sequential chunking loop. Verify that the backend variable is in scope and not shadowed or undefined when handleUpload executes.",
+      "reqIds": [
+        "REQ-92"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-error-handling-in-both-frontend-src-components-sensorycortextab-tsx-and-frontend-src-components-agentregistrytable-tsx-to-gracefully-handle-cases-where-the-backend-actor-initialization-fails-display-a-user-friendly-error-message-if-the-actor-remains-uninitialized-after-a-reasonable-timeout-or-initialization-attempt",
+      "title": "Add error handling in both frontend/src/components/SensoryCortexTab.tsx and frontend/src/components/AgentRegistryTable.tsx to gracefully handle cases where the backend actor initialization fails. Display a user-friendly error message if the actor remains uninitialized after a reasonable timeout or initialization attempt.",
+      "reqIds": [
+        "REQ-93"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-import-the-backend-actor-using-the-useactor-hook-create-a-react-state-variable-using-usestate-with-signature-const-agents-setagents-usestate-any-to-store-the-agent-list",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, import the backend actor using the useActor hook, create a React state variable using useState with signature const [agents, setAgents] = useState<any[]>([]) to store the agent list",
+      "reqIds": [
+        "REQ-96"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-implement-a-useeffect-hook-that-runs-on-component-mount-calls-await-backend-get-agent-registry-and-updates-the-agents-state-with-the-returned-data-using-setagents",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, implement a useEffect hook that runs on component mount, calls await backend.get_agent_registry(), and updates the agents state with the returned data using setAgents",
+      "reqIds": [
+        "REQ-97"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-refactor-the-table-rendering-logic-in-frontend-src-components-agentregistrytable-tsx-to-dynamically-generate-rows-by-mapping-over-the-agents-state-array-instead-of-using-hardcoded-html-each-row-must-display-the-agent-s-name-and-current-status",
+      "title": "Refactor the table rendering logic in frontend/src/components/AgentRegistryTable.tsx to dynamically generate rows by mapping over the agents state array instead of using hardcoded HTML. Each row must display the agent's name and current status",
+      "reqIds": [
+        "REQ-98"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-update-each-toggle-component-in-the-mapped-table-rows-to-reflect-the-true-agent-is-enabled-boolean-value-from-the-backend-state-showing-enabled-state-when-is-enabled-is-true-and-disabled-state-when-is-enabled-is-false",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, update each Toggle component in the mapped table rows to reflect the true agent.is_enabled boolean value from the backend state, showing enabled state when is_enabled is true and disabled state when is_enabled is false",
+      "reqIds": [
+        "REQ-99"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-onchange-or-onclick-event-handler-to-each-toggle-component-in-frontend-src-components-agentregistrytable-tsx-that-executes-await-backend-toggle-agent-status-agent-name-agent-is-enabled-when-the-toggle-is-clicked-passing-the-agent-s-name-and-the-inverted-enabled-status",
+      "title": "Add an onChange or onClick event handler to each Toggle component in frontend/src/components/AgentRegistryTable.tsx that executes await backend.toggle_agent_status(agent.name, !agent.is_enabled) when the toggle is clicked, passing the agent's name and the inverted enabled status",
+      "reqIds": [
+        "REQ-100"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-after-the-toggle-agent-status-backend-call-resolves-successfully-immediately-call-backend-get-agent-registry-again-to-fetch-the-updated-agent-data-from-the-backend-and-call-setagents-with-the-fresh-data-to-update-the-ui-state-in-real-time",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, after the toggle_agent_status backend call resolves successfully, immediately call backend.get_agent_registry() again to fetch the updated agent data from the backend and call setAgents with the fresh data to update the UI state in real-time",
+      "reqIds": [
+        "REQ-101"
       ],
       "version": 1
     }
@@ -1028,6 +1124,70 @@
       "summary": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
       "reqIds": [
         "REQ-75"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-99",
+      "summary": "In The_Orchestrator backend, ensure Agent record is initialized with is_enabled = true by default",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-100",
+      "summary": "Create public query function get_agent_registry() : async [Agent] in The_Orchestrator backend that returns the current list of all agents and their statuses",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-101",
+      "summary": "In Swarm Health tab component, import backend actor and create React state: const [agents, setAgents] = useState([])",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-102",
+      "summary": "Use useEffect hook in Swarm Health tab to call await backend.get_agent_registry() on component mount and update the agents state",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-103",
+      "summary": "Make the Swarm Health table render dynamically by mapping over the agents state variable, not using hardcoded HTML",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-104",
+      "summary": "Update the Toggle component in the mapped Swarm Health table to reflect the true agent.is_enabled boolean",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-105",
+      "summary": "Add onChange or onClick handler to the Toggle component in Swarm Health that executes await backend.toggle_agent_status(agent.name, !agent.is_enabled) when clicked",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-106",
+      "summary": "After toggle_agent_status resolves in Swarm Health, immediately call backend.get_agent_registry() again to re-fetch fresh data and update UI state",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-107",
+      "summary": "In backend/main.mo, ensure the Agent record type includes an is_enabled field of type Bool that defaults to true when agents are initialized in the agent registry",
+      "reqIds": [
+        "REQ-94"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-108",
+      "summary": "Create a public query function named get_agent_registry in backend/main.mo with signature get_agent_registry() : async [Agent] that returns the complete current list of all registered agents and their status fields including is_enabled",
+      "reqIds": [
+        "REQ-95"
       ],
       "status": "pending"
     }

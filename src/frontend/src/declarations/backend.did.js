@@ -24,6 +24,11 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const Agent = IDL.Record({
+  'id' : IDL.Nat,
+  'name' : IDL.Text,
+  'isEnabled' : IDL.Bool,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const FileMetadata = IDL.Record({
   'assignedAgent' : IDL.Text,
@@ -70,6 +75,7 @@ export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'abortDebate' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getAgentRegistry' : IDL.Func([], [IDL.Vec(Agent)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getFileRegistry' : IDL.Func(
@@ -119,6 +125,11 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const Agent = IDL.Record({
+    'id' : IDL.Nat,
+    'name' : IDL.Text,
+    'isEnabled' : IDL.Bool,
+  });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const FileMetadata = IDL.Record({
     'assignedAgent' : IDL.Text,
@@ -165,6 +176,7 @@ export const idlFactory = ({ IDL }) => {
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'abortDebate' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getAgentRegistry' : IDL.Func([], [IDL.Vec(Agent)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getFileRegistry' : IDL.Func(

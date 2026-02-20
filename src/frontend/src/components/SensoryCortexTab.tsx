@@ -17,8 +17,39 @@ export function SensoryCortexTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   
-  const { actor } = useActor();
+  const { actor, isFetching } = useActor();
   const routeDocument = useRouteDocument();
+
+  // Guard clause: Prevent rendering if backend actor is not initialized
+  if (!actor && isFetching) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center space-y-4">
+          <div className="text-2xl font-bold" style={{ color: '#39FF14' }}>
+            Initializing connection to The Orchestrator...
+          </div>
+          <div className="text-sm" style={{ color: '#888' }}>
+            Please wait while we establish secure communication
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!actor && !isFetching) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center space-y-4">
+          <div className="text-2xl font-bold" style={{ color: '#FF0000' }}>
+            Failed to connect to backend
+          </div>
+          <div className="text-sm" style={{ color: '#FFA500' }}>
+            Please refresh the page or check your Internet Identity authentication.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleFileSelect = (file: File) => {
     console.log('[SensoryCortex] File selected:', file.name, 'Size:', file.size, 'bytes');
@@ -125,7 +156,14 @@ export function SensoryCortexTab() {
   const handleUpload = async () => {
     console.log('[SensoryCortex] Upload button clicked');
     console.log('[SensoryCortex] Selected file:', selectedFile?.name || 'none');
+    console.log('[SensoryCortex] Backend actor status:', actor ? 'initialized' : 'not initialized');
     
+    if (!actor) {
+      console.error('[SensoryCortex] Upload failed: Backend actor not initialized');
+      toast.error('Failed to connect to backend: Actor not initialized');
+      return;
+    }
+
     if (!selectedFile) {
       console.error('[SensoryCortex] Upload failed: No file selected');
       toast.error('Please select a file first');

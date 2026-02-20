@@ -230,7 +230,9 @@ actor {
   };
 
   public query ({ caller }) func getFileRegistry() : async [(Text, FileMetadata)] {
-    // Accessible to all users including guests
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access file registry");
+    };
     fileRegistry.toArray();
   };
 
@@ -241,5 +243,12 @@ actor {
 
     ignore targetCanister;
     ignore amount;
+  };
+
+  public query ({ caller }) func getAgentRegistry() : async [Agent] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access agent registry");
+    };
+    agents.values().toArray();
   };
 };

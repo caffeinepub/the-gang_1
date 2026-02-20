@@ -100,6 +100,11 @@ export interface FileMetadata {
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
 }
+export interface Agent {
+    id: bigint;
+    name: string;
+    isEnabled: boolean;
+}
 export interface DebateState {
     isDebating: boolean;
     emergencyMode: boolean;
@@ -132,6 +137,7 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     abortDebate(userInterruption: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getAgentRegistry(): Promise<Array<Agent>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFileRegistry(): Promise<Array<[string, FileMetadata]>>;
@@ -271,6 +277,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n8(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async getAgentRegistry(): Promise<Array<Agent>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAgentRegistry();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAgentRegistry();
             return result;
         }
     }

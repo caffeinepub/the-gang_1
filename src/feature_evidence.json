@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-delete-the-entire-sensory-cortex-canister-principal-input-field-and-its-associated-state-variable-from-the-sensorycortextab-component-frontend-src-components-sensorycortextab-tsx",
-      "featureTitle": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
+      "featureId": "feature-in-frontend-src-components-agentregistrytable-tsx-import-the-backend-actor-using-the-useactor-hook-create-a-react-state-variable-using-usestate-with-signature-const-agents-setagents-usestate-any-to-store-the-agent-list",
+      "featureTitle": "In frontend/src/components/AgentRegistryTable.tsx, import the backend actor using the useActor hook, create a React state variable using useState with signature const [agents, setAgents] = useState<any[]>([]) to store the agent list",
       "files": [
-        "frontend/src/components/SensoryCortexTab.tsx"
+        "frontend/src/components/AgentRegistryTable.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -18,15 +18,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-84"
+        "REQ-96"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-all-validation-logic-that-disables-the-start-upload-button-based-on-a-principal-id-the-only-requirement-for-the-start-upload-button-to-be-active-is-that-a-file-is-selected-if-selectedfile-null",
-      "featureTitle": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
+      "featureId": "feature-in-frontend-src-components-agentregistrytable-tsx-implement-a-useeffect-hook-that-runs-on-component-mount-calls-await-backend-get-agent-registry-and-updates-the-agents-state-with-the-returned-data-using-setagents",
+      "featureTitle": "In frontend/src/components/AgentRegistryTable.tsx, implement a useEffect hook that runs on component mount, calls await backend.get_agent_registry(), and updates the agents state with the returned data using setAgents",
       "files": [
-        "frontend/src/components/SensoryCortexTab.tsx"
+        "frontend/src/components/AgentRegistryTable.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -39,15 +39,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-85"
+        "REQ-97"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-fix-the-upload-flow-so-that-when-start-upload-is-clicked-the-chunking-loop-sends-1-8mb-chunks-directly-to-the-backend-orchestrator-s-upload-chunk-function-not-to-sensory-cortex-directly",
-      "featureTitle": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
+      "featureId": "feature-refactor-the-table-rendering-logic-in-frontend-src-components-agentregistrytable-tsx-to-dynamically-generate-rows-by-mapping-over-the-agents-state-array-instead-of-using-hardcoded-html-each-row-must-display-the-agent-s-name-and-current-status",
+      "featureTitle": "Refactor the table rendering logic in frontend/src/components/AgentRegistryTable.tsx to dynamically generate rows by mapping over the agents state array instead of using hardcoded HTML. Each row must display the agent's name and current status",
       "files": [
-        "frontend/src/components/SensoryCortexTab.tsx"
+        "frontend/src/components/AgentRegistryTable.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -60,15 +60,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-86"
+        "REQ-98"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-when-the-upload-reaches-100-completion-call-the-backend-orchestrator-s-route-document-file-name-previewtext-function-where-previewtext-is-the-first-5-000-characters-extracted-from-the-file",
-      "featureTitle": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
+      "featureId": "feature-in-frontend-src-components-agentregistrytable-tsx-update-each-toggle-component-in-the-mapped-table-rows-to-reflect-the-true-agent-is-enabled-boolean-value-from-the-backend-state-showing-enabled-state-when-is-enabled-is-true-and-disabled-state-when-is-enabled-is-false",
+      "featureTitle": "In frontend/src/components/AgentRegistryTable.tsx, update each Toggle component in the mapped table rows to reflect the true agent.is_enabled boolean value from the backend state, showing enabled state when is_enabled is true and disabled state when is_enabled is false",
       "files": [
-        "frontend/src/components/SensoryCortexTab.tsx"
+        "frontend/src/components/AgentRegistryTable.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -81,7 +81,49 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-87"
+        "REQ-99"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-onchange-or-onclick-event-handler-to-each-toggle-component-in-frontend-src-components-agentregistrytable-tsx-that-executes-await-backend-toggle-agent-status-agent-name-agent-is-enabled-when-the-toggle-is-clicked-passing-the-agent-s-name-and-the-inverted-enabled-status",
+      "featureTitle": "Add an onChange or onClick event handler to each Toggle component in frontend/src/components/AgentRegistryTable.tsx that executes await backend.toggle_agent_status(agent.name, !agent.is_enabled) when the toggle is clicked, passing the agent's name and the inverted enabled status",
+      "files": [
+        "frontend/src/components/AgentRegistryTable.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-100"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-frontend-src-components-agentregistrytable-tsx-after-the-toggle-agent-status-backend-call-resolves-successfully-immediately-call-backend-get-agent-registry-again-to-fetch-the-updated-agent-data-from-the-backend-and-call-setagents-with-the-fresh-data-to-update-the-ui-state-in-real-time",
+      "featureTitle": "In frontend/src/components/AgentRegistryTable.tsx, after the toggle_agent_status backend call resolves successfully, immediately call backend.get_agent_registry() again to fetch the updated agent data from the backend and call setAgents with the fresh data to update the UI state in real-time",
+      "files": [
+        "frontend/src/components/AgentRegistryTable.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-101"
       ],
       "confidence": "high"
     }

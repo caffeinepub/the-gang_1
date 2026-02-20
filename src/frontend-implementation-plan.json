@@ -1,71 +1,107 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove Principal Input and Fix Upload Button in Sensory Cortex",
+  "title": "Sync Swarm Health Dashboard with Backend Agent Registry",
   "requirements": [
     {
-      "id": "REQ-84",
-      "summary": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component",
+      "id": "REQ-96",
+      "summary": "Import backend actor and initialize agents state in AgentRegistryTable component",
       "acceptanceCriteria": [
-        "The Principal input field is completely removed from the UI",
-        "All state variables related to Principal ID are deleted",
-        "No visual trace of the Principal input remains in the Sensory Cortex tab"
+        "Backend actor is destructured from useActor hook at component top",
+        "React state agents is declared with type annotation",
+        "State is initialized as empty array"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
           "operation": "modify",
-          "description": "Remove the 'SENSORY CORTEX CANISTER PRINCIPAL' input field element and delete all associated state variables (e.g., sensoryCortexPrincipal, setSensoryCortexPrincipal) from the component. Remove any validation, error handling, or UI logic that references this Principal input field."
+          "description": "Import useActor hook from '../hooks/useActor' if not already imported. Add a React state declaration using useState: const [agents, setAgents] = useState<any[]>([]) to store the agent list fetched from the backend. Ensure the backend actor is destructured from useActor at the component top level."
         }
       ]
     },
     {
-      "id": "REQ-85",
-      "summary": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID, ensuring the button is enabled only when a file is selected",
+      "id": "REQ-97",
+      "summary": "Fetch agent registry data on component mount using useEffect",
       "acceptanceCriteria": [
-        "The START UPLOAD button is enabled when selectedFile is not null",
-        "The START UPLOAD button is disabled only when no file is selected",
-        "No Principal ID validation exists in the button's disabled logic"
+        "useEffect has empty dependency array [] to run only on mount",
+        "useEffect contains async function that calls backend.get_agent_registry()",
+        "Returned agent data is stored in agents state via setAgents",
+        "Error handling is included for failed backend calls"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
           "operation": "modify",
-          "description": "Update the 'START UPLOAD' button's disabled prop to only check if selectedFile is not null. Remove any conditions that reference Principal ID validation. The button should be disabled={!selectedFile} or disabled={selectedFile === null}."
+          "description": "Implement a useEffect hook with empty dependency array [] that runs on component mount. Inside the effect, create an async function that calls await backend.getAgentRegistry() (note: backend interface uses camelCase getAgentRegistry, not snake_case). Store the returned agent array in the agents state using setAgents. Include try-catch error handling for failed backend calls and log errors appropriately."
         }
       ]
     },
     {
-      "id": "REQ-86",
-      "summary": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function",
+      "id": "REQ-98",
+      "summary": "Refactor table rendering to dynamically map over agents state instead of hardcoded HTML",
       "acceptanceCriteria": [
-        "The chunking loop calls the backend's upload_chunk function from The_Orchestrator actor",
-        "Chunks are exactly 1,800,000 bytes in size",
-        "Each chunk upload awaits confirmation before sending the next chunk",
-        "No direct calls are made to a Sensory Cortex canister from the frontend"
+        "Table body uses agents.map() to generate rows",
+        "No hardcoded agent names in JSX",
+        "Each row displays agent.name field",
+        "Rows update automatically when agents state changes"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
           "operation": "modify",
-          "description": "Modify the upload handler to chunk the selected file into 1,800,000-byte pieces and send each chunk sequentially to the backend actor's upload_chunk backend capability (available via useActor hook). Ensure each chunk upload awaits a response before proceeding to the next chunk. Remove any direct actor creation or Principal-based canister calls to Sensory Cortex. Use the existing actor from useActor to call the backend Orchestrator's methods."
+          "description": "Replace any hardcoded table row HTML with dynamic rendering using agents.map((agent) => ...). Each mapped row must display agent.name for the agent name column. Remove all hardcoded agent names from JSX. Ensure each row has a unique key prop using agent.id or agent.name. The table body should automatically re-render when the agents state changes."
         }
       ]
     },
     {
-      "id": "REQ-87",
-      "summary": "When the upload reaches 100% completion, call the backend Orchestrator's route_document function with file name and preview text (first 5,000 characters)",
+      "id": "REQ-99",
+      "summary": "Bind Toggle components to reflect true agent.isEnabled boolean values from backend state",
       "acceptanceCriteria": [
-        "After all chunks upload successfully, route_document is called",
-        "The first parameter is the file's name",
-        "The second parameter is the previewText containing the first 5,000 characters of the file",
-        "The route_document call targets The_Orchestrator backend actor"
+        "Toggle component receives agent.isEnabled as checked or value prop",
+        "Toggle visual state matches backend isEnabled value",
+        "Green indicator displays when isEnabled is true",
+        "Red indicator displays when isEnabled is false"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
           "operation": "modify",
-          "description": "After the chunking loop completes successfully (100% upload), extract the first 5,000 characters from the file content as previewText, then call actor.routeDocument(file.name, previewText, fileSize, sensoryCortexPrincipal) using the backend actor from useActor. Note: Based on the backend interface signature routeDocument(filename: string, filePreview: string, fileSize: bigint, sensoryCortex: Principal), you will need to pass the appropriate sensoryCortex Principal parameter as required by the backend - use a hardcoded or environment-configured Principal value since the user input is being removed."
+          "description": "Update each Toggle component in the mapped table rows to receive agent.isEnabled as its checked or value prop (note: backend interface uses camelCase isEnabled, not snake_case is_enabled). Ensure the Toggle visual state correctly reflects the backend isEnabled boolean value. Green indicator (#39FF14) should display when isEnabled is true, and red indicator should display when isEnabled is false, maintaining the tactical dark aesthetic."
+        }
+      ]
+    },
+    {
+      "id": "REQ-100",
+      "summary": "Add toggle click handler that calls backend toggleAgentStatus with inverted status",
+      "acceptanceCriteria": [
+        "Toggle has onChange or onClick handler implemented",
+        "Handler calls backend.toggleAgentStatus with correct parameters",
+        "First parameter is agent.name from current row",
+        "Second parameter is !agent.isEnabled (inverted current state)",
+        "Handler is properly async or wrapped in async function"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "operation": "modify",
+          "description": "Add an onChange or onClick event handler to each Toggle component in the mapped rows. The handler must call await backend.toggleAgentStatus(agent.name, !agent.isEnabled) (note: backend interface uses camelCase toggleAgentStatus and isEnabled, not snake_case). The first parameter is the agent's name string from the current row, and the second parameter is the inverted enabled status (!agent.isEnabled). Ensure the handler is properly async or wrapped in an async function with error handling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-101",
+      "summary": "Refresh agent data immediately after toggle status change to update UI in real-time",
+      "acceptanceCriteria": [
+        "After toggleAgentStatus completes, getAgentRegistry is called",
+        "Fresh agent data is stored in agents state via setAgents",
+        "UI updates reflect the new backend state immediately",
+        "Toggle indicators update to show new enabled/disabled status without page refresh"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "operation": "modify",
+          "description": "After the await backend.toggleAgentStatus() call resolves successfully in the toggle handler, immediately call await backend.getAgentRegistry() again to fetch the updated agent data from the backend. Store the fresh agent array in the agents state using setAgents() to update the UI in real-time. This ensures toggle indicators update to show the new enabled/disabled status without requiring a page refresh. Include error handling for the refresh call."
         }
       ]
     }

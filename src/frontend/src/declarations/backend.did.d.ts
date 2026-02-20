@@ -10,6 +10,7 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Agent { 'id' : bigint, 'name' : string, 'isEnabled' : boolean }
 export interface DebateState {
   'isDebating' : boolean,
   'emergencyMode' : boolean,
@@ -56,6 +57,7 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'abortDebate' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getAgentRegistry' : ActorMethod<[], Array<Agent>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getFileRegistry' : ActorMethod<[], Array<[string, FileMetadata]>>,

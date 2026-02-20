@@ -15,6 +15,11 @@ export interface FileMetadata {
     size: bigint;
     filename: string;
 }
+export interface Agent {
+    id: bigint;
+    name: string;
+    isEnabled: boolean;
+}
 export interface DebateState {
     isDebating: boolean;
     emergencyMode: boolean;
@@ -32,6 +37,7 @@ export enum UserRole {
 export interface backendInterface {
     abortDebate(userInterruption: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getAgentRegistry(): Promise<Array<Agent>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFileRegistry(): Promise<Array<[string, FileMetadata]>>;

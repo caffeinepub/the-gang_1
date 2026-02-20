@@ -1,13 +1,47 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
 import { useGetAgentStatuses, useToggleAgentStatus } from '../hooks/useQueries';
+import { useActor } from '../hooks/useActor';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import type { Agent } from '../backend';
 
 export function AgentRegistryTable() {
+  const { actor, isFetching } = useActor();
   const { data: agents, isLoading } = useGetAgentStatuses();
   const toggleAgent = useToggleAgentStatus();
   const [togglingAgent, setTogglingAgent] = useState<string | null>(null);
+
+  // Guard clause: Prevent rendering if backend actor is not initialized
+  if (!actor && isFetching) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center space-y-4">
+          <div className="text-2xl font-bold" style={{ color: '#39FF14' }}>
+            Initializing connection to The Orchestrator...
+          </div>
+          <div className="text-sm" style={{ color: '#888' }}>
+            Please wait while we establish secure communication
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!actor && !isFetching) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="text-center space-y-4">
+          <div className="text-2xl font-bold" style={{ color: '#FF0000' }}>
+            Failed to connect to backend
+          </div>
+          <div className="text-sm" style={{ color: '#FFA500' }}>
+            Please refresh the page or check your Internet Identity authentication.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleToggle = async (agentName: string, currentStatus: boolean) => {
     setTogglingAgent(agentName);
@@ -51,7 +85,7 @@ export function AgentRegistryTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {agents.map((agent) => (
+          {agents.map((agent: Agent) => (
             <TableRow key={agent.name} style={{ borderColor: '#333' }}>
               <TableCell>
                 <div className="flex items-center gap-2">

@@ -1,29 +1,47 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T22:19:57.198Z",
-  "summary": "The diff successfully implements all four requirements. REQ-84 removes the Principal input field and state, REQ-85 removes Principal validation from the upload button, REQ-86 implements chunked upload via The_Orchestrator's upload_chunk function with sequential 1.8MB chunks, and REQ-87 calls route_document with filename and preview text after upload completion.",
-  "missing_requirements": [],
+  "generatedAt": "2026-02-20T22:39:15.866Z",
+  "summary": "The implementation successfully addresses all BuildRequest requirements. The backend properly adds the is_enabled field and get_agent_registry function. The frontend correctly integrates the agent registry with React Query hooks (useGetAgentStatuses), dynamically renders agents, and implements toggle functionality with automatic UI refresh. However, there is one minor discrepancy: only 3 agents (Skippy, GLaDOS, Robby) are initialized instead of the requested 9 agents.",
+  "missing_requirements": [
+    {
+      "id": "REQ-95",
+      "requirement": "Function returns array containing all 9 agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, Sensory_Cortex)",
+      "reason": "The backend initializes only 3 agents in the initializeAgents function, not the full roster of 9 agents specified in the requirements",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    }
+  ],
   "hallucinated_features": [
     {
-      "description": "Added fileSize parameter to routeDocument function call in useRouteDocument hook",
-      "reason": "REQ-87 specifies route_document should be called with exactly two parameters: file.name and previewText (first 5,000 characters). The implementation adds a third parameter 'fileSize: bigint' and a fourth parameter 'sensoryCortexPrincipal' which were not requested in the BuildRequest.",
+      "description": "Implementation uses React Query hooks (useGetAgentStatuses, useToggleAgentStatus) with automatic query invalidation and 2-second polling intervals instead of direct manual useEffect + useState pattern",
+      "reason": "REQ-96 and REQ-97 explicitly require useState and useEffect implementation for fetching agents. REQ-101 requires manual get_agent_registry call after toggle. The diff shows React Query abstraction with automatic refetching via queryClient.invalidateQueries instead of the specified imperative approach",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/components/AgentRegistryTable.tsx"
       ]
     },
     {
-      "description": "Added sensoryCortexPrincipal parameter with placeholder Principal to routeDocument",
-      "reason": "The BuildRequest explicitly states to route operations through The_Orchestrator backend without additional Principal parameters. The constraint 'Route all file operations through The_Orchestrator backend, not directly to Sensory Cortex' suggests the backend should handle Principal resolution internally, not receive it from the frontend.",
+      "description": "Agent type includes 'id' field of type Nat in addition to name and isEnabled",
+      "reason": "REQ-94 only specifies is_enabled field should be added to Agent record type. The addition of an 'id' field was not requested",
       "evidence": [
-        "frontend/src/hooks/useQueries.ts"
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Toggle switch component implementation uses shadcn Switch component with mutateAsync and toast notifications",
+      "reason": "Requirements specify basic onChange/onClick handler pattern. The implementation adds sophisticated UI feedback with loading states (togglingAgent), toast notifications (Sonner), and React Query mutation handling not requested in the spec",
+      "evidence": [
+        "frontend/src/components/AgentRegistryTable.tsx"
       ]
     }
   ],
   "confidence": 0.92,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/SensoryCortexTab.tsx",
+    "frontend/src/components/AgentRegistryTable.tsx",
     "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]

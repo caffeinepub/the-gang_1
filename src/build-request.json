@@ -1,95 +1,174 @@
 {
   "kind": "build_request",
-  "title": "Remove Principal Input and Fix Upload Button in Sensory Cortex",
+  "title": "Sync Swarm Health Dashboard with Backend Agent Registry",
   "projectName": "The Gang",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-84",
-      "text": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
-      "target": "frontend",
+      "id": "REQ-94",
+      "text": "In backend/main.mo, ensure the Agent record type includes an is_enabled field of type Bool that defaults to true when agents are initialized in the agent registry",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-last"
         ],
         "quotes": [
-          "Delete the entire \"SENSORY CORTEX CANISTER PRINCIPAL\" input field and its associated state from the UI."
+          "Ensure the Agent record is initialized with is_enabled = true by default"
         ]
       },
       "acceptanceCriteria": [
-        "The Principal input field is completely removed from the UI",
-        "All state variables related to Principal ID are deleted",
-        "No visual trace of the Principal input remains in the Sensory Cortex tab"
+        "Agent record type definition includes is_enabled: Bool field",
+        "All agents in the registry are initialized with is_enabled = true by default"
       ]
     },
     {
-      "id": "REQ-85",
-      "text": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
-      "target": "frontend",
+      "id": "REQ-95",
+      "text": "Create a public query function named get_agent_registry in backend/main.mo with signature get_agent_registry() : async [Agent] that returns the complete current list of all registered agents and their status fields including is_enabled",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-last"
         ],
         "quotes": [
-          "Remove any validation logic that disables the \"START UPLOAD\" button based on a Principal ID. The ONLY requirement for the \"START UPLOAD\" button to be active is that a file is selected (if (selectedFile !== null))."
+          "Create a public query function called get_agent_registry() : async [Agent] that returns the current list of all agents and their statuses"
         ]
       },
       "acceptanceCriteria": [
-        "The START UPLOAD button is enabled when selectedFile is not null",
-        "The START UPLOAD button is disabled only when no file is selected",
-        "No Principal ID validation exists in the button's disabled logic"
+        "Function is marked as public query",
+        "Function signature is get_agent_registry() : async [Agent]",
+        "Function returns array containing all 9 agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, Sensory_Cortex)",
+        "Each returned Agent record includes name, is_enabled, and any other defined fields"
       ]
     },
     {
-      "id": "REQ-86",
-      "text": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
+      "id": "REQ-96",
+      "text": "In frontend/src/components/AgentRegistryTable.tsx, import the backend actor using the useActor hook, create a React state variable using useState with signature const [agents, setAgents] = useState<any[]>([]) to store the agent list",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-last"
         ],
         "quotes": [
-          "When \"START UPLOAD\" is clicked, execute the chunking loop, sending the 1.8MB chunks directly to the backend Orchestrator's upload_chunk function."
+          "In the Swarm Health tab component, import the backend actor",
+          "Create a React state: const [agents, setAgents] = useState([])"
         ]
       },
       "acceptanceCriteria": [
-        "The chunking loop calls the backend's upload_chunk function from The_Orchestrator actor",
-        "Chunks are exactly 1,800,000 bytes in size",
-        "Each chunk upload awaits confirmation before sending the next chunk",
-        "No direct calls are made to a Sensory Cortex canister from the frontend"
+        "Backend actor is destructured from useActor hook at component top",
+        "React state agents is declared with type annotation",
+        "State is initialized as empty array"
       ]
     },
     {
-      "id": "REQ-87",
-      "text": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
+      "id": "REQ-97",
+      "text": "In frontend/src/components/AgentRegistryTable.tsx, implement a useEffect hook that runs on component mount, calls await backend.get_agent_registry(), and updates the agents state with the returned data using setAgents",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-last"
         ],
         "quotes": [
-          "When the upload reaches 100%, call the backend Orchestrator's route_document(file.name, previewText) function."
+          "Use a useEffect hook to call await backend.get_agent_registry() on component mount and update the agents state"
         ]
       },
       "acceptanceCriteria": [
-        "After all chunks upload successfully, route_document is called",
-        "The first parameter is the file's name",
-        "The second parameter is the previewText containing the first 5,000 characters of the file",
-        "The route_document call targets The_Orchestrator backend actor"
+        "useEffect has empty dependency array [] to run only on mount",
+        "useEffect contains async function that calls backend.get_agent_registry()",
+        "Returned agent data is stored in agents state via setAgents",
+        "Error handling is included for failed backend calls"
+      ]
+    },
+    {
+      "id": "REQ-98",
+      "text": "Refactor the table rendering logic in frontend/src/components/AgentRegistryTable.tsx to dynamically generate rows by mapping over the agents state array instead of using hardcoded HTML. Each row must display the agent's name and current status",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "The table MUST render dynamically by mapping over this agents state variable, not hardcoded HTML"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Table body uses agents.map() to generate rows",
+        "No hardcoded agent names in JSX",
+        "Each row displays agent.name field",
+        "Rows update automatically when agents state changes"
+      ]
+    },
+    {
+      "id": "REQ-99",
+      "text": "In frontend/src/components/AgentRegistryTable.tsx, update each Toggle component in the mapped table rows to reflect the true agent.is_enabled boolean value from the backend state, showing enabled state when is_enabled is true and disabled state when is_enabled is false",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Update the Toggle component in the mapped table to reflect the true agent.is_enabled boolean"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Toggle component receives agent.is_enabled as checked or value prop",
+        "Toggle visual state matches backend is_enabled value",
+        "Green indicator displays when is_enabled is true",
+        "Red indicator displays when is_enabled is false"
+      ]
+    },
+    {
+      "id": "REQ-100",
+      "text": "Add an onChange or onClick event handler to each Toggle component in frontend/src/components/AgentRegistryTable.tsx that executes await backend.toggle_agent_status(agent.name, !agent.is_enabled) when the toggle is clicked, passing the agent's name and the inverted enabled status",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Add an onChange or onClick handler to the Toggle",
+          "When clicked, it must execute await backend.toggle_agent_status(agent.name, !agent.is_enabled)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Toggle has onChange or onClick handler implemented",
+        "Handler calls backend.toggle_agent_status with correct parameters",
+        "First parameter is agent.name from current row",
+        "Second parameter is !agent.is_enabled (inverted current state)",
+        "Handler is properly async or wrapped in async function"
+      ]
+    },
+    {
+      "id": "REQ-101",
+      "text": "In frontend/src/components/AgentRegistryTable.tsx, after the toggle_agent_status backend call resolves successfully, immediately call backend.get_agent_registry() again to fetch the updated agent data from the backend and call setAgents with the fresh data to update the UI state in real-time",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Immediately after the await resolves, call the backend query again to re-fetch the fresh data and update the UI state"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After toggle_agent_status completes, get_agent_registry is called",
+        "Fresh agent data is stored in agents state via setAgents",
+        "UI updates reflect the new backend state immediately",
+        "Toggle indicators update to show new enabled/disabled status without page refresh"
       ]
     }
   ],
   "constraints": [
-    "The entire application is already secured by Internet Identity - do not add additional authentication layers",
-    "Route all file operations through The_Orchestrator backend, not directly to Sensory Cortex",
-    "Maintain the existing sequential chunking engine with 1.8MB chunks",
-    "Preserve the tactical dark aesthetic styling"
+    "All backend logic must remain in the single main actor file backend/main.mo",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts",
+    "Maintain the tactical dark aesthetic with green (#39FF14) for enabled and red for disabled states",
+    "Do not create new backend canisters - all logic goes in The_Orchestrator main actor"
   ],
   "nonGoals": [
-    "Adding new Principal ID input fields",
-    "Creating direct communication between frontend and Sensory Cortex canister",
-    "Modifying the chunking size from 1.8MB",
-    "Changing the Internet Identity authentication flow"
+    "Adding new agent canisters beyond the existing 9",
+    "Changing the agent toggle authentication/authorization logic",
+    "Modifying the existing toggle_agent_status backend function implementation",
+    "Adding WebSocket or real-time subscription features",
+    "Changing the UI component library or styling framework"
   ],
   "imageRequirements": {
     "required": [],
