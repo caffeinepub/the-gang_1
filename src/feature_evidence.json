@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-a-new-react-component-or-section-within-the-existing-swarm-health-tab-frontend-src-app-tsx-that-displays-a-data-table-listing-all-9-ai-agents-robby-skippy-the-architect-deep-thought-glados-vincent-janet-the-librarian-and-sensory-cortex-with-their-names-prominently-displayed",
-      "featureTitle": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
+      "featureId": "feature-delete-the-entire-sensory-cortex-canister-principal-input-field-and-its-associated-state-variable-from-the-sensorycortextab-component-frontend-src-components-sensorycortextab-tsx",
+      "featureTitle": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/AgentRegistryTable.tsx"
+        "frontend/src/components/SensoryCortexTab.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,16 +18,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-76"
+        "REQ-84"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-toggle-switch-ui-component-next-to-each-agent-in-the-swarm-health-data-table-that-triggers-the-backend-toggle-agent-status-function-when-clicked-the-toggle-must-pass-the-agent-s-name-and-the-new-enabled-disabled-status-to-the-backend-function",
-      "featureTitle": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
+      "featureId": "feature-remove-all-validation-logic-that-disables-the-start-upload-button-based-on-a-principal-id-the-only-requirement-for-the-start-upload-button-to-be-active-is-that-a-file-is-selected-if-selectedfile-null",
+      "featureTitle": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
       "files": [
-        "frontend/src/components/AgentRegistryTable.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/SensoryCortexTab.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -41,15 +39,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-77"
+        "REQ-85"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-visual-status-indicators-in-the-swarm-health-agent-table-use-a-green-indicator-color-39ff14-for-enabled-agents-and-a-red-indicator-for-disabled-agents-the-indicator-should-be-clearly-visible-and-update-in-real-time-based-on-the-agent-s-is-enabled-status",
-      "featureTitle": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+      "featureId": "feature-fix-the-upload-flow-so-that-when-start-upload-is-clicked-the-chunking-loop-sends-1-8mb-chunks-directly-to-the-backend-orchestrator-s-upload-chunk-function-not-to-sensory-cortex-directly",
+      "featureTitle": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
       "files": [
-        "frontend/src/components/AgentRegistryTable.tsx"
+        "frontend/src/components/SensoryCortexTab.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -62,15 +60,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-78"
+        "REQ-86"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-a-react-query-mutation-hook-in-frontend-src-hooks-usequeries-ts-for-the-toggle-agent-status-backend-function-that-accepts-agent-name-and-status-parameters-and-invalidates-the-agent-status-query-after-successful-execution",
-      "featureTitle": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+      "featureId": "feature-when-the-upload-reaches-100-completion-call-the-backend-orchestrator-s-route-document-file-name-previewtext-function-where-previewtext-is-the-first-5-000-characters-extracted-from-the-file",
+      "featureTitle": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
       "files": [
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/SensoryCortexTab.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -83,7 +81,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-79"
+        "REQ-87"
       ],
       "confidence": "high"
     }

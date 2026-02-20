@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
+  "projectStateVersion": 31,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -14,8 +14,12 @@
     "Inter-canister communication via ask_agent(Text)->async Text interface",
     "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Sensory Cortex UI incorrectly includes Principal input field and validation logic that blocks uploads",
+    "Upload button disabled by Principal validation instead of only checking if file is selected",
+    "Upload flow should route chunks to The_Orchestrator, not directly to Sensory Cortex canister"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-create-frontend-dashboard-that-displays-the-status-and-identity-of-all-9-canisters-in-the-gang-system-showing-their-principal-ids-controller-information-and-operational-status-include-visual-representation-of-the-multi-agent-architecture",
@@ -302,6 +306,70 @@
       "title": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
       "reqIds": [
         "REQ-79"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensorycortextab-component-frontend-src-components-sensorycortextab-tsx-diagnose-and-fix-the-file-upload-flow-so-that-when-a-user-drags-a-file-into-the-drag-and-drop-zone-or-uses-the-select-file-button-clicking-the-upload-file-button-successfully-triggers-the-sequential-chunking-engine-and-begins-uploading-to-the-backend",
+      "title": "In the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx), diagnose and fix the file upload flow so that when a user drags a file into the drag-and-drop zone OR uses the 'Select File' button, clicking the 'Upload File' button successfully triggers the sequential chunking engine and begins uploading to the backend",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-file-state-management-in-sensorycortextab-correctly-captures-and-stores-the-selected-file-from-both-the-drag-and-drop-ondrop-handler-and-the-file-input-onchange-handler-so-that-the-file-is-available-when-the-upload-file-button-click-event-fires",
+      "title": "Ensure the file state management in SensoryCortexTab correctly captures and stores the selected file from both the drag-and-drop onDrop handler and the file input onChange handler, so that the file is available when the 'Upload File' button click event fires",
+      "reqIds": [
+        "REQ-81"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-upload-file-button-in-sensorycortextab-has-a-proper-onclick-handler-that-reads-the-stored-file-from-state-and-invokes-the-sequential-chunking-upload-logic-if-the-handler-is-missing-or-incorrectly-wired-implement-or-fix-it",
+      "title": "Verify that the 'Upload File' button in SensoryCortexTab has a proper onClick handler that reads the stored file from state and invokes the sequential chunking upload logic. If the handler is missing or incorrectly wired, implement or fix it",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-console-logging-or-visual-feedback-in-the-sensorycortextab-upload-flow-to-help-diagnose-state-issues-log-when-file-is-captured-from-drag-and-drop-when-file-is-captured-from-file-input-and-when-upload-file-button-is-clicked-display-error-message-to-user-if-upload-file-button-is-clicked-with-no-file-selected",
+      "title": "Add console logging or visual feedback in the SensoryCortexTab upload flow to help diagnose state issues: log when file is captured from drag-and-drop, when file is captured from file input, and when Upload File button is clicked. Display error message to user if Upload File button is clicked with no file selected",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-delete-the-entire-sensory-cortex-canister-principal-input-field-and-its-associated-state-variable-from-the-sensorycortextab-component-frontend-src-components-sensorycortextab-tsx",
+      "title": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
+      "reqIds": [
+        "REQ-84"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-all-validation-logic-that-disables-the-start-upload-button-based-on-a-principal-id-the-only-requirement-for-the-start-upload-button-to-be-active-is-that-a-file-is-selected-if-selectedfile-null",
+      "title": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
+      "reqIds": [
+        "REQ-85"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-upload-flow-so-that-when-start-upload-is-clicked-the-chunking-loop-sends-1-8mb-chunks-directly-to-the-backend-orchestrator-s-upload-chunk-function-not-to-sensory-cortex-directly",
+      "title": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
+      "reqIds": [
+        "REQ-86"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-upload-reaches-100-completion-call-the-backend-orchestrator-s-route-document-file-name-previewtext-function-where-previewtext-is-the-first-5-000-characters-extracted-from-the-file",
+      "title": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
+      "reqIds": [
+        "REQ-87"
       ],
       "version": 1
     }

@@ -4,13 +4,13 @@ import Map "mo:core/Map";
 import Nat "mo:core/Nat";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
+
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 
 /* State migration to new actor in with clause */
-(with migration = Migration.run)
+
 actor {
   include MixinStorage();
   // Initialize the access control system

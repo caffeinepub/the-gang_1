@@ -1,155 +1,95 @@
 {
   "kind": "build_request",
-  "title": "Implement Agent Registry with Kill Switches and C2 Dashboard",
+  "title": "Remove Principal Input and Fix Upload Button in Sensory Cortex",
   "projectName": "The Gang",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-73",
-      "text": "Update the internal Agent data structure in The_Orchestrator backend (backend/main.mo) to include a new boolean field named is_enabled with a default value of true for each agent",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Update the internal Agent data structure to include a boolean field: is_enabled (default to true)."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Agent type or record includes is_enabled : Bool field",
-        "All existing agents are initialized with is_enabled = true",
-        "The field is properly persisted in stable storage"
-      ]
-    },
-    {
-      "id": "REQ-74",
-      "text": "Create a public update function named toggle_agent_status in The_Orchestrator backend that accepts agent_name (Text) and status (Bool) parameters, verifies the caller is the Admin Principal using an assertion, and updates the specified agent's is_enabled field to the provided status value",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Create a public update function called toggle_agent_status(agent_name: Text, status: Bool) that requires the caller to be the Admin."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Function signature is: public shared(msg) func toggle_agent_status(agent_name : Text, status : Bool) : async ()",
-        "Function includes admin authorization check using msg.caller",
-        "Function updates the is_enabled field for the matching agent_name",
-        "Function traps or returns an error if agent_name is not found"
-      ]
-    },
-    {
-      "id": "REQ-75",
-      "text": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Inside the start_boardroom_debate function, before calling any agent's ask_agent function, add an if (agent.is_enabled) check.",
-          "If the agent is disabled, the Orchestrator must bypass them and append this system message to the transcript: '[Agent Name] is currently offline. Bypassing routing segment.'"
-        ]
-      },
-      "acceptanceCriteria": [
-        "is_enabled check is performed before each agent's ask_agent call",
-        "When agent is disabled, the inter-canister call is skipped entirely",
-        "System message with format '[Agent Name] is currently offline. Bypassing routing segment.' is appended to transcript",
-        "The debate flow continues to the next enabled agent"
-      ]
-    },
-    {
-      "id": "REQ-76",
-      "text": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
+      "id": "REQ-84",
+      "text": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "In the 'Swarm Health' tab, build a data table listing all 9 AI agents."
+          "Delete the entire \"SENSORY CORTEX CANISTER PRINCIPAL\" input field and its associated state from the UI."
         ]
       },
       "acceptanceCriteria": [
-        "All 9 agents are listed in the table with their exact names",
-        "The table is visible when activeTab equals 'health'",
-        "The table uses the tactical dark aesthetic with sharp edges"
+        "The Principal input field is completely removed from the UI",
+        "All state variables related to Principal ID are deleted",
+        "No visual trace of the Principal input remains in the Sensory Cortex tab"
       ]
     },
     {
-      "id": "REQ-77",
-      "text": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
+      "id": "REQ-85",
+      "text": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "Add a Toggle/Switch UI component next to each agent that triggers the toggle_agent_status backend function."
+          "Remove any validation logic that disables the \"START UPLOAD\" button based on a Principal ID. The ONLY requirement for the \"START UPLOAD\" button to be active is that a file is selected (if (selectedFile !== null))."
         ]
       },
       "acceptanceCriteria": [
-        "Each agent row has a toggle/switch control",
-        "Clicking the toggle calls the backend toggle_agent_status function with correct agent_name and status parameters",
-        "The toggle state reflects the current is_enabled status of the agent",
-        "Toggle interactions are authenticated via Internet Identity"
+        "The START UPLOAD button is enabled when selectedFile is not null",
+        "The START UPLOAD button is disabled only when no file is selected",
+        "No Principal ID validation exists in the button's disabled logic"
       ]
     },
     {
-      "id": "REQ-78",
-      "text": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+      "id": "REQ-86",
+      "text": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "Use a green visual indicator for enabled agents and a red indicator for disabled ones."
+          "When \"START UPLOAD\" is clicked, execute the chunking loop, sending the 1.8MB chunks directly to the backend Orchestrator's upload_chunk function."
         ]
       },
       "acceptanceCriteria": [
-        "Green indicator (#39FF14) is displayed when agent is enabled",
-        "Red indicator is displayed when agent is disabled",
-        "Visual indicator updates immediately when toggle is clicked",
-        "Styling is consistent with the tactical dark theme"
+        "The chunking loop calls the backend's upload_chunk function from The_Orchestrator actor",
+        "Chunks are exactly 1,800,000 bytes in size",
+        "Each chunk upload awaits confirmation before sending the next chunk",
+        "No direct calls are made to a Sensory Cortex canister from the frontend"
       ]
     },
     {
-      "id": "REQ-79",
-      "text": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+      "id": "REQ-87",
+      "text": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "Add a Toggle/Switch UI component next to each agent that triggers the toggle_agent_status backend function."
+          "When the upload reaches 100%, call the backend Orchestrator's route_document(file.name, previewText) function."
         ]
       },
       "acceptanceCriteria": [
-        "Mutation hook is exported from useQueries.ts",
-        "Hook properly handles authenticated actor from useActor",
-        "Successful mutations invalidate relevant queries to refresh agent status",
-        "Error handling is implemented for failed toggle operations"
+        "After all chunks upload successfully, route_document is called",
+        "The first parameter is the file's name",
+        "The second parameter is the previewText containing the first 5,000 characters of the file",
+        "The route_document call targets The_Orchestrator backend actor"
       ]
     }
   ],
   "constraints": [
-    "Do not implement cycle or fuel management in this phase",
-    "Maintain single-actor architecture in backend/main.mo",
-    "Do not modify immutable frontend paths (useInternetIdentity hooks, useActor.ts, main.tsx, components/ui)",
-    "Admin authorization must use the existing admin Principal verification pattern",
-    "Preserve existing emergency mode and debate routing logic"
+    "The entire application is already secured by Internet Identity - do not add additional authentication layers",
+    "Route all file operations through The_Orchestrator backend, not directly to Sensory Cortex",
+    "Maintain the existing sequential chunking engine with 1.8MB chunks",
+    "Preserve the tactical dark aesthetic styling"
   ],
   "nonGoals": [
-    "Cycle balance monitoring or display",
-    "Automated refueling logic",
-    "ExperimentalCycles integration for agent top-ups",
-    "Main Tank deposit functionality",
-    "Cycle gauge or progress bar components"
+    "Adding new Principal ID input fields",
+    "Creating direct communication between frontend and Sensory Cortex canister",
+    "Modifying the chunking size from 1.8MB",
+    "Changing the Internet Identity authentication flow"
   ],
   "imageRequirements": {
     "required": [],

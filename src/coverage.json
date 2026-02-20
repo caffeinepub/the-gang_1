@@ -1,107 +1,68 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T21:51:07.745Z",
+  "generatedAt": "2026-02-20T22:19:57.202Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 7,
+    "total": 4,
     "implemented": 4,
     "items": [
       {
-        "id": "REQ-73",
-        "summary": "Update the internal Agent data structure in The_Orchestrator backend (backend/main.mo) to include a new boolean field named is_enabled with a default value of true for each agent",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-74",
-        "summary": "Create a public update function named toggle_agent_status in The_Orchestrator backend that accepts agent_name (Text) and status (Bool) parameters, verifies the caller is the Admin Principal using an assertion, and updates the specified agent's is_enabled field to the provided status value",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-75",
-        "summary": "Add routing guardrail logic in the start_boardroom_debate function in The_Orchestrator backend: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call to that agent and append a system message to current_state.transcript in the format: '[Agent Name] is currently offline. Bypassing routing segment.'",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-76",
-        "summary": "Create a new React component or section within the existing 'Swarm Health' tab (frontend/src/App.tsx) that displays a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex) with their names prominently displayed",
+        "id": "REQ-84",
+        "summary": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component (frontend/src/components/SensoryCortexTab.tsx)",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ]
       },
       {
-        "id": "REQ-77",
-        "summary": "Add a Toggle/Switch UI component next to each agent in the Swarm Health data table that triggers the backend toggle_agent_status function when clicked. The toggle must pass the agent's name and the new enabled/disabled status to the backend function.",
+        "id": "REQ-85",
+        "summary": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID. The ONLY requirement for the 'START UPLOAD' button to be active is that a file is selected (if (selectedFile !== null))",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/AgentRegistryTable.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/AgentRegistryTable.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ]
       },
       {
-        "id": "REQ-78",
-        "summary": "Implement visual status indicators in the Swarm Health agent table: use a green indicator (color #39FF14) for enabled agents and a red indicator for disabled agents. The indicator should be clearly visible and update in real-time based on the agent's is_enabled status.",
+        "id": "REQ-86",
+        "summary": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function (not to Sensory Cortex directly)",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ]
       },
       {
-        "id": "REQ-79",
-        "summary": "Create a React Query mutation hook in frontend/src/hooks/useQueries.ts for the toggle_agent_status backend function that accepts agent_name and status parameters and invalidates the agent status query after successful execution",
+        "id": "REQ-87",
+        "summary": "When the upload reaches 100% completion, call the backend Orchestrator's route_document(file.name, previewText) function where previewText is the first 5,000 characters extracted from the file",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/SensoryCortexTab.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AgentRegistryTable.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
+    "frontend/src/components/SensoryCortexTab.tsx",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/utils/urlParams.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,73 +1,30 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T21:51:07.741Z",
-  "summary": "The diff implements a comprehensive Agent Registry with kill switches and C2 dashboard. Backend changes include adding is_enabled field to Agent type, toggle_agent_status function with admin authorization, and routing guardrail logic in start_boardroom_debate. Frontend implements the AgentRegistryTable component with status indicators, toggle switches, and React Query hooks. However, several requirements have missing or incomplete implementations.",
-  "missing_requirements": [
-    {
-      "id": "REQ-75",
-      "requirement": "Add routing guardrail logic in the start_boardroom_debate function: before calling each agent's ask_agent function (Skippy, GLaDOS, Robby), check if the agent's is_enabled field is true. If is_enabled is false, skip the inter-canister call and append system message '[Agent Name] is currently offline. Bypassing routing segment.' to transcript",
-      "reason": "The backend/main.mo diff is truncated and does not show the start_boardroom_debate function implementation. Cannot verify that is_enabled checks are performed before agent calls or that offline messages are appended to transcript.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-79",
-      "requirement": "Successful mutations invalidate relevant queries to refresh agent status",
-      "reason": "The useToggleAgentStatus mutation in useQueries.ts is truncated and does not show the onSuccess handler that should invalidate the agentStatuses query. Cannot verify query invalidation is implemented.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-20T22:19:57.198Z",
+  "summary": "The diff successfully implements all four requirements. REQ-84 removes the Principal input field and state, REQ-85 removes Principal validation from the upload button, REQ-86 implements chunked upload via The_Orchestrator's upload_chunk function with sequential 1.8MB chunks, and REQ-87 calls route_document with filename and preview text after upload completion.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Migration module created for agent persistence with old/new actor types",
-      "reason": "BuildRequest does not mention creating a migration.mo file or implementing state migration logic with OldActor/NewActor types. REQ-73 only requires adding is_enabled field, not a full migration system.",
-      "evidence": [
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "description": "URL parameter utilities for extracting and persisting parameters from hash-based routing",
-      "reason": "BuildRequest does not request URL parameter management utilities. The urlParams.ts file with functions like getUrlParameter, storeSessionParameter, getPersistedUrlParameter was not requested in any requirement.",
-      "evidence": [
-        "frontend/src/utils/urlParams.ts"
-      ]
-    },
-    {
-      "description": "userProfiles Map and user profile management functions (getCallerUserProfile, getUserProfile, saveCallerUserProfile)",
-      "reason": "BuildRequest does not request user profile management functionality. These functions and the userProfiles state were added without being specified in any requirement.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Static hardcoded agent list in useGetAgentStatuses instead of backend query",
-      "reason": "REQ-76/77/78 expect the agent data to come from the backend, but the implementation creates a static list of 9 agents with hardcoded IDs and assumes all are enabled. The comment admits backend doesn't have a getAgents function yet but this should have been implemented per REQ-73's AC about proper persistence.",
+      "description": "Added fileSize parameter to routeDocument function call in useRouteDocument hook",
+      "reason": "REQ-87 specifies route_document should be called with exactly two parameters: file.name and previewText (first 5,000 characters). The implementation adds a third parameter 'fileSize: bigint' and a fourth parameter 'sensoryCortexPrincipal' which were not requested in the BuildRequest.",
       "evidence": [
         "frontend/src/hooks/useQueries.ts"
       ]
     },
     {
-      "description": "getSecretParameter utility and _initializeAccessControlWithSecret call in useActor",
-      "reason": "BuildRequest does not mention secret parameter extraction or special access control initialization with caffeineAdminToken. The constraint specifies using existing admin Principal verification pattern, not URL-based secret tokens.",
+      "description": "Added sensoryCortexPrincipal parameter with placeholder Principal to routeDocument",
+      "reason": "The BuildRequest explicitly states to route operations through The_Orchestrator backend without additional Principal parameters. The constraint 'Route all file operations through The_Orchestrator backend, not directly to Sensory Cortex' suggests the backend should handle Principal resolution internally, not receive it from the frontend.",
       "evidence": [
-        "frontend/src/hooks/useActor.ts"
+        "frontend/src/hooks/useQueries.ts"
       ]
     }
   ],
-  "confidence": 0.75,
+  "confidence": 0.92,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/AgentRegistryTable.tsx",
-    "frontend/src/hooks/useActor.ts",
+    "frontend/src/components/SensoryCortexTab.tsx",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/utils/urlParams.ts",
     "project_state.json"
   ]
 }

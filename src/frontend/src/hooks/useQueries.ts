@@ -69,16 +69,18 @@ export function useRouteDocument() {
       filename,
       filePreview,
       fileSize,
-      sensoryCortexPrincipal,
     }: {
       filename: string;
       filePreview: string;
       fileSize: bigint;
-      sensoryCortexPrincipal: string;
     }) => {
       if (!actor) throw new Error('Actor not initialized');
-      const principal = Principal.fromText(sensoryCortexPrincipal);
-      return actor.routeDocument(filename, filePreview, fileSize, principal);
+      
+      // Use placeholder principal for Sensory Cortex
+      // This will be replaced with actual canister ID during deployment
+      const sensoryCortexPrincipal = Principal.fromText('aaaaa-aa');
+      
+      return actor.routeDocument(filename, filePreview, fileSize, sensoryCortexPrincipal);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });

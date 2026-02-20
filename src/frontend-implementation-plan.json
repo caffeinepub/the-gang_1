@@ -1,87 +1,71 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Agent Registry with Kill Switches and C2 Dashboard",
+  "title": "Remove Principal Input and Fix Upload Button in Sensory Cortex",
   "requirements": [
     {
-      "id": "REQ-76",
-      "summary": "Create agent registry table in Swarm Health tab displaying all 9 AI agents",
+      "id": "REQ-84",
+      "summary": "Delete the entire 'SENSORY CORTEX CANISTER PRINCIPAL' input field and its associated state variable from the SensoryCortexTab component",
       "acceptanceCriteria": [
-        "All 9 agents are listed in the table with their exact names",
-        "The table is visible when activeTab equals 'health'",
-        "The table uses the tactical dark aesthetic with sharp edges"
+        "The Principal input field is completely removed from the UI",
+        "All state variables related to Principal ID are deleted",
+        "No visual trace of the Principal input remains in the Sensory Cortex tab"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/AgentRegistryTable.tsx",
-          "operation": "create",
-          "description": "Create a new React component that renders a data table listing all 9 AI agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, and Sensory_Cortex). Display agent names prominently with tactical dark styling using sharp edges and the existing color palette. Use a table layout with proper column headers. Include status indicators and toggle controls for each agent row (will be populated by REQ-77 and REQ-78)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/SensoryCortexTab.tsx",
           "operation": "modify",
-          "description": "Import and render the AgentRegistryTable component within the Swarm Health tab section. Add the component inside the conditional block where activeTab equals 'health', below the existing tab title. Maintain the existing layout structure and tactical dark styling. Verify the component's usage instructions before implementing."
+          "description": "Remove the 'SENSORY CORTEX CANISTER PRINCIPAL' input field element and delete all associated state variables (e.g., sensoryCortexPrincipal, setSensoryCortexPrincipal) from the component. Remove any validation, error handling, or UI logic that references this Principal input field."
         }
       ]
     },
     {
-      "id": "REQ-77",
-      "summary": "Add toggle switch UI for each agent that calls backend toggle_agent_status function",
+      "id": "REQ-85",
+      "summary": "Remove all validation logic that disables the 'START UPLOAD' button based on a Principal ID, ensuring the button is enabled only when a file is selected",
       "acceptanceCriteria": [
-        "Each agent row has a toggle/switch control",
-        "Clicking the toggle calls the backend toggle_agent_status function with correct agent_name and status parameters",
-        "The toggle state reflects the current is_enabled status of the agent",
-        "Toggle interactions are authenticated via Internet Identity"
+        "The START UPLOAD button is enabled when selectedFile is not null",
+        "The START UPLOAD button is disabled only when no file is selected",
+        "No Principal ID validation exists in the button's disabled logic"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/components/SensoryCortexTab.tsx",
           "operation": "modify",
-          "description": "Add a React Query mutation hook named useToggleAgentStatus that accepts agent_name (string) and status (boolean) parameters. The mutation should call actor.toggleAgentStatus(agent_name, status) using the authenticated actor from useActor. Include proper error handling for failed toggle operations. After successful execution, invalidate the agent status query to refresh the agent list. Follow the existing mutation patterns in this file."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a React Query query hook named useGetAgentStatuses that fetches the current enabled/disabled status for all agents. This query should be refetched periodically (similar to the debate status polling pattern) to ensure the UI reflects the latest agent states. The query should use the authenticated actor and be enabled only when the actor is available."
-        },
-        {
-          "path": "frontend/src/components/AgentRegistryTable.tsx",
-          "operation": "modify",
-          "description": "Import and use the useToggleAgentStatus mutation hook and useGetAgentStatuses query hook from useQueries. Add a toggle/switch UI component (using shadcn/ui Switch component) next to each agent name in the table. Wire the toggle's onChange handler to trigger the useToggleAgentStatus mutation with the agent's name and new status. Ensure the toggle's checked state reflects the current is_enabled status from the query. Display loading state during toggle operations. Verify the component's usage instructions before implementing."
+          "description": "Update the 'START UPLOAD' button's disabled prop to only check if selectedFile is not null. Remove any conditions that reference Principal ID validation. The button should be disabled={!selectedFile} or disabled={selectedFile === null}."
         }
       ]
     },
     {
-      "id": "REQ-78",
-      "summary": "Implement visual status indicators showing enabled (green #39FF14) and disabled (red) states",
+      "id": "REQ-86",
+      "summary": "Fix the upload flow so that when 'START UPLOAD' is clicked, the chunking loop sends 1.8MB chunks directly to the backend Orchestrator's upload_chunk function",
       "acceptanceCriteria": [
-        "Green indicator (#39FF14) is displayed when agent is enabled",
-        "Red indicator is displayed when agent is disabled",
-        "Visual indicator updates immediately when toggle is clicked",
-        "Styling is consistent with the tactical dark theme"
+        "The chunking loop calls the backend's upload_chunk function from The_Orchestrator actor",
+        "Chunks are exactly 1,800,000 bytes in size",
+        "Each chunk upload awaits confirmation before sending the next chunk",
+        "No direct calls are made to a Sensory Cortex canister from the frontend"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/AgentRegistryTable.tsx",
+          "path": "frontend/src/components/SensoryCortexTab.tsx",
           "operation": "modify",
-          "description": "Add a visual status indicator column to the agent table. For each agent, render a circular or badge-style indicator that displays green (#39FF14) when the agent is enabled and red when disabled. The indicator should use inline styles or Tailwind classes to apply the exact colors. Ensure the indicator updates in real-time when the toggle state changes by reacting to the agent status query data. Position the indicator prominently (e.g., as the first column or next to the agent name) and ensure it is clearly visible against the dark background."
+          "description": "Modify the upload handler to chunk the selected file into 1,800,000-byte pieces and send each chunk sequentially to the backend actor's upload_chunk backend capability (available via useActor hook). Ensure each chunk upload awaits a response before proceeding to the next chunk. Remove any direct actor creation or Principal-based canister calls to Sensory Cortex. Use the existing actor from useActor to call the backend Orchestrator's methods."
         }
       ]
     },
     {
-      "id": "REQ-79",
-      "summary": "Create React Query mutation hook for toggle_agent_status with query invalidation",
+      "id": "REQ-87",
+      "summary": "When the upload reaches 100% completion, call the backend Orchestrator's route_document function with file name and preview text (first 5,000 characters)",
       "acceptanceCriteria": [
-        "Mutation hook is exported from useQueries.ts",
-        "Hook properly handles authenticated actor from useActor",
-        "Successful mutations invalidate relevant queries to refresh agent status",
-        "Error handling is implemented for failed toggle operations"
+        "After all chunks upload successfully, route_document is called",
+        "The first parameter is the file's name",
+        "The second parameter is the previewText containing the first 5,000 characters of the file",
+        "The route_document call targets The_Orchestrator backend actor"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/components/SensoryCortexTab.tsx",
           "operation": "modify",
-          "description": "Ensure the useToggleAgentStatus mutation hook created in REQ-77 is properly exported from useQueries.ts. Verify that it uses the authenticated actor from useActor, includes proper error handling with try-catch blocks, and invalidates the agent status query using queryClient.invalidateQueries after successful execution. Follow the existing mutation patterns (e.g., useStartDebate, useAbortDebate) for consistency in error handling and query invalidation."
+          "description": "After the chunking loop completes successfully (100% upload), extract the first 5,000 characters from the file content as previewText, then call actor.routeDocument(file.name, previewText, fileSize, sensoryCortexPrincipal) using the backend actor from useActor. Note: Based on the backend interface signature routeDocument(filename: string, filePreview: string, fileSize: bigint, sensoryCortex: Principal), you will need to pass the appropriate sensoryCortex Principal parameter as required by the backend - use a hardcoded or environment-configured Principal value since the user input is being removed."
         }
       ]
     }

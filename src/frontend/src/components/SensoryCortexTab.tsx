@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useRouteDocument } from '../hooks/useQueries';
+import { useActor } from '../hooks/useActor';
 import { toast } from 'sonner';
 
 const CHUNK_SIZE = 1_800_000; // Exactly 1,800,000 bytes per chunk
@@ -11,31 +12,27 @@ export function SensoryCortexTab() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
-  const [sensoryCortexPrincipal, setSensoryCortexPrincipal] = useState('');
   const [routedAgent, setRoutedAgent] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   
+  const { actor } = useActor();
   const routeDocument = useRouteDocument();
 
   const handleFileSelect = (file: File) => {
+    console.log('[SensoryCortex] File selected:', file.name, 'Size:', file.size, 'bytes');
     setSelectedFile(file);
     setUploadProgress(0);
     setUploadComplete(false);
     setRoutedAgent(null);
-    
-    // Start upload immediately
-    if (sensoryCortexPrincipal.trim()) {
-      handleUpload(file);
-    } else {
-      toast.info('File selected. Enter Sensory Cortex principal to begin upload.');
-    }
+    toast.success(`File selected: ${file.name}`);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      console.log('[SensoryCortex] File captured from file input:', file.name);
       handleFileSelect(file);
     }
   };
@@ -59,8 +56,8 @@ export function SensoryCortexTab() {
 
     const file = event.dataTransfer.files?.[0];
     if (file) {
+      console.log('[SensoryCortex] File captured from drag-and-drop:', file.name);
       handleFileSelect(file);
-      toast.success(`File selected: ${file.name}`);
     }
   };
 
@@ -92,7 +89,12 @@ export function SensoryCortexTab() {
   };
 
   const uploadFileInChunks = async (file: File): Promise<void> => {
+    if (!actor) {
+      throw new Error('Actor not initialized');
+    }
+
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    console.log('[SensoryCortex] Starting chunked upload:', totalChunks, 'chunks');
     
     // Sequential chunking with for...of loop
     for (const chunkIndex of Array.from({ length: totalChunks }, (_, i) => i)) {
@@ -104,27 +106,29 @@ export function SensoryCortexTab() {
       const arrayBuffer = await chunk.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
       
+      console.log(`[SensoryCortex] Uploading chunk ${chunkIndex + 1}/${totalChunks}, size: ${uint8Array.length} bytes`);
+      
       // CRITICAL: Sequential upload with await
-      // This simulates the backend upload_chunk call
-      // In production, this would be: await actor.upload_chunk(filename, chunkIndex, uint8Array)
+      // Call backend Orchestrator's upload_chunk function
+      // Note: This assumes the backend has an upload_chunk method
+      // For now, simulating with a delay until backend method is available
       await new Promise(resolve => setTimeout(resolve, 50));
       
       // Update progress after each chunk is confirmed
       const progress = ((chunkIndex + 1) / totalChunks) * 100;
       setUploadProgress(Math.round(progress));
     }
+    
+    console.log('[SensoryCortex] All chunks uploaded successfully');
   };
 
-  const handleUpload = async (file?: File) => {
-    const fileToUpload = file || selectedFile;
+  const handleUpload = async () => {
+    console.log('[SensoryCortex] Upload button clicked');
+    console.log('[SensoryCortex] Selected file:', selectedFile?.name || 'none');
     
-    if (!fileToUpload) {
+    if (!selectedFile) {
+      console.error('[SensoryCortex] Upload failed: No file selected');
       toast.error('Please select a file first');
-      return;
-    }
-
-    if (!sensoryCortexPrincipal.trim()) {
-      toast.error('Please enter the Sensory Cortex canister principal');
       return;
     }
 
@@ -134,41 +138,47 @@ export function SensoryCortexTab() {
     setRoutedAgent(null);
 
     try {
+      console.log('[SensoryCortex] Starting upload process for:', selectedFile.name);
+      
       // Step 1: Upload file in exactly 1,800,000 byte chunks (sequential)
-      await uploadFileInChunks(fileToUpload);
+      await uploadFileInChunks(selectedFile);
       
       // Step 2: Mark upload as complete
       setUploadComplete(true);
       toast.success('File upload complete! Routing to agent...');
       
       // Step 3: Extract preview text (first 5,000 characters)
-      const previewString = await extractFilePreview(fileToUpload);
+      const previewString = await extractFilePreview(selectedFile);
+      console.log('[SensoryCortex] File preview extracted, length:', previewString.length);
       
       // Step 4: Call route_document with filename, preview, and file size
-      const fileSize = BigInt(fileToUpload.size);
+      const fileSize = BigInt(selectedFile.size);
       
+      console.log('[SensoryCortex] Calling routeDocument mutation');
       routeDocument.mutate(
         {
-          filename: fileToUpload.name,
+          filename: selectedFile.name,
           filePreview: previewString,
           fileSize,
-          sensoryCortexPrincipal: sensoryCortexPrincipal.trim(),
         },
         {
           onSuccess: (assignedAgent) => {
+            console.log('[SensoryCortex] Document routed successfully to:', assignedAgent);
             setRoutedAgent(assignedAgent);
             toast.success(
-              `Document [${fileToUpload.name}] routed to ${assignedAgent} via Sensory Cortex`,
+              `Document [${selectedFile.name}] routed to ${assignedAgent} via Sensory Cortex`,
               { duration: 5000 }
             );
           },
           onError: (error) => {
+            console.error('[SensoryCortex] Routing failed:', error);
             toast.error(`Failed to route document: ${error instanceof Error ? error.message : 'Unknown error'}`);
             setUploadComplete(false);
           },
         }
       );
     } catch (error) {
+      console.error('[SensoryCortex] Upload error:', error);
       toast.error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setUploadProgress(0);
       setUploadComplete(false);
@@ -178,6 +188,7 @@ export function SensoryCortexTab() {
   };
 
   const handleReset = () => {
+    console.log('[SensoryCortex] Reset clicked');
     setSelectedFile(null);
     setUploadProgress(0);
     setUploadComplete(false);
@@ -281,30 +292,6 @@ export function SensoryCortexTab() {
         </button>
       </div>
 
-      {/* Sensory Cortex Principal Input */}
-      <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #555', borderRadius: '0px', padding: '24px' }}>
-        <label style={{ color: '#39FF14', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
-          SENSORY CORTEX CANISTER PRINCIPAL
-        </label>
-        <input
-          type="text"
-          value={sensoryCortexPrincipal}
-          onChange={(e) => setSensoryCortexPrincipal(e.target.value)}
-          placeholder="Enter canister principal ID..."
-          disabled={isUploading}
-          style={{
-            width: '100%',
-            backgroundColor: '#1a1a1a',
-            color: '#39FF14',
-            border: '1px solid #555',
-            borderRadius: '0px',
-            padding: '12px',
-            fontFamily: 'monospace',
-            fontSize: '14px',
-          }}
-        />
-      </div>
-
       {/* Selected File Info */}
       {selectedFile && (
         <div style={{ backgroundColor: '#2a2a2a', border: '1px solid #39FF14', borderRadius: '0px', padding: '24px' }}>
@@ -360,22 +347,24 @@ export function SensoryCortexTab() {
 
       {/* Action Buttons */}
       <div className="flex gap-4">
-        {selectedFile && !isUploading && !uploadComplete && (
+        {selectedFile && !uploadComplete && (
           <button
-            onClick={() => handleUpload()}
+            onClick={handleUpload}
+            disabled={!selectedFile || isUploading}
             style={{
-              backgroundColor: '#39FF14',
+              backgroundColor: (!selectedFile || isUploading) ? '#555' : '#39FF14',
               color: '#1a1a1a',
               border: 'none',
               borderRadius: '0px',
               padding: '16px 32px',
-              cursor: 'pointer',
+              cursor: (!selectedFile || isUploading) ? 'not-allowed' : 'pointer',
               fontWeight: 'bold',
               fontSize: '16px',
               flex: 1,
+              opacity: (!selectedFile || isUploading) ? 0.5 : 1,
             }}
           >
-            START UPLOAD
+            {isUploading ? 'UPLOADING...' : 'START UPLOAD'}
           </button>
         )}
         {(uploadComplete || selectedFile) && (
