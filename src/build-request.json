@@ -1,0 +1,161 @@
+{
+  "kind": "build_request",
+  "title": "Add Internet Identity authentication, cycle management, and emergency override",
+  "projectName": "The Gang",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-36",
+      "text": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Integrate the @dfinity/auth-client package into the React frontend.",
+          "Add a prominent 'Login with Internet Identity' button to the dashboard."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The @dfinity/auth-client package is installed and imported in the frontend",
+        "A prominent 'Login with Internet Identity' button is visible on the dashboard",
+        "Clicking the button initiates the Internet Identity authentication flow",
+        "User's authentication state is tracked and persists across sessions"
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "text": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Create a 'High-Stakes' UI lock: The transcript output from the \"Robby\" agent must be hidden/blurred, and the Text-to-Speech must be disabled, unless the user is actively authenticated via Internet Identity."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When user is not authenticated, Robby's portions of the transcript are hidden or blurred in the UI",
+        "When user is not authenticated, the SpeechSynthesis API does not speak Robby's responses",
+        "When user is authenticated via Internet Identity, Robby's transcript is fully visible and TTS functions normally",
+        "The UI provides visual feedback indicating that authentication is required to access Robby's output"
+      ]
+    },
+    {
+      "id": "REQ-38",
+      "text": "Import ExperimentalCycles module in the Motoko backend main actor file",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Import ExperimentalCycles in the Motoko backend."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The ExperimentalCycles module is imported at the top of backend/main.mo",
+        "The import statement follows Motoko syntax conventions"
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "text": "Create a public update function called top_up_swarm in the backend that accepts target_canister (Principal) and amount (Nat) parameters, uses ExperimentalCycles.add(amount) to attach cycles from The_Orchestrator's balance, and sends those cycles to the target_canister",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Create a public update function called top_up_swarm(target_canister: Principal, amount: Nat).",
+          "This function must use ExperimentalCycles.add(amount) to attach cycles from the Orchestrator's balance, and then execute a call to send those cycles to the target_canister."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The top_up_swarm function is defined as a public update function",
+        "The function signature matches: top_up_swarm(target_canister: Principal, amount: Nat)",
+        "The function calls ExperimentalCycles.add(amount) before making the inter-canister call",
+        "The function successfully transfers cycles to the target_canister",
+        "The function returns an appropriate result or error message"
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "Add an assertion in the top_up_swarm function to ensure only an authenticated admin Principal can trigger the cycle top-up operation",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Add an assert to ensure only an authenticated admin (your Principal) can trigger this top-up."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The function checks the caller's Principal ID using the msg.caller value",
+        "An assert statement verifies that msg.caller matches the configured admin Principal",
+        "If the caller is not the admin, the function traps with an appropriate error message",
+        "The admin Principal ID is stored in the canister's state or as a constant"
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "text": "Add an emergency override intercept at the beginning of the start_boardroom_debate update function that checks if user_prompt contains the exact string 'HEM_Override_Key', and if found, bypasses the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Inside your existing start_boardroom_debate update function, right at the beginning, add a string intercept for the emergency override.",
+          "Check if the user_prompt contains the exact string \"HEM_Override_Key\".",
+          "If it does, bypass the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The check for 'HEM_Override_Key' occurs at the very beginning of start_boardroom_debate, before any other logic",
+        "The check uses exact string matching (case-sensitive)",
+        "If the override key is detected, no inter-canister calls are made to Skippy, GLaDOS, or Robby",
+        "The emergency override path is completely independent of the normal debate flow"
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "text": "When the emergency override is triggered in start_boardroom_debate, immediately set current_speaker to 'Skippy_Emergency', append the text 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to the transcript, and set is_debating to false",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Immediately set current_speaker = \"Skippy_Emergency\", append the text \"NCD-16 Override Recognized. Drop the snark. What is the emergency?\" to the transcript, and set is_debating = false."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When 'HEM_Override_Key' is detected, current_state.current_speaker is set to 'Skippy_Emergency'",
+        "The exact message 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' is appended to current_state.transcript",
+        "current_state.is_debating is set to false",
+        "The function returns immediately after setting these values, without executing any further logic"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify the existing useInternetIdentity hook located at frontend/src/hooks/useInternetIdentity.ts",
+    "Do not modify the existing useActor hook located at frontend/src/hooks/useActor.ts",
+    "The emergency override check must occur before any inter-canister calls in start_boardroom_debate",
+    "The top_up_swarm function must only be callable by the authenticated admin Principal"
+  ],
+  "nonGoals": [
+    "Implementing custom authentication mechanisms beyond Internet Identity",
+    "Creating a UI for managing multiple admin principals",
+    "Implementing cycle monitoring or automatic top-up logic",
+    "Adding additional emergency override keys or multi-factor authentication",
+    "Modifying the existing debate flow beyond the emergency override intercept"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

@@ -1,0 +1,531 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 15,
+  "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
+  "architectural_notes": [
+    "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
+    "All canisters controlled by single Principal ID (Identity #2)",
+    "Strict sovereignty: no data leaves chain except through vetKey-gated periscope",
+    "The Researcher agent has special vetKey-gated periscope for external data access",
+    "The_Orchestrator canister serves as central coordinator with StableBTreeMap for file storage",
+    "File chunk size limited to 1.8MB to fit IC message limits",
+    "390GB storage cap enforced to stay under IC physical limits",
+    "8 external C++ LLM agent canisters (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian) deployed separately",
+    "Inter-canister communication via ask_agent(Text)->async Text interface",
+    "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-frontend-dashboard-that-displays-the-status-and-identity-of-all-9-canisters-in-the-gang-system-showing-their-principal-ids-controller-information-and-operational-status-include-visual-representation-of-the-multi-agent-architecture",
+      "title": "Create frontend dashboard that displays the status and identity of all 9 canisters in The Gang system, showing their Principal IDs, controller information, and operational status. Include visual representation of the multi-agent architecture.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-and-implement-a-creative-distinctive-visual-theme-for-the-gang-system-that-reflects-sovereignty-decentralization-and-multi-agent-coordination-use-a-cohesive-color-palette-that-avoids-blue-and-purple-with-typography-and-layout-that-conveys-technical-sophistication-and-autonomous-intelligence",
+      "title": "Design and implement a creative, distinctive visual theme for The Gang system that reflects sovereignty, decentralization, and multi-agent coordination. Use a cohesive color palette that avoids blue and purple, with typography and layout that conveys technical sophistication and autonomous intelligence.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-custom-react-hook-named-usedebatestatus-that-polls-the-backend-get-status-query-function-every-500-milliseconds-using-react-query",
+      "title": "Create a custom React hook named useDebateStatus that polls the backend get_status query function every 500 milliseconds using React Query",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-react-ui-component-that-displays-the-current-speaker-field-e-g-skippy-is-analyzing-and-streams-the-transcript-text-onto-the-screen-in-real-time-as-it-updates-from-polling",
+      "title": "Build a React UI component that displays the current_speaker field (e.g., 'Skippy is analyzing...') and streams the transcript text onto the screen in real-time as it updates from polling",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-push-to-talk-button-using-the-browser-s-native-speechrecognition-or-webkitspeechrecognition-api-that-captures-user-speech-when-pressed-and-released",
+      "title": "Implement a 'Push to Talk' button using the browser's native SpeechRecognition (or webkitSpeechRecognition) API that captures user speech when pressed and released",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-user-stops-speaking-via-the-push-to-talk-button-capture-the-recognized-text-and-immediately-pass-it-to-the-backend-start-boardroom-debate-update-function",
+      "title": "When the user stops speaking via the Push to Talk button, capture the recognized text and immediately pass it to the backend start_boardroom_debate update function",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-native-speechsynthesis-api-with-a-useeffect-hook-that-listens-to-changes-in-the-transcript-and-current-speaker-when-current-speaker-changes-to-robby-automatically-speak-robby-s-final-response-out-loud-using-a-british-male-voice-if-available-in-the-user-s-browser",
+      "title": "Implement the native SpeechSynthesis API with a useEffect hook that listens to changes in the transcript and current_speaker. When current_speaker changes to 'Robby', automatically speak Robby's final response out loud using a British Male voice if available in the user's browser",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-prominent-interrupt-stop-button-on-the-ui-that-when-clicked-executes-window-speechsynthesis-cancel-to-stop-browser-speech-and-immediately-calls-the-backend-abort-debate-function-to-kill-the-inter-canister-routing",
+      "title": "Create a prominent 'Interrupt/Stop' button on the UI that when clicked executes window.speechSynthesis.cancel() to stop browser speech and immediately calls the backend abort_debate function to kill the inter-canister routing",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-rendering-rule-for-the-transcript-output-component-if-any-text-resembles-a-product-link-it-must-strictly-be-rendered-as-an-html-anchor-tag-a-explicitly-strip-or-block-any-html-table-tags-from-rendering-in-the-ui",
+      "title": "Create a rendering rule for the transcript output component. If any text resembles a product link, it must strictly be rendered as an HTML anchor tag (<a>). Explicitly strip or block any HTML <table> tags from rendering in the UI",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-commented-out-placeholder-hook-called-usewakewordstub-with-a-todo-comment-stating-todo-inject-picovoice-porcupine-react-logic-here-to-trigger-the-speechrecognition-automatically",
+      "title": "Create a commented-out placeholder hook called useWakeWordStub with a TODO comment stating: 'TODO: Inject @picovoice/porcupine-react logic here to trigger the SpeechRecognition automatically'",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-the-dfinity-auth-client-package-into-the-react-frontend-and-add-a-prominent-login-with-internet-identity-button-to-the-dashboard",
+      "title": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-high-stakes-ui-lock-in-the-debatedisplay-component-hide-or-blur-the-transcript-output-from-robby-and-disable-the-text-to-speech-functionality-unless-the-user-is-actively-authenticated-via-internet-identity",
+      "title": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create 8 AI agent canisters for The Gang multi-agent system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Create 1 ingestion canister for data processing",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement Principal ID-based canister control for strict sovereignty",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement vetKey-gated periscope for The Researcher to allow controlled external data access",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Create backend architecture for 9 total canisters: 8 AI agent canisters representing individual agents in 'The Gang' plus 1 ingestion canister for data processing. Each canister must be independently deployable and have distinct responsibilities within the multi-agent system.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Implement strict sovereignty model where all canisters are controlled exclusively by the user's Principal ID (Identity #2). No other principals should have control privileges over any canister in the system.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Implement vetKey-gated periscope mechanism in The Researcher agent canister that serves as the sole controlled gateway for external data access. This must be the only pathway through which data can leave the Internet Computer chain.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Implement the ingestion canister with methods to receive, validate, and route data to appropriate AI agent canisters. This canister serves as the entry point for all data flowing into The Gang system.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Build The_Orchestrator backend canister with StableBTreeMap-based file storage (The Bucket) supporting 1.8MB chunk uploads with 390GB cap",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Define 8 external actor interfaces (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian) with ask_agent function signature for inter-canister communication",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Implement admin configuration function to register Principal IDs for the 8 external LLM agent canisters in The_Orchestrator's state",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Implement StableBTreeMap in The_Orchestrator backend canister to store file data in stable memory, bypassing the Wasm heap entirely",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Create public upload_chunk function in The_Orchestrator that accepts file chunks strictly up to 1.8MB in size and appends them to file records in the StableBTreeMap",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement state variable in The_Orchestrator to track total storage used across all files, and enforce a hard cap of 390GB by trapping or returning an error in upload_chunk when this limit is reached",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Define 8 external actor type interfaces in The_Orchestrator backend for Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, and The_Librarian, each containing the exact function signature: ask_agent : shared (Text) -> async Text",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Create admin configuration function in The_Orchestrator that allows saving Principal IDs for the 8 external LLM agent canisters (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian) into the canister's state",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Create Current_Debate_State record in The_Orchestrator with is_debating, current_speaker, latest_chunk, and full_transcript fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Implement get_debate_status query function in The_Orchestrator that returns Current_Debate_State for frontend polling",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Implement start_boardroom_debate update function in The_Orchestrator that chains inter-canister calls (Skippy -> GLaDOS -> Robby) and updates state after each agent responds",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Implement abort_debate update function in The_Orchestrator that sets is_debating to false and accepts user interruption text to append to full_transcript",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add kill switch logic to start_boardroom_debate that checks is_debating flag before each inter-canister call and returns early if false",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Create a stable state variable named Current_Debate_State in The_Orchestrator backend containing the fields: is_debating (Bool), current_speaker (Text), latest_chunk (Text), and full_transcript (Text). Initialize all fields appropriately.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Implement a public query function named get_debate_status in The_Orchestrator that returns the Current_Debate_State record. This function must be fast and queryable to support 500ms polling from the frontend.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Implement a public update function named start_boardroom_debate in The_Orchestrator that executes a sequential inter-canister call chain: Skippy -> GLaDOS -> Robby using the ask_agent interface. Before calling each agent, update current_speaker to that agent's name. Immediately after each agent returns, update latest_chunk with the response and append it to full_transcript. Set is_debating to true at the start and false at the end.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Add kill switch logic to start_boardroom_debate that checks if is_debating is false before making each inter-canister call. If is_debating becomes false during execution, the function must immediately return without making further calls.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement a public update function named abort_debate in The_Orchestrator that accepts a Text argument (the user's interruption message). The function must immediately set is_debating to false and append the interruption text to full_transcript. This enables the frontend to stop the current debate and restart with new context.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Create DebateState custom type with is_debating, current_speaker, and transcript fields in The_Orchestrator",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Create global mutable current_state variable of type DebateState initialized with is_debating=false, current_speaker=\"None\", transcript=\"\"",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Implement public query function get_status that returns current_state",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Implement public update function update_status(speaker, chunk, active) that overwrites current_speaker, appends chunk to transcript, and updates is_debating",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Create a custom type called DebateState in The_Orchestrator backend containing three fields: is_debating (Bool), current_speaker (Text), and transcript (Text)",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Create a global mutable state variable called current_state of type DebateState in The_Orchestrator, initialized with is_debating = false, current_speaker = \"None\", and transcript = \"\"",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Create a public query function called get_status in The_Orchestrator that returns the current_state variable",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Create a public update function called update_status in The_Orchestrator that accepts three parameters (speaker: Text, chunk: Text, active: Bool) and updates current_state by overwriting current_speaker with speaker, appending chunk to transcript, and setting is_debating to active",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Create a public update function called start_boardroom_debate in The_Orchestrator backend that accepts a single parameter user_prompt of type Text. Immediately set current_state.is_debating = true at the start of this function.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "In start_boardroom_debate, implement Step 1 (Skippy): Set current_state.current_speaker = \"Skippy\". Call the external Skippy actor using await Skippy.ask_agent(user_prompt). When the await returns, append Skippy's response to current_state.transcript.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "In start_boardroom_debate, implement Step 2 (GLaDOS): Before calling GLaDOS, check if current_state.is_debating is still true. If false, return immediately. If true, set current_state.current_speaker = \"GLaDOS\". Call await GLaDOS.ask_agent(skippy_response) and append GLaDOS's response to current_state.transcript.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "In start_boardroom_debate, implement Step 3 (Robby): Check if current_state.is_debating is still true. If false, return immediately. If true, set current_state.current_speaker = \"Robby\". Call await Robby.ask_agent(glados_response) and append Robby's response to current_state.transcript.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "At the end of start_boardroom_debate (after all agent calls complete or the function returns early), set current_state.is_debating = false and current_state.current_speaker = \"None\".",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Create a public update function called abort_debate in The_Orchestrator backend that accepts a single parameter user_interruption of type Text. This function must immediately set current_state.is_debating = false to trigger the kill switch in start_boardroom_debate.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "In abort_debate, append the user_interruption text to current_state.transcript so the interruption is recorded in the debate history.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Create custom React hook that polls The_Orchestrator get_status query function every 500ms",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Build React UI component that displays current_speaker status and streams transcript text in real-time based on polling data",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Implement 'Push to Talk' button using browser's native SpeechRecognition API to capture user speech and send to backend start_boardroom_debate function",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-46",
+      "summary": "Implement native SpeechSynthesis API with useEffect that automatically speaks Robby's response using British Male voice when current_speaker changes to Robby",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-47",
+      "summary": "Create prominent 'Interrupt/Stop' button that calls window.speechSynthesis.cancel() and backend abort_debate function to stop debate mid-execution",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Implement transcript rendering rule that converts product links to HTML anchor tags and strips/blocks all HTML <table> tags from rendering",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Create commented-out placeholder hook called useWakeWordStub with TODO comment for future @picovoice/porcupine-react integration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-50",
+      "summary": "Integrate @dfinity/auth-client in React frontend and add 'Login with Internet Identity' button to dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Implement 'High-Stakes' UI lock: hide/blur Robby's transcript output and disable Text-to-Speech unless user is authenticated via Internet Identity",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Import ExperimentalCycles in The_Orchestrator backend and create public update function top_up_swarm(target_canister: Principal, amount: Nat) that attaches cycles using ExperimentalCycles.add(amount) and sends to target_canister",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Add assert to top_up_swarm function to ensure only authenticated admin (user's Principal) can trigger cycle top-up",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Add emergency override intercept in start_boardroom_debate: check if user_prompt contains 'HEM_Override_Key', bypass normal routing, set current_speaker='Skippy_Emergency', append 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to transcript, and set is_debating=false",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Import ExperimentalCycles module in the Motoko backend main actor file",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-58",
+      "summary": "Create a public update function called top_up_swarm in the backend that accepts target_canister (Principal) and amount (Nat) parameters, uses ExperimentalCycles.add(amount) to attach cycles from The_Orchestrator's balance, and sends those cycles to the target_canister",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-59",
+      "summary": "Add an assertion in the top_up_swarm function to ensure only an authenticated admin Principal can trigger the cycle top-up operation",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-60",
+      "summary": "Add an emergency override intercept at the beginning of the start_boardroom_debate update function that checks if user_prompt contains the exact string 'HEM_Override_Key', and if found, bypasses the normal Skippy -> GLaDOS -> Robby inter-canister routing entirely",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-61",
+      "summary": "When the emergency override is triggered in start_boardroom_debate, immediately set current_speaker to 'Skippy_Emergency', append the text 'NCD-16 Override Recognized. Drop the snark. What is the emergency?' to the transcript, and set is_debating to false",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "The Gang",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

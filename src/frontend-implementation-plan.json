@@ -1,0 +1,41 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add Internet Identity authentication, cycle management, and emergency override",
+  "requirements": [
+    {
+      "id": "REQ-36",
+      "summary": "Integrate Internet Identity authentication with prominent login button on dashboard",
+      "acceptanceCriteria": [
+        "The @dfinity/auth-client package is installed and imported in the frontend",
+        "A prominent 'Login with Internet Identity' button is visible on the dashboard",
+        "Clicking the button initiates the Internet Identity authentication flow",
+        "User's authentication state is tracked and persists across sessions"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add a prominent 'Login with Internet Identity' button to the dashboard UI. Import and use the useInternetIdentity hook to access login() and isAuthenticated state. Position the login button prominently in the header or top section of the App component. Display the user's authentication status and provide visual feedback when authenticated. The button should be disabled when already authenticated and show appropriate text based on auth state."
+        }
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "summary": "Implement High-Stakes UI lock in DebateDisplay: hide Robby's transcript and disable TTS unless authenticated",
+      "acceptanceCriteria": [
+        "When user is not authenticated, Robby's portions of the transcript are hidden or blurred in the UI",
+        "When user is not authenticated, the SpeechSynthesis API does not speak Robby's responses",
+        "When user is authenticated via Internet Identity, Robby's transcript is fully visible and TTS functions normally",
+        "The UI provides visual feedback indicating that authentication is required to access Robby's output"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DebateDisplay.tsx",
+          "operation": "modify",
+          "description": "Implement High-Stakes UI lock for Robby's output based on authentication state. Import useInternetIdentity hook to access isAuthenticated state. When current_speaker is 'Robby' and user is not authenticated, apply blur filter to the transcript display (e.g., blur(8px)) and overlay a message indicating 'Authentication required to view Robby's responses'. Conditionally prevent the useSpeechSynthesis speak() function from being called for Robby's responses when not authenticated. When authenticated, display Robby's transcript normally and enable TTS. Add visual indicator (lock icon or badge) showing authentication is required for premium content."
+        }
+      ]
+    }
+  ]
+}

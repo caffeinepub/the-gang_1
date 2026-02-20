@@ -1,0 +1,41 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-integrate-the-dfinity-auth-client-package-into-the-react-frontend-and-add-a-prominent-login-with-internet-identity-button-to-the-dashboard",
+      "featureTitle": "Integrate the @dfinity/auth-client package into the React frontend and add a prominent 'Login with Internet Identity' button to the dashboard",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-36"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-high-stakes-ui-lock-in-the-debatedisplay-component-hide-or-blur-the-transcript-output-from-robby-and-disable-the-text-to-speech-functionality-unless-the-user-is-actively-authenticated-via-internet-identity",
+      "featureTitle": "Implement 'High-Stakes' UI lock in the DebateDisplay component: hide or blur the transcript output from Robby, and disable the Text-to-Speech functionality, unless the user is actively authenticated via Internet Identity",
+      "files": [
+        "frontend/src/components/DebateDisplay.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-37"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
