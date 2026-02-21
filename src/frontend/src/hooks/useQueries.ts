@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import type { DebateState, Agent } from '../backend';
-import { Principal } from '@icp-sdk/core/principal';
 
 export function useDebateStatus() {
   const { actor, isFetching } = useActor();
@@ -25,13 +24,8 @@ export function useStartBoardroomDebate() {
     mutationFn: async (userPrompt: string) => {
       if (!actor) throw new Error('Actor not initialized');
       
-      // Placeholder principals for the three agents
-      // These will be replaced with actual agent canister IDs in future phases
-      const skippyPrincipal = Principal.fromText('aaaaa-aa');
-      const gladosPrincipal = Principal.fromText('aaaaa-aa');
-      const robbyPrincipal = Principal.fromText('aaaaa-aa');
-      
-      return actor.startBoardroomDebate(userPrompt, skippyPrincipal, gladosPrincipal, robbyPrincipal);
+      // Backend now returns hardcoded responses without cross-canister calls
+      return actor.startBoardroomDebate(userPrompt);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -70,11 +64,7 @@ export function useRouteDocument() {
     }) => {
       if (!actor) throw new Error('Actor not initialized');
       
-      // Use placeholder principal for Sensory Cortex
-      // This will be replaced with actual canister ID during deployment
-      const sensoryCortexPrincipal = Principal.fromText('aaaaa-aa');
-      
-      return actor.routeDocument(filename, filePreview, fileSize, sensoryCortexPrincipal);
+      return actor.routeDocument(filename, filePreview, fileSize);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });

@@ -39,7 +39,6 @@ export interface FileMetadata {
   'size' : bigint,
   'filename' : string,
 }
-export interface SensoryCortex { 'askAgent' : ActorMethod<[string], string> }
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -82,12 +81,9 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'initializeAgents' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'routeDocument' : ActorMethod<[string, string, bigint, Principal], string>,
+  'routeDocument' : ActorMethod<[string, string, bigint], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'startBoardroomDebate' : ActorMethod<
-    [string, Principal, Principal, Principal],
-    undefined
-  >,
+  'startBoardroomDebate' : ActorMethod<[string], string>,
   'toggleAgentStatus' : ActorMethod<[string, boolean], undefined>,
   'topUpSwarm' : ActorMethod<[Principal, bigint], undefined>,
 }

@@ -1,40 +1,39 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:24:14.625Z",
+  "generatedAt": "2026-02-21T01:44:15.953Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 4,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-129",
-        "summary": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "id": "REQ-136",
+        "summary": "In backend/main.mo, locate the start_boardroom_debate update function and completely remove all cross-canister call logic including any await agent.askAgent(...) calls, Actor lookups, and Principal ID references to external agent canisters",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-130",
-        "summary": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "id": "REQ-137",
+        "summary": "In backend/main.mo, refactor start_boardroom_debate to accept the user's prompt parameter and return a single hardcoded Text string that simulates a multi-agent debate transcript with format: 'User: [prompt]\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.'",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-131",
-        "summary": "In backend/main.mo, locate the start_boardroom_debate function. Remove all agent registry lookup checks for Skippy, GLaDOS, and Robby. Hardcode the function to always append the mock responses for these three agents to the transcript in sequential order (Skippy -> GLaDOS -> Robby), regardless of their registry status. Ignore the is_enabled field temporarily to prove the inter-canister routing plumbing works correctly.",
+        "id": "REQ-138",
+        "summary": "In backend/main.mo, ensure start_boardroom_debate updates current_state.transcript with the hardcoded mock transcript string before returning, and sets current_state.is_debating to false at the end of execution",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-139",
+        "summary": "In backend/main.mo, remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate since we are stubbing the debate with hardcoded responses and not routing to real agents",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -47,11 +46,11 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/PushToTalkButton.tsx",
-    "frontend/src/hooks/useSpeechRecognition.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

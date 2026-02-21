@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 53,
+  "projectStateVersion": 57,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -15,9 +15,7 @@
     "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
   ],
   "known_issues": [
-    "White Screen of Death regression caused by missing try/catch/finally blocks around backend.start_boardroom_debate call",
-    "Transcript state not being cleared at start of new Push-to-Talk recording, causing old content to persist",
-    "Agent registry check causing false 'offline' status even with valid agent data"
+    "IC0536 error: Management canister has no method 'askAgent' - attempting cross-canister calls with uninitialized Principal IDs"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -594,6 +592,38 @@
       "title": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
       "reqIds": [
         "REQ-130"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-wrap-the-await-backend-start-boardroom-debate-call-in-a-try-catch-finally-block-in-the-catch-block-log-the-error-using-console-error-and-append-system-error-backend-connection-failed-to-the-transcript-state-in-the-finally-block-explicitly-reset-setisdebating-false-and-setisrecording-false-to-unlock-the-buttons-ensuring-this-happens-even-if-the-backend-call-throws-an-error",
+      "title": "In frontend/src/App.tsx, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
+      "reqIds": [
+        "REQ-132"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-verify-that-the-backend-actor-is-imported-using-the-same-pattern-as-swarmhealth-and-sensorycortex-components-the-backend-must-be-destructured-from-the-useactor-hook-or-authprovider-context-at-the-top-of-the-component-function-remove-any-local-const-backend-null-declarations-that-shadow-the-global-actor",
+      "title": "In frontend/src/App.tsx, verify that the backend actor is imported using the same pattern as SwarmHealth and SensoryCortex components. The backend must be destructured from the useActor() hook or AuthProvider context at the top of the component function. Remove any local const backend = null declarations that shadow the global actor.",
+      "reqIds": [
+        "REQ-133"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-at-the-very-beginning-of-the-handlepushtotalk-function-or-equivalent-function-that-triggers-speech-recognition-add-settranscript-as-the-first-line-before-any-other-logic-executes-this-clears-the-transcript-state-immediately-when-the-user-presses-push-to-talk-ensuring-each-new-recording-starts-with-a-completely-empty-transcript-window",
+      "title": "In frontend/src/App.tsx, at the very beginning of the handlePushToTalk function (or equivalent function that triggers speech recognition), add setTranscript([]) as the first line before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
+      "reqIds": [
+        "REQ-134"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-debatedisplay-tsx-or-frontend-src-app-tsx-wherever-authentication-required-text-appears-search-for-and-permanently-delete-all-hardcoded-strings-containing-authentication-required-to-view-robby-s-responses-or-authentication-required-from-the-component-render-output-these-strings-must-not-exist-anywhere-in-the-boardroom-ui",
+      "title": "In frontend/src/components/DebateDisplay.tsx or frontend/src/App.tsx (wherever 'Authentication required' text appears), search for and permanently delete all hardcoded strings containing 'Authentication required to view Robby's responses' or 'Authentication Required' from the component render output. These strings must not exist anywhere in the Boardroom UI.",
+      "reqIds": [
+        "REQ-135"
       ],
       "version": 1
     }
@@ -1478,16 +1508,52 @@
       "status": "pending"
     },
     {
-      "id": "AR-136",
-      "summary": "Temporarily remove registry checks in start_boardroom_debate backend function and hardcode mock responses for Skippy, GLaDOS, and Robby to prove routing plumbing works",
+      "id": "AR-134",
+      "summary": "Restore try/catch/finally safety net in handlePushToTalk to prevent White Screen of Death when backend call fails",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-139",
-      "summary": "In backend/main.mo, locate the start_boardroom_debate function. Remove all agent registry lookup checks for Skippy, GLaDOS, and Robby. Hardcode the function to always append the mock responses for these three agents to the transcript in sequential order (Skippy -> GLaDOS -> Robby), regardless of their registry status. Ignore the is_enabled field temporarily to prove the inter-canister routing plumbing works correctly.",
+      "id": "AR-135",
+      "summary": "Add setTranscript([]) at the very start of handlePushToTalk function to clear transcript stream before each new recording",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-145",
+      "summary": "In backend/main.mo, remove all cross-canister calls (await agent.askAgent) from start_boardroom_debate and replace with hardcoded mock responses to fix IC0536 error",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-146",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate update function and completely remove all cross-canister call logic including any await agent.askAgent(...) calls, Actor lookups, and Principal ID references to external agent canisters",
       "reqIds": [
-        "REQ-131"
+        "REQ-136"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-147",
+      "summary": "In backend/main.mo, refactor start_boardroom_debate to accept the user's prompt parameter and return a single hardcoded Text string that simulates a multi-agent debate transcript with format: 'User: [prompt]\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.'",
+      "reqIds": [
+        "REQ-137"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-148",
+      "summary": "In backend/main.mo, ensure start_boardroom_debate updates current_state.transcript with the hardcoded mock transcript string before returning, and sets current_state.is_debating to false at the end of execution",
+      "reqIds": [
+        "REQ-138"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-149",
+      "summary": "In backend/main.mo, remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate since we are stubbing the debate with hardcoded responses and not routing to real agents",
+      "reqIds": [
+        "REQ-139"
       ],
       "status": "pending"
     }

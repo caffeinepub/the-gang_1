@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix White Screen of Death regression and ensure transcript clearing on new recordings.
+**Goal:** Remove cross-canister calls from the debate function and replace with hardcoded responses to fix IC0536 compilation errors.
 
 **Planned changes:**
-- Wrap backend.start_boardroom_debate() call in try/catch/finally block with error handling and state cleanup
-- Add setTranscript([]) as the first line in handlePushToTalk to clear transcript before new recordings
-- Hardcode start_boardroom_debate to always return mock responses for Skippy, GLaDOS, and Robby without registry checks
+- Remove all cross-canister call logic (await agent.askAgent, Actor lookups, Principal ID references) from start_boardroom_debate in backend/main.mo
+- Replace debate logic with a hardcoded text string that simulates a multi-agent debate transcript including user prompt and stubbed responses from Skippy, GLaDOS, and Robby
+- Update current_state.transcript with the mock transcript and set current_state.is_debating to false
+- Remove all Agent Registry lookups for is_enabled checks since agents are now stubbed
 
-**User-visible outcome:** Push-to-Talk button remains functional even when backend errors occur, transcript window clears completely on each new recording, and all three agents always respond in debates.
+**User-visible outcome:** The debate feature will return a hardcoded mock transcript immediately without making any cross-canister calls, allowing the UI to display debate results and verify state transitions cleanly.

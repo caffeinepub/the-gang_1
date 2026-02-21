@@ -89,9 +89,6 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface SensoryCortexInterface {
-    askAgent(arg0: string): Promise<string>;
-}
 export interface FileMetadata {
     assignedAgent: string;
     size: bigint;
@@ -160,9 +157,9 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    routeDocument(filename: string, filePreview: string, fileSize: bigint, sensoryCortex: Principal): Promise<string>;
+    routeDocument(filename: string, filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    startBoardroomDebate(userPrompt: string, skippy: Principal, glados: Principal, robby: Principal): Promise<void>;
+    startBoardroomDebate(userPrompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
     topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
 }
@@ -407,17 +404,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async routeDocument(arg0: string, arg1: string, arg2: bigint, arg3: Principal): Promise<string> {
+    async routeDocument(arg0: string, arg1: string, arg2: bigint): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.routeDocument(arg0, arg1, arg2, arg3);
+                const result = await this.actor.routeDocument(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.routeDocument(arg0, arg1, arg2, arg3);
+            const result = await this.actor.routeDocument(arg0, arg1, arg2);
             return result;
         }
     }
@@ -435,17 +432,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async startBoardroomDebate(arg0: string, arg1: Principal, arg2: Principal, arg3: Principal): Promise<void> {
+    async startBoardroomDebate(arg0: string): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.startBoardroomDebate(arg0, arg1, arg2, arg3);
+                const result = await this.actor.startBoardroomDebate(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.startBoardroomDebate(arg0, arg1, arg2, arg3);
+            const result = await this.actor.startBoardroomDebate(arg0);
             return result;
         }
     }

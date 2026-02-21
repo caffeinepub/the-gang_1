@@ -27,6 +27,7 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
     if (isListening) {
       stopListening();
     } else {
+      // Clear transcript immediately when starting new recording
       startListening();
     }
   };

@@ -1,42 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix White Screen of Death regression and transcript clearing",
-  "requirements": [
-    {
-      "id": "REQ-129",
-      "summary": "Wrap backend.start_boardroom_debate() in try/catch/finally block to prevent White Screen of Death and ensure buttons unlock on errors",
-      "acceptanceCriteria": [
-        "The backend.start_boardroom_debate() call is wrapped in a try block",
-        "A catch block logs errors and appends 'System Error: Backend connection failed.' to transcript",
-        "A finally block explicitly calls setIsDebating(false) and setIsRecording(false)",
-        "Buttons remain functional and unlock even when backend throws errors",
-        "No White Screen of Death occurs when backend call fails"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "In the handlePushToTalk function, wrap the await backend.startBoardroomDebate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state by calling setTranscript(prev => [...prev, 'System Error: Backend connection failed.']). In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error."
-        }
-      ]
-    },
-    {
-      "id": "REQ-130",
-      "summary": "Clear transcript immediately when Push-to-Talk is pressed to ensure each new recording starts with an empty transcript window",
-      "acceptanceCriteria": [
-        "setTranscript([]) is the first line executed in handlePushToTalk",
-        "Transcript window displays empty state when Push-to-Talk is pressed",
-        "No residual content from previous recordings appears in new sessions",
-        "Clearing happens before speech recognition starts"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "In the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window."
-        }
-      ]
-    }
-  ]
+  "title": "Remove cross-canister calls and stub debate function with hardcoded responses",
+  "requirements": []
 }

@@ -17,45 +17,49 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setIsSupported(true);
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setIsSupported(true);
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
 
-      recognitionRef.current.onresult = (event: any) => {
-        try {
-          const speechResult = event.results[0][0].transcript;
-          setTranscript(speechResult);
-          setError(null);
-        } catch (err) {
-          console.error('Error processing speech result:', err);
-          setError('Failed to process speech result');
-        }
-      };
+        recognitionRef.current.onresult = (event: any) => {
+          try {
+            const speechResult = event.results[0][0].transcript;
+            setTranscript(speechResult);
+            setError(null);
+          } catch (err) {
+            console.error('Speech recognition result error:', err);
+            setError('Failed to process speech result');
+          }
+        };
 
-      recognitionRef.current.onerror = (event: any) => {
-        try {
-          console.error('Speech recognition error:', event.error);
-          setError(`Speech recognition error: ${event.error}`);
-          setIsListening(false);
-        } catch (err) {
-          console.error('Error in onerror handler:', err);
-          setError('Speech recognition error occurred');
-          setIsListening(false);
-        }
-      };
+        recognitionRef.current.onerror = (event: any) => {
+          try {
+            console.error('Speech recognition error:', event.error);
+            setError(`Speech recognition error: ${event.error}`);
+            setIsListening(false);
+          } catch (err) {
+            console.error('Error handler failed:', err);
+            setError('Critical speech recognition error');
+            setIsListening(false);
+          }
+        };
 
-      recognitionRef.current.onend = () => {
-        try {
-          setIsListening(false);
-        } catch (err) {
-          console.error('Error in onend handler:', err);
-          setIsListening(false);
-        }
-      };
+        recognitionRef.current.onend = () => {
+          try {
+            setIsListening(false);
+          } catch (err) {
+            console.error('Speech recognition end error:', err);
+            setIsListening(false);
+          }
+        };
+      } else {
+        setIsSupported(false);
+      }
     }
 
     return () => {
@@ -63,24 +67,23 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         try {
           recognitionRef.current.stop();
         } catch (err) {
-          console.error('Error stopping recognition on cleanup:', err);
+          console.error('Cleanup error:', err);
         }
       }
     };
   }, []);
 
   const startListening = useCallback(() => {
-    // CRITICAL: Clear transcript at the very start of new recording
-    setTranscript('');
-    setError(null);
-    
     if (recognitionRef.current && !isListening) {
       try {
+        // CRITICAL: Clear transcript at the very start before recording begins
+        setTranscript('');
+        setError(null);
         recognitionRef.current.start();
         setIsListening(true);
       } catch (err) {
-        console.error('Error starting speech recognition:', err);
-        setError('Failed to start speech recognition');
+        console.error('Failed to start speech recognition:', err);
+        setError('Failed to start recording');
       }
     }
   }, [isListening]);
@@ -90,8 +93,8 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
       try {
         recognitionRef.current.stop();
       } catch (err) {
-        console.error('Error stopping speech recognition:', err);
-        setError('Failed to stop speech recognition');
+        console.error('Failed to stop speech recognition:', err);
+        setError('Failed to stop recording');
         setIsListening(false);
       }
     }

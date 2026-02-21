@@ -7,11 +7,9 @@ import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 
-// Authorization + Storage
 actor {
   include MixinStorage();
 
-  // Initialize the access control system
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -67,11 +65,6 @@ actor {
   let fileRegistry = Map.empty<Text, FileMetadata>();
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  public type SensoryCortex = actor {
-    askAgent : shared (Text) -> async Text;
-  };
-
-  // Pre-populate the 9 core agents upon initialization
   private func prePopulateAgents() {
     let coreAgents : [(Nat, Text, AgentType)] = [
       (0, "Skippy", #generalPurpose),
@@ -101,10 +94,8 @@ actor {
     nextAgentId := 9;
   };
 
-  // Initialize agents on first deployment
   prePopulateAgents();
 
-  // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -168,93 +159,51 @@ actor {
     agentOpt;
   };
 
-  func checkAgentEnabled(agentName : Text) : Bool {
-    switch (getAgentByName(agentName)) {
-      case (null) { false };
-      case (?agent) { agent.isEnabled };
-    };
-  };
-
   func appendSystemMessage(message : Text) {
     currentState := {
       currentState with transcript = currentState.transcript # "\n" # message;
     };
   };
 
-  public shared ({ caller }) func startBoardroomDebate(
-    userPrompt : Text,
-    skippy : SensoryCortex,
-    glados : SensoryCortex,
-    robby : SensoryCortex,
-  ) : async () {
+  public shared ({ caller }) func startBoardroomDebate(userPrompt : Text) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start debates");
     };
 
-    if (userPrompt.contains(#text "HEM_Override_Key")) {
-      currentState := {
-        currentState with
-        currentSpeaker = "Skippy_Emergency";
-        transcript = currentState.transcript # "\nNCD-16 Override Recognized. Drop the snark. What is the emergency?";
-        isDebating = false;
-      };
-      return;
-    };
-
-    if (userPrompt.contains(#text "Steel Rain")) {
-      currentState := { currentState with emergencyMode = true };
-    };
-
-    if (userPrompt.contains(#text "Stand Down")) {
-      if (currentState.emergencyMode) {
-        currentState := {
-          currentState with
-          emergencyMode = false;
-          transcript = currentState.transcript # "\nEmergency Override lifted. Returning to Boardroom protocol.";
-          isDebating = false;
-        };
-        return;
-      };
-    };
-
-    if (currentState.isDebating) {
-      return;
-    };
-
-    // Hardcoded routing for Skippy, GLaDOS, and Robby - Append in sequence
-    let skippyResponse = await skippy.askAgent(userPrompt);
-    let gladosResponse = await glados.askAgent(userPrompt);
-    let robbyResponse = await robby.askAgent(userPrompt);
+    let mockResponse : Text =
+      "User: " # userPrompt # "\n\n" #
+      "Skippy: This is a stubbed response for Skippy.\n\n" #
+      "GLaDOS: This is a stubbed response for GLaDOS.\n\n" #
+      "Robby: This is a stubbed response for Robby.\n";
 
     currentState := {
       currentState with
-      transcript = currentState.transcript # "\nSkippy: " # skippyResponse # "\nGLaDOS: " # gladosResponse # "\nRobby: " # robbyResponse;
-      isDebating = true;
+      transcript = mockResponse;
+      isDebating = false;
     };
+
+    mockResponse;
   };
 
-  public shared ({ caller }) func routeDocument(filename : Text, filePreview : Text, fileSize : Nat, sensoryCortex : SensoryCortex) : async Text {
+  public shared ({ caller }) func routeDocument(filename : Text, filePreview : Text, fileSize : Nat) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can route documents");
     };
-
-    let prompt = "Analyze this text and reply with ONLY the target agent name (Skippy, The_Architect, or Staging): " # filePreview;
-    let agentName = await sensoryCortex.askAgent(prompt);
 
     fileRegistry.add(
       filename,
       {
         filename;
         size = fileSize;
-        assignedAgent = agentName;
+        assignedAgent = "StubAgent";
       },
     );
 
     currentState := {
-      currentState with transcript = currentState.transcript # "\nSYSTEM: File [" # filename # "] processed and routed to " # agentName;
+      currentState with transcript = currentState.transcript # "\nSYSTEM: File [" # filename # "] processed and routed to StubAgent";
     };
 
-    agentName;
+    "StubAgent";
   };
 
   public query ({ caller }) func getFileRegistry() : async [(Text, FileMetadata)] {
@@ -280,12 +229,10 @@ actor {
     agents.values().toArray();
   };
 
-  // System initialization with all 9 agents
   public shared ({ caller }) func initializeAgents() : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can initialize agents");
     };
-    // Re-initialize agents if needed
     prePopulateAgents();
   };
 };

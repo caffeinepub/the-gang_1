@@ -1,47 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-in-frontend-src-app-tsx-or-the-component-containing-the-handlepushtotalk-function-wrap-the-await-backend-start-boardroom-debate-call-in-a-try-catch-finally-block-in-the-catch-block-log-the-error-using-console-error-and-append-system-error-backend-connection-failed-to-the-transcript-state-in-the-finally-block-explicitly-reset-setisdebating-false-and-setisrecording-false-to-unlock-the-buttons-ensuring-this-happens-even-if-the-backend-call-throws-an-error",
-      "featureTitle": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-129"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-in-frontend-src-app-tsx-or-the-component-containing-the-handlepushtotalk-function-add-settranscript-as-the-very-first-line-of-the-function-before-any-other-logic-executes-this-clears-the-transcript-state-immediately-when-the-user-presses-push-to-talk-ensuring-each-new-recording-starts-with-a-completely-empty-transcript-window",
-      "featureTitle": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-130"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

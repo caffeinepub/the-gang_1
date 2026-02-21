@@ -56,9 +56,6 @@ export const DebateState = IDL.Record({
   'transcript' : IDL.Text,
   'currentSpeaker' : IDL.Text,
 });
-export const SensoryCortex = IDL.Service({
-  'askAgent' : IDL.Func([IDL.Text], [IDL.Text], []),
-});
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -106,17 +103,9 @@ export const idlService = IDL.Service({
     ),
   'initializeAgents' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'routeDocument' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Nat, SensoryCortex],
-      [IDL.Text],
-      [],
-    ),
+  'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'startBoardroomDebate' : IDL.Func(
-      [IDL.Text, SensoryCortex, SensoryCortex, SensoryCortex],
-      [],
-      [],
-    ),
+  'startBoardroomDebate' : IDL.Func([IDL.Text], [IDL.Text], []),
   'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
   'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
 });
@@ -172,9 +161,6 @@ export const idlFactory = ({ IDL }) => {
     'transcript' : IDL.Text,
     'currentSpeaker' : IDL.Text,
   });
-  const SensoryCortex = IDL.Service({
-    'askAgent' : IDL.Func([IDL.Text], [IDL.Text], []),
-  });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -222,17 +208,9 @@ export const idlFactory = ({ IDL }) => {
       ),
     'initializeAgents' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'routeDocument' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Nat, SensoryCortex],
-        [IDL.Text],
-        [],
-      ),
+    'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'startBoardroomDebate' : IDL.Func(
-        [IDL.Text, SensoryCortex, SensoryCortex, SensoryCortex],
-        [],
-        [],
-      ),
+    'startBoardroomDebate' : IDL.Func([IDL.Text], [IDL.Text], []),
     'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
     'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   });

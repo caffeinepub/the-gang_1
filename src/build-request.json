@@ -1,83 +1,95 @@
 {
   "kind": "build_request",
-  "title": "Fix White Screen of Death regression and transcript clearing",
+  "title": "Remove cross-canister calls and stub debate function with hardcoded responses",
+  "projectName": "The Gang",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-129",
-      "text": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-final"
-        ],
-        "quotes": [
-          "Wrap the start_boardroom_debate call in a try/catch/finally block.",
-          "In the finally block, you MUST reset setIsDebating(false) so the buttons unlock."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The backend.start_boardroom_debate() call is wrapped in a try block",
-        "A catch block logs errors and appends 'System Error: Backend connection failed.' to transcript",
-        "A finally block explicitly calls setIsDebating(false) and setIsRecording(false)",
-        "Buttons remain functional and unlock even when backend throws errors",
-        "No White Screen of Death occurs when backend call fails"
-      ]
-    },
-    {
-      "id": "REQ-130",
-      "text": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-final"
-        ],
-        "quotes": [
-          "At the very start of the handlePushToTalk function, you must call setTranscript([]);",
-          "The transcript window must be wiped clean every time the user starts a new recording."
-        ]
-      },
-      "acceptanceCriteria": [
-        "setTranscript([]) is the first line executed in handlePushToTalk",
-        "Transcript window displays empty state when Push-to-Talk is pressed",
-        "No residual content from previous recordings appears in new sessions",
-        "Clearing happens before speech recognition starts"
-      ]
-    },
-    {
-      "id": "REQ-131",
-      "text": "In backend/main.mo, locate the start_boardroom_debate function. Remove all agent registry lookup checks for Skippy, GLaDOS, and Robby. Hardcode the function to always append the mock responses for these three agents to the transcript in sequential order (Skippy -> GLaDOS -> Robby), regardless of their registry status. Ignore the is_enabled field temporarily to prove the inter-canister routing plumbing works correctly.",
+      "id": "REQ-136",
+      "text": "In backend/main.mo, locate the start_boardroom_debate update function and completely remove all cross-canister call logic including any await agent.askAgent(...) calls, Actor lookups, and Principal ID references to external agent canisters",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-user-critical-fix"
         ],
         "quotes": [
-          "In the Motoko backend, stop checking the registry for this build.",
-          "Hardcode the start_boardroom_debate to return the mock responses for Skippy, GLaDOS, and Robby regardless of registry status.",
-          "We need to prove the plumbing works before we re-introduce the registry check."
+          "completely remove any await agent.askAgent(...) or similar cross-canister messaging logic from start_boardroom_debate"
         ]
       },
       "acceptanceCriteria": [
-        "start_boardroom_debate function does not check registry.get() for Skippy, GLaDOS, or Robby",
-        "Mock responses for all three agents always append to transcript",
-        "Function executes full Skippy -> GLaDOS -> Robby sequence every time",
-        "No 'offline' or 'bypassing' messages appear for these agents",
-        "Registry status has no effect on debate flow"
+        "No await statements calling external agent actors exist in start_boardroom_debate",
+        "No Actor.createActor or Principal ID lookups occur in the function",
+        "Function compiles without IC0536 errors"
+      ]
+    },
+    {
+      "id": "REQ-137",
+      "text": "In backend/main.mo, refactor start_boardroom_debate to accept the user's prompt parameter and return a single hardcoded Text string that simulates a multi-agent debate transcript with format: 'User: [prompt]\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.'",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-critical-fix"
+        ],
+        "quotes": [
+          "return \"User: \" # prompt # \"\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Function returns a Text string containing the user's prompt prefixed with 'User: '",
+        "Hardcoded responses for Skippy, GLaDOS, and Robby are included in the output",
+        "Each agent response is separated by newlines for readability",
+        "No actual LLM calls or external data fetching occurs"
+      ]
+    },
+    {
+      "id": "REQ-138",
+      "text": "In backend/main.mo, ensure start_boardroom_debate updates current_state.transcript with the hardcoded mock transcript string before returning, and sets current_state.is_debating to false at the end of execution",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-critical-fix"
+        ],
+        "quotes": [
+          "Just return the hardcoded text string back to the React frontend so we can verify the UI state transitions cleanly"
+        ]
+      },
+      "acceptanceCriteria": [
+        "current_state.transcript contains the full hardcoded debate output",
+        "current_state.is_debating is set to false after function completes",
+        "Frontend polling via get_status receives the updated transcript"
+      ]
+    },
+    {
+      "id": "REQ-139",
+      "text": "In backend/main.mo, remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate since we are stubbing the debate with hardcoded responses and not routing to real agents",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-critical-fix"
+        ],
+        "quotes": [
+          "Do not lookup Canister IDs, do not use Actors for the agents"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No agent.is_enabled checks occur in start_boardroom_debate",
+        "Function executes without querying the Agent Registry",
+        "Hardcoded responses are returned unconditionally"
       ]
     }
   ],
   "constraints": [
-    "Do not remove the agent registry data structure or get_agent_registry function",
-    "Do not modify the toggle_agent_status function",
-    "Preserve all existing error handling in other components",
-    "Keep the emergency mode and Steel Rain override logic intact"
+    "Do not modify frontend files - this is a backend-only fix",
+    "Preserve the function signature of start_boardroom_debate to maintain frontend compatibility",
+    "Keep the DebateState data structure unchanged",
+    "Maintain the get_status query function for frontend polling"
   ],
   "nonGoals": [
-    "Re-implementing registry checks in this build",
-    "Adding new agent routing logic",
-    "Modifying the Speech Recognition or Speech Synthesis APIs",
-    "Changing authentication or Internet Identity flows"
+    "Implementing real LLM agent routing",
+    "Initializing Principal IDs for external agents",
+    "Creating cross-canister communication infrastructure",
+    "Building dynamic debate routing logic",
+    "Integrating with external AI services"
   ],
   "imageRequirements": {
     "required": [],

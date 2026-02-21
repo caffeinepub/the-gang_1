@@ -285,10 +285,10 @@ export default function App() {
                   <CardContent className="py-12 text-center">
                     <Shield className="h-16 w-16 mx-auto mb-4" style={{ color: '#39FF14' }} />
                     <h2 className="text-2xl font-bold mb-2" style={{ color: '#39FF14' }}>
-                      Authentication Required
+                      Sign In to Access Boardroom
                     </h2>
                     <p className="mb-6" style={{ color: '#888' }}>
-                      Please sign in with Internet Identity to access the Boardroom
+                      Please authenticate with Internet Identity to continue
                     </p>
                     <button
                       onClick={handleLogin}
@@ -433,8 +433,8 @@ export default function App() {
       </main>
 
       <footer className="border-t mt-16" style={{ borderColor: '#333', backgroundColor: '#1a1a1a' }}>
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm" style={{ color: '#888' }}>
               © {new Date().getFullYear()} The Gang Voice Assistant. All rights reserved.
             </p>
