@@ -1,25 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T04:01:10.104Z",
+  "generatedAt": "2026-02-21T23:30:32.351Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-167",
-        "summary": "In backend/main.mo, restore the start_boardroom_debate function to use dynamic agent routing logic that checks the Agent Registry is_enabled status for each agent (Skippy, GLaDOS, Robby). If an agent's is_enabled field is true, append their stubbed response to the transcript. If is_enabled is false, append the message '[Agent Name] is currently offline. Bypassing routing segment.' to the transcript.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-168",
-        "summary": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
+        "id": "REQ-1",
+        "summary": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -29,8 +22,8 @@
         ]
       },
       {
-        "id": "REQ-169",
-        "summary": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
+        "id": "REQ-2",
+        "summary": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -40,19 +33,8 @@
         ]
       },
       {
-        "id": "REQ-170",
-        "summary": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-171",
-        "summary": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
+        "id": "REQ-3",
+        "summary": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -64,14 +46,11 @@
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/components/PushToTalkButton.tsx",
-    "frontend/src/hooks/useSpeechRecognition.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

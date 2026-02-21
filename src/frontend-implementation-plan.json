@@ -1,69 +1,52 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore Version 34 functionality",
+  "title": "Fix Frozen UI State with try/catch/finally",
   "requirements": [
     {
-      "id": "REQ-168",
-      "summary": "Remove transcript clearing on Push-to-Talk to allow transcript persistence across multiple recording sessions",
+      "id": "REQ-1",
+      "summary": "Wrap the backend.start_boardroom_debate() call in handleTranscriptComplete with a try/catch/finally block to handle connection failures",
       "acceptanceCriteria": [
-        "setTranscript([]) is removed from the Push-to-Talk handler",
-        "Transcript content persists across multiple recordings",
-        "New agent responses append to existing transcript without clearing"
+        "The backend.start_boardroom_debate() call is wrapped in a try block",
+        "A catch block is present to handle any thrown errors"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "In the handlePushToTalk function, remove the setTranscript([]) call that clears the transcript at the start of each recording. The transcript state should persist and accumulate across multiple Push-to-Talk sessions without being reset."
+          "description": "Wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try block to isolate the async operation and prepare for error handling"
         }
       ]
     },
     {
-      "id": "REQ-169",
-      "summary": "Remove error handling wrapper from boardroom debate backend call to restore direct execution pattern",
+      "id": "REQ-2",
+      "summary": "Add console.error logging in the catch block to capture connection issues or errors from the backend call",
       "acceptanceCriteria": [
-        "try/catch/finally block is removed from the debate call",
-        "backend.start_boardroom_debate() executes without error wrapper",
-        "No finally block that resets loading state variables"
+        "console.error is called in the catch block with error details",
+        "Error information is visible in browser console for debugging"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "In the handlePushToTalk function, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call. The function should call backend.start_boardroom_debate() directly without explicit error boundaries or finally blocks."
+          "description": "Add a catch block to the try/catch structure in handleTranscriptComplete that logs errors using console.error, capturing any connection issues or backend call failures for debugging purposes"
         }
       ]
     },
     {
-      "id": "REQ-170",
-      "summary": "Restore transcript dependency in speech synthesis useEffect to trigger properly on transcript updates",
+      "id": "REQ-3",
+      "summary": "Reset the debating/loading state to false in the finally block to re-enable the Push-to-Talk button after errors",
       "acceptanceCriteria": [
-        "useEffect dependency array includes transcript variable",
-        "Speech synthesis triggers properly when transcript updates",
-        "Component responds to transcript changes as expected"
+        "The finally block executes regardless of success or failure",
+        "The debating state is reset to false in the finally block",
+        "The Push-to-Talk button becomes enabled again after an error occurs",
+        "UI does not remain frozen when backend calls fail"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Locate the useEffect hook that manages SpeechSynthesis or transcript updates and restore the transcript state variable to its dependency array. This ensures speech synthesis triggers properly when the transcript changes."
-        }
-      ]
-    },
-    {
-      "id": "REQ-171",
-      "summary": "Change Push-to-Talk button onClick handler to use direct function reference instead of arrow function wrapper",
-      "acceptanceCriteria": [
-        "Button uses onClick={handleSpeech} syntax",
-        "Arrow function wrapper is removed",
-        "Handler executes when button is clicked"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Change the Push-to-Talk button onClick handler from arrow function syntax (onClick={() => handleSpeech()}) to direct function reference syntax (onClick={handleSpeech}). Remove the arrow function wrapper so the handler is triggered directly."
+          "description": "Add a finally block to the try/catch structure in handleTranscriptComplete that unconditionally resets the debating state (setIsDebating(false)) to ensure the Push-to-Talk button is re-enabled regardless of whether the backend call succeeds or fails, preventing frozen UI states"
         }
       ]
     }

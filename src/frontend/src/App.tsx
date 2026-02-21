@@ -42,8 +42,15 @@ function BoardroomTab() {
     setSystemError(null);
     setIsDebating(true);
     
-    await startDebate.mutateAsync(transcriptText);
-    toast.success('Debate started successfully!');
+    try {
+      await startDebate.mutateAsync(transcriptText);
+      toast.success('Debate started successfully!');
+    } catch (error) {
+      console.error('Failed to start debate:', error);
+      toast.error('Failed to start debate. Please try again.');
+    } finally {
+      setIsDebating(false);
+    }
   }, [actor, startDebate]);
 
   // Strict early returns - only ONE message at a time (AFTER all hooks)

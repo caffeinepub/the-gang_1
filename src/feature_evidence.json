@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-in-frontend-src-app-tsx-remove-the-settranscript-call-from-the-handlepushtotalk-function-that-clears-the-transcript-at-the-start-of-each-recording-the-transcript-should-persist-across-multiple-push-to-talk-sessions-and-accumulate-agent-responses-without-being-reset",
-      "featureTitle": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
+      "featureId": "feature-in-frontend-src-app-tsx-wrap-the-backend-start-boardroom-debate-call-inside-the-handletranscriptcomplete-function-with-a-try-catch-finally-block-to-handle-connection-failures",
+      "featureTitle": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -18,13 +18,13 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-168"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-in-frontend-src-app-tsx-remove-the-try-catch-finally-error-handling-wrapper-from-the-backend-start-boardroom-debate-call-in-the-handlepushtotalk-function-the-function-should-call-backend-start-boardroom-debate-directly-without-explicit-error-boundaries",
-      "featureTitle": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
+      "featureId": "feature-inside-the-catch-block-of-the-handletranscriptcomplete-error-handler-add-console-error-logging-to-capture-any-connection-issues-or-errors-from-the-backend-call",
+      "featureTitle": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -39,13 +39,13 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-169"
+        "REQ-2"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-in-frontend-src-hooks-usequeries-ts-or-frontend-src-app-tsx-wherever-the-debate-status-polling-hook-is-defined-restore-the-useeffect-dependency-array-for-the-speech-recognition-update-logic-to-include-the-transcript-state-variable-the-useeffect-that-manages-speechsynthesis-or-transcript-updates-should-have-transcript-in-its-dependency-array",
-      "featureTitle": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
+      "featureId": "feature-inside-the-finally-block-of-the-handletranscriptcomplete-error-handler-reset-the-debating-loading-state-to-false-e-g-setisdebating-false-to-re-enable-the-push-to-talk-button",
+      "featureTitle": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -60,28 +60,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-170"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-in-frontend-src-app-tsx-change-the-push-to-talk-button-onclick-handler-to-use-direct-function-reference-syntax-onclick-handlespeech-instead-of-arrow-function-syntax-onclick-handlespeech-the-button-should-trigger-the-handler-directly-without-wrapping-it-in-an-arrow-function",
-      "featureTitle": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-171"
+        "REQ-3"
       ],
       "confidence": "high"
     }

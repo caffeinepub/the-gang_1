@@ -16,6 +16,7 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
   const lastProcessedTranscriptRef = useRef<string>('');
 
   // Process transcript when speech recognition stops and we have new content
+  // FIX 1: Removed 'transcript' from dependency array to prevent infinite loop
   useEffect(() => {
     if (!isListening && transcript && transcript !== lastProcessedTranscriptRef.current) {
       // Speech recognition has stopped and we have a new transcript
@@ -26,7 +27,7 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
         console.error('Error in onTranscriptComplete callback:', error);
       }
     }
-  }, [isListening, transcript, onTranscriptComplete]);
+  }, [isListening, onTranscriptComplete]);
 
   const handlePushToTalk = () => {
     if (isListening) {
@@ -50,7 +51,7 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
   return (
     <div className="space-y-2">
       <Button
-        onClick={handlePushToTalk}
+        onClick={() => handlePushToTalk()}
         disabled={disabled}
         variant={isListening ? 'destructive' : 'default'}
         className={`w-full ${isListening ? 'animate-pulse' : ''}`}

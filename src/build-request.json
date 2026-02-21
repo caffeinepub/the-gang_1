@@ -1,110 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Restore Version 34 functionality",
-  "projectName": "The Gang",
+  "title": "Fix Frozen UI State with try/catch/finally",
+  "projectName": "Boardroom Debate",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-167",
-      "text": "In backend/main.mo, restore the start_boardroom_debate function to use dynamic agent routing logic that checks the Agent Registry is_enabled status for each agent (Skippy, GLaDOS, Robby). If an agent's is_enabled field is true, append their stubbed response to the transcript. If is_enabled is false, append the message '[Agent Name] is currently offline. Bypassing routing segment.' to the transcript.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-restore-v34"
-        ],
-        "quotes": [
-          "Restore the code to Version 34"
-        ]
-      },
-      "acceptanceCriteria": [
-        "start_boardroom_debate checks agent.is_enabled before appending each agent's response",
-        "Offline agents show 'is currently offline. Bypassing...' message in transcript",
-        "Online agents show their normal stubbed response in transcript"
-      ]
-    },
-    {
-      "id": "REQ-168",
-      "text": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
+      "id": "REQ-1",
+      "text": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-restore-v34"
+          "msg-4"
         ],
         "quotes": [
-          "Restore the code to Version 34"
+          "Wrap the backend.start_boardroom_debate() call inside a strict try/catch/finally block"
         ]
       },
       "acceptanceCriteria": [
-        "setTranscript([]) is removed from the Push-to-Talk handler",
-        "Transcript content persists across multiple recordings",
-        "New agent responses append to existing transcript without clearing"
+        "The backend.start_boardroom_debate() call is wrapped in a try block",
+        "A catch block is present to handle any thrown errors"
       ]
     },
     {
-      "id": "REQ-169",
-      "text": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
+      "id": "REQ-2",
+      "text": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-restore-v34"
+          "msg-4"
         ],
         "quotes": [
-          "Restore the code to Version 34"
+          "Inside the catch block, add a console.error to log any connection issues"
         ]
       },
       "acceptanceCriteria": [
-        "try/catch/finally block is removed from the debate call",
-        "backend.start_boardroom_debate() executes without error wrapper",
-        "No finally block that resets loading state variables"
+        "console.error is called in the catch block with error details",
+        "Error information is visible in browser console for debugging"
       ]
     },
     {
-      "id": "REQ-170",
-      "text": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
+      "id": "REQ-3",
+      "text": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-restore-v34"
+          "msg-4"
         ],
         "quotes": [
-          "Restore the code to Version 34"
+          "Inside the finally block, you MUST reset the loading/debating state to false (e.g., setIsDebating(false) or whatever state is disabling the Push-to-Talk button)"
         ]
       },
       "acceptanceCriteria": [
-        "useEffect dependency array includes transcript variable",
-        "Speech synthesis triggers properly when transcript updates",
-        "Component responds to transcript changes as expected"
-      ]
-    },
-    {
-      "id": "REQ-171",
-      "text": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-restore-v34"
-        ],
-        "quotes": [
-          "Restore the code to Version 34"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Button uses onClick={handleSpeech} syntax",
-        "Arrow function wrapper is removed",
-        "Handler executes when button is clicked"
+        "The finally block executes regardless of success or failure",
+        "The debating state is reset to false in the finally block",
+        "The Push-to-Talk button becomes enabled again after an error occurs",
+        "UI does not remain frozen when backend calls fail"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the Agent Registry structure or pre-populated agent data",
-    "Preserve all existing authentication and actor initialization logic",
-    "Keep all three tab navigation components (Boardroom, Sensory Cortex, Swarm Health) intact"
+    "CRITICAL: Frontend React changes only. Do not touch the backend logic",
+    "Do not modify backend/main.mo or any backend files",
+    "Only modify frontend/src/App.tsx"
   ],
   "nonGoals": [
-    "Fixing React Error 185 infinite loop",
-    "Adding error handling for backend call failures",
-    "Preventing button stuck states with finally blocks",
-    "Clearing transcript between recordings"
+    "Backend changes",
+    "Modifying debate orchestration logic",
+    "Changing API contracts or response formats",
+    "Adding new features beyond error handling"
   ],
   "imageRequirements": {
     "required": [],
