@@ -59,7 +59,7 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     routeDocument(filename: string, filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    startBoardroomDebate(userPrompt: string): Promise<string>;
+    start_boardroom_debate(prompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
     topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
 }

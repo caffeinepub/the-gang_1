@@ -165,24 +165,11 @@ actor {
     };
   };
 
-  public shared ({ caller }) func startBoardroomDebate(userPrompt : Text) : async Text {
+  public shared ({ caller }) func start_boardroom_debate(prompt : Text) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start debates");
     };
-
-    let mockResponse : Text =
-      "User: " # userPrompt # "\n\n" #
-      "Skippy: This is a stubbed response for Skippy.\n\n" #
-      "GLaDOS: This is a stubbed response for GLaDOS.\n\n" #
-      "Robby: This is a stubbed response for Robby.\n";
-
-    currentState := {
-      currentState with
-      transcript = mockResponse;
-      isDebating = false;
-    };
-
-    mockResponse;
+    return "Skippy: This is a stubbed response.\n\nGLaDOS: This is a stubbed response.\n\nRobby: This is a stubbed response";
   };
 
   public shared ({ caller }) func routeDocument(filename : Text, filePreview : Text, fileSize : Nat) : async Text {

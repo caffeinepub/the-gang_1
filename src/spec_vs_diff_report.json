@@ -1,52 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:44:15.948Z",
-  "summary": "The diff shows implementation of REQ-136, REQ-137, REQ-138, and REQ-139 by removing cross-canister call logic and stubbing the debate function with hardcoded responses. However, the backend/main.mo diff is severely truncated, preventing full verification of all acceptance criteria. Frontend changes include a comment acknowledging the backend now returns hardcoded responses, which aligns with the requirements but was explicitly excluded from scope (non-goal: 'Do not modify frontend files').",
+  "generatedAt": "2026-02-21T01:52:06.627Z",
+  "summary": "The diff implements both REQ-140 (React infinite loop fix) and REQ-141 (hardcoded backend response). REQ-140 is partially addressed through polling interval adjustments in useQueries.ts. REQ-141 appears implemented in backend/main.mo but the diff is truncated, preventing full verification of the exact function body.",
   "missing_requirements": [
     {
-      "id": "REQ-136",
-      "requirement": "Complete removal of all cross-canister call logic including await agent.askAgent(...) calls, Actor lookups, and Principal ID references in start_boardroom_debate",
-      "reason": "The backend/main.mo diff is truncated and does not show the start_boardroom_debate function implementation, making it impossible to verify that all await statements, Actor.createActor calls, and Principal ID lookups have been removed",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-137",
-      "requirement": "Refactor start_boardroom_debate to return hardcoded Text string with specific format including User prompt and responses from Skippy, GLaDOS, and Robby",
-      "reason": "The backend/main.mo diff is truncated before showing the start_boardroom_debate function body, so the hardcoded response format cannot be verified",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-138",
-      "requirement": "Update current_state.transcript with hardcoded mock transcript and set current_state.is_debating to false at end of start_boardroom_debate execution",
-      "reason": "The backend/main.mo diff is truncated and does not show the start_boardroom_debate function implementation, preventing verification of state updates",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-139",
-      "requirement": "Remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate",
-      "reason": "The backend/main.mo diff is truncated and does not show the start_boardroom_debate function, making it impossible to verify removal of agent.is_enabled checks",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Frontend file modification with comment about backend hardcoded responses in useQueries.ts",
-      "reason": "BuildRequest explicitly states 'Do not modify frontend files - this is a backend-only fix' as a constraint. The diff shows frontend/src/hooks/useQueries.ts was modified to add a comment about backend returning hardcoded responses",
+      "id": "REQ-140",
+      "requirement": "Move all state setter calls from render body to explicit event handlers or useEffect with proper dependency arrays in App.tsx",
+      "reason": "The diff does not include App.tsx changes. Only useQueries.ts shows polling interval adjustments (reduced from 500ms to 3000ms), which addresses symptoms but not the root cause of state setters in render body.",
       "evidence": [
         "frontend/src/hooks/useQueries.ts"
       ]
     }
   ],
-  "confidence": 0.4,
+  "hallucinated_features": [
+    {
+      "description": "Added staleTime configuration to React Query hooks",
+      "reason": "The BuildRequest and requirements do not mention staleTime configuration. Only reduced polling intervals and proper dependency arrays were requested.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Added comments about preventing infinite loops in useQueries.ts",
+      "reason": "Comments like 'Reduced polling frequency to prevent infinite loop' and 'Consider data fresh for 2/3 seconds' were added without being requested in the BuildRequest.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    }
+  ],
+  "confidence": 0.65,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",

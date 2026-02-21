@@ -105,7 +105,7 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'startBoardroomDebate' : IDL.Func([IDL.Text], [IDL.Text], []),
+  'start_boardroom_debate' : IDL.Func([IDL.Text], [IDL.Text], []),
   'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
   'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
 });
@@ -210,7 +210,7 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'startBoardroomDebate' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'start_boardroom_debate' : IDL.Func([IDL.Text], [IDL.Text], []),
     'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
     'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   });

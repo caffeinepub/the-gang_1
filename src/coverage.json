@@ -1,39 +1,27 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:44:15.953Z",
+  "generatedAt": "2026-02-21T01:52:06.631Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
+    "total": 2,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-136",
-        "summary": "In backend/main.mo, locate the start_boardroom_debate update function and completely remove all cross-canister call logic including any await agent.askAgent(...) calls, Actor lookups, and Principal ID references to external agent canisters",
-        "status": "unknown",
-        "plannedFiles": [],
+        "id": "REQ-140",
+        "summary": "In frontend/src/App.tsx, locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency].",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-137",
-        "summary": "In backend/main.mo, refactor start_boardroom_debate to accept the user's prompt parameter and return a single hardcoded Text string that simulates a multi-agent debate transcript with format: 'User: [prompt]\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.'",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-138",
-        "summary": "In backend/main.mo, ensure start_boardroom_debate updates current_state.transcript with the hardcoded mock transcript string before returning, and sets current_state.is_debating to false at the end of execution",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-139",
-        "summary": "In backend/main.mo, remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate since we are stubbing the debate with hardcoded responses and not routing to real agents",
+        "id": "REQ-141",
+        "summary": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []

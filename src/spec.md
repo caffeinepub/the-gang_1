@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Remove cross-canister calls from the debate function and replace with hardcoded responses to fix IC0536 compilation errors.
+**Goal:** Fix React Error 185 infinite loop in the frontend and replace backend debate logic with a hardcoded stub response.
 
 **Planned changes:**
-- Remove all cross-canister call logic (await agent.askAgent, Actor lookups, Principal ID references) from start_boardroom_debate in backend/main.mo
-- Replace debate logic with a hardcoded text string that simulates a multi-agent debate transcript including user prompt and stubbed responses from Skippy, GLaDOS, and Robby
-- Update current_state.transcript with the mock transcript and set current_state.is_debating to false
-- Remove all Agent Registry lookups for is_enabled checks since agents are now stubbed
+- Move all state setter calls in frontend/src/App.tsx from render body to event handlers or useEffect hooks with proper dependency arrays
+- Replace the entire start_boardroom_debate function body in backend/main.mo with a hardcoded return string containing stubbed agent responses
+- Remove all agent registry lookups, cross-canister calls, and state updates from start_boardroom_debate
 
-**User-visible outcome:** The debate feature will return a hardcoded mock transcript immediately without making any cross-canister calls, allowing the UI to display debate results and verify state transitions cleanly.
+**User-visible outcome:** The boardroom debate interface loads without infinite loop errors, and clicking "Start Debate" returns a stubbed three-agent response instead of causing backend fetch errors.

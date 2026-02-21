@@ -159,7 +159,7 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     routeDocument(filename: string, filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    startBoardroomDebate(userPrompt: string): Promise<string>;
+    start_boardroom_debate(prompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
     topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
 }
@@ -432,17 +432,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async startBoardroomDebate(arg0: string): Promise<string> {
+    async start_boardroom_debate(arg0: string): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.startBoardroomDebate(arg0);
+                const result = await this.actor.start_boardroom_debate(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.startBoardroomDebate(arg0);
+            const result = await this.actor.start_boardroom_debate(arg0);
             return result;
         }
     }

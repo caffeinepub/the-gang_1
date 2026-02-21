@@ -1,6 +1,24 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove cross-canister calls and stub debate function with hardcoded responses",
-  "requirements": []
+  "title": "Fix React Error 185 infinite loop in App.tsx",
+  "requirements": [
+    {
+      "id": "REQ-140",
+      "summary": "Fix React Error 185 infinite loop by moving state setters from render body to event handlers and adding proper useEffect dependency arrays",
+      "acceptanceCriteria": [
+        "No state setter functions are called directly in the component render body",
+        "All useEffect hooks have explicit dependency arrays",
+        "React Error 185 (Maximum update depth exceeded) is resolved",
+        "State updates only occur in event handlers or properly configured useEffect hooks"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency]. Ensure no state setters are called in the main render flow outside of event handlers or properly configured useEffect hooks."
+        }
+      ]
+    }
+  ]
 }

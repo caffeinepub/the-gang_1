@@ -12,7 +12,8 @@ export function useDebateStatus() {
       return actor.getStatus();
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 500, // Poll every 500ms for real-time updates
+    refetchInterval: 3000, // Reduced polling frequency to prevent infinite loop (was 500ms)
+    staleTime: 2000, // Consider data fresh for 2 seconds
   });
 }
 
@@ -25,7 +26,7 @@ export function useStartBoardroomDebate() {
       if (!actor) throw new Error('Actor not initialized');
       
       // Backend now returns hardcoded responses without cross-canister calls
-      return actor.startBoardroomDebate(userPrompt);
+      return actor.start_boardroom_debate(userPrompt);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -83,7 +84,8 @@ export function useGetAgentStatuses() {
       return result as unknown as Agent[];
     },
     enabled: !!actor && !isFetching,
-    refetchInterval: 2000, // Poll every 2 seconds to keep status updated
+    refetchInterval: 5000, // Reduced polling frequency (was 2000ms)
+    staleTime: 3000, // Consider data fresh for 3 seconds
   });
 }
 

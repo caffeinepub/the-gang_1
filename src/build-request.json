@@ -1,95 +1,62 @@
 {
   "kind": "build_request",
-  "title": "Remove cross-canister calls and stub debate function with hardcoded responses",
-  "projectName": "The Gang",
+  "title": "Fix React Error 185 infinite loop and hardcode backend debate response",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-136",
-      "text": "In backend/main.mo, locate the start_boardroom_debate update function and completely remove all cross-canister call logic including any await agent.askAgent(...) calls, Actor lookups, and Principal ID references to external agent canisters",
-      "target": "backend",
+      "id": "REQ-140",
+      "text": "In frontend/src/App.tsx, locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency].",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-user-critical-fix"
         ],
         "quotes": [
-          "completely remove any await agent.askAgent(...) or similar cross-canister messaging logic from start_boardroom_debate"
+          "You are calling a state setter (like setTranscript, setIsDebating, or similar) directly in the main render body or inside a useEffect that is missing a dependency array.",
+          "Ensure ALL state updates only happen inside explicit event handlers (e.g., triggered by onClick inside handlePushToTalk) or inside a useEffect with a strict dependency array like []."
         ]
       },
       "acceptanceCriteria": [
-        "No await statements calling external agent actors exist in start_boardroom_debate",
-        "No Actor.createActor or Principal ID lookups occur in the function",
-        "Function compiles without IC0536 errors"
+        "No state setter functions are called directly in the component render body",
+        "All useEffect hooks have explicit dependency arrays",
+        "React Error 185 (Maximum update depth exceeded) is resolved",
+        "State updates only occur in event handlers or properly configured useEffect hooks"
       ]
     },
     {
-      "id": "REQ-137",
-      "text": "In backend/main.mo, refactor start_boardroom_debate to accept the user's prompt parameter and return a single hardcoded Text string that simulates a multi-agent debate transcript with format: 'User: [prompt]\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.'",
+      "id": "REQ-141",
+      "text": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
       "target": "backend",
       "source": {
         "messageIds": [
           "msg-user-critical-fix"
         ],
         "quotes": [
-          "return \"User: \" # prompt # \"\\n\\nSkippy: This is a stubbed response for Skippy.\\n\\nGLaDOS: This is a stubbed response for GLaDOS.\\n\\nRobby: This is a stubbed response for Robby.\""
+          "Replace the ENTIRE start_boardroom_debate function in the Motoko backend (The_Orchestrator) with exactly this code",
+          "Do NOT add any other logic to this function. Do not check the agent registry. Do not make cross-canister calls. Just return that exact string."
         ]
       },
       "acceptanceCriteria": [
-        "Function returns a Text string containing the user's prompt prefixed with 'User: '",
-        "Hardcoded responses for Skippy, GLaDOS, and Robby are included in the output",
-        "Each agent response is separated by newlines for readability",
-        "No actual LLM calls or external data fetching occurs"
-      ]
-    },
-    {
-      "id": "REQ-138",
-      "text": "In backend/main.mo, ensure start_boardroom_debate updates current_state.transcript with the hardcoded mock transcript string before returning, and sets current_state.is_debating to false at the end of execution",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-critical-fix"
-        ],
-        "quotes": [
-          "Just return the hardcoded text string back to the React frontend so we can verify the UI state transitions cleanly"
-        ]
-      },
-      "acceptanceCriteria": [
-        "current_state.transcript contains the full hardcoded debate output",
-        "current_state.is_debating is set to false after function completes",
-        "Frontend polling via get_status receives the updated transcript"
-      ]
-    },
-    {
-      "id": "REQ-139",
-      "text": "In backend/main.mo, remove all Agent Registry lookups for is_enabled checks in start_boardroom_debate since we are stubbing the debate with hardcoded responses and not routing to real agents",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-critical-fix"
-        ],
-        "quotes": [
-          "Do not lookup Canister IDs, do not use Actors for the agents"
-        ]
-      },
-      "acceptanceCriteria": [
-        "No agent.is_enabled checks occur in start_boardroom_debate",
-        "Function executes without querying the Agent Registry",
-        "Hardcoded responses are returned unconditionally"
+        "start_boardroom_debate function body contains ONLY the return statement with the hardcoded string",
+        "No agent registry lookups are performed in the function",
+        "No cross-canister calls are made in the function",
+        "No state updates to current_state are performed in the function",
+        "Function returns the exact string: 'Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.'",
+        "Backend fetch errors are resolved and the function returns cleanly to the frontend"
       ]
     }
   ],
   "constraints": [
-    "Do not modify frontend files - this is a backend-only fix",
-    "Preserve the function signature of start_boardroom_debate to maintain frontend compatibility",
-    "Keep the DebateState data structure unchanged",
-    "Maintain the get_status query function for frontend polling"
+    "Do not modify any other backend functions beyond start_boardroom_debate",
+    "Do not change the function signature of start_boardroom_debate (must accept prompt: Text and return async Text)",
+    "Do not add additional logic to start_boardroom_debate beyond the hardcoded return statement",
+    "Ensure React state setters are never called in component render body"
   ],
   "nonGoals": [
-    "Implementing real LLM agent routing",
-    "Initializing Principal IDs for external agents",
-    "Creating cross-canister communication infrastructure",
-    "Building dynamic debate routing logic",
-    "Integrating with external AI services"
+    "Implementing actual multi-agent debate logic",
+    "Restoring agent registry integration",
+    "Adding new features to the debate system",
+    "Modifying other components beyond fixing the infinite loop"
   ],
   "imageRequirements": {
     "required": [],

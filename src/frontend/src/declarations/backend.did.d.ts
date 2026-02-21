@@ -83,7 +83,7 @@ export interface _SERVICE {
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'routeDocument' : ActorMethod<[string, string, bigint], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'startBoardroomDebate' : ActorMethod<[string], string>,
+  'start_boardroom_debate' : ActorMethod<[string], string>,
   'toggleAgentStatus' : ActorMethod<[string, boolean], undefined>,
   'topUpSwarm' : ActorMethod<[Principal, bigint], undefined>,
 }
