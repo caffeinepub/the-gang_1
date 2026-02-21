@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 69,
+  "projectStateVersion": 75,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -18,11 +18,10 @@
     "SwarmHealth toggle onChange handlers execute immediately on render causing infinite loops",
     "Stuck disabled buttons in SwarmHealth due to missing loading state reset in error conditions",
     "Boardroom transcript container has no min-height causing layout shifts when setTranscript([]) is called",
-    "React Error 185 in Boardroom component from state setters called directly in main render body",
     "createActor fails silently without try/catch causing permanent loading screen",
     "Duplicate guard clauses in parent Layout and child components render multiple stacked loading messages simultaneously"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-create-frontend-dashboard-that-displays-the-status-and-identity-of-all-9-canisters-in-the-gang-system-showing-their-principal-ids-controller-information-and-operational-status-include-visual-representation-of-the-multi-agent-architecture",
@@ -725,6 +724,54 @@
       "title": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
       "reqIds": [
         "REQ-164"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-locate-the-boardroom-component-render-function-and-identify-all-state-setter-calls-settranscript-setisdebating-setisrecording-or-similar-that-are-being-executed-directly-in-the-component-render-body-outside-of-event-handlers-or-useeffect-hooks-move-these-state-setters-exclusively-into-event-handler-functions-onclick-onsubmit-etc-or-wrap-them-in-useeffect-hooks-with-proper-dependency-arrays",
+      "title": "In frontend/src/App.tsx, locate the Boardroom component render function and identify all state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the component render body outside of event handlers or useEffect hooks. Move these state setters exclusively into event handler functions (onClick, onSubmit, etc.) or wrap them in useEffect hooks with proper dependency arrays.",
+      "reqIds": [
+        "REQ-165"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-locate-the-push-to-talk-button-element-in-the-boardroom-component-ensure-the-onclick-event-handler-uses-arrow-function-syntax-to-prevent-immediate-execution-on-render-change-any-direct-function-call-syntax-like-onclick-handlespeech-to-onclick-handlespeech-to-ensure-the-handler-only-executes-when-the-button-is-actually-clicked",
+      "title": "In frontend/src/App.tsx, locate the Push to Talk button element in the Boardroom component. Ensure the onClick event handler uses arrow function syntax to prevent immediate execution on render. Change any direct function call syntax like onClick={handleSpeech} to onClick={() => handleSpeech()} to ensure the handler only executes when the button is actually clicked.",
+      "reqIds": [
+        "REQ-166"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-remove-the-settranscript-call-from-the-handlepushtotalk-function-that-clears-the-transcript-at-the-start-of-each-recording-the-transcript-should-persist-across-multiple-push-to-talk-sessions-and-accumulate-agent-responses-without-being-reset",
+      "title": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
+      "reqIds": [
+        "REQ-168"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-remove-the-try-catch-finally-error-handling-wrapper-from-the-backend-start-boardroom-debate-call-in-the-handlepushtotalk-function-the-function-should-call-backend-start-boardroom-debate-directly-without-explicit-error-boundaries",
+      "title": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
+      "reqIds": [
+        "REQ-169"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-hooks-usequeries-ts-or-frontend-src-app-tsx-wherever-the-debate-status-polling-hook-is-defined-restore-the-useeffect-dependency-array-for-the-speech-recognition-update-logic-to-include-the-transcript-state-variable-the-useeffect-that-manages-speechsynthesis-or-transcript-updates-should-have-transcript-in-its-dependency-array",
+      "title": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
+      "reqIds": [
+        "REQ-170"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-change-the-push-to-talk-button-onclick-handler-to-use-direct-function-reference-syntax-onclick-handlespeech-instead-of-arrow-function-syntax-onclick-handlespeech-the-button-should-trigger-the-handler-directly-without-wrapping-it-in-an-arrow-function",
+      "title": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
+      "reqIds": [
+        "REQ-171"
       ],
       "version": 1
     }
@@ -1659,76 +1706,10 @@
       "status": "pending"
     },
     {
-      "id": "AR-150",
-      "summary": "Fix React Error 185 infinite render loop in Boardroom component by ensuring all state setters are only called inside event handlers or useEffect with strict dependency arrays",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-151",
-      "summary": "Replace entire start_boardroom_debate function in backend/main.mo with hardcoded return string: 'Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.' with no additional logic",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-152",
-      "summary": "In frontend/src/App.tsx, locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency].",
-      "reqIds": [
-        "REQ-140"
-      ],
-      "status": "pending"
-    },
-    {
       "id": "AR-153",
       "summary": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
       "reqIds": [
         "REQ-141"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-154",
-      "summary": "In backend/main.mo, modify start_boardroom_debate to dynamically construct response string by checking Agent Registry is_enabled status for Skippy, GLaDOS, and Robby without any cross-canister calls",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-155",
-      "summary": "In backend/main.mo, locate the start_boardroom_debate function. At the beginning of the function, create a mutable text variable using var response = \"\";",
-      "reqIds": [
-        "REQ-142"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-156",
-      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'Skippy' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'Skippy: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'Skippy is offline. Bypassed.\\n\\n' to the response variable.",
-      "reqIds": [
-        "REQ-143"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-157",
-      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'GLaDOS' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'GLaDOS: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'GLaDOS is offline. Bypassed.\\n\\n' to the response variable.",
-      "reqIds": [
-        "REQ-144"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-158",
-      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'Robby' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'Robby: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'Robby is offline. Bypassed.\\n\\n' to the response variable.",
-      "reqIds": [
-        "REQ-145"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-159",
-      "summary": "In backend/main.mo, at the end of the start_boardroom_debate function after all agent status checks are complete, return the final constructed response text string to the frontend. The function signature must remain public shared(msg) func start_boardroom_debate(prompt: Text) : async Text.",
-      "reqIds": [
-        "REQ-146"
       ],
       "status": "pending"
     },
@@ -1745,24 +1726,10 @@
       "status": "pending"
     },
     {
-      "id": "AR-162",
-      "summary": "Fix Boardroom Error 185: Audit Boardroom component for state setters called directly in render body and move them into explicit event handlers or useEffect hooks with strict dependency arrays",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-165",
       "summary": "In frontend/src/App.tsx or the Boardroom component section, locate the container div that holds the Transcript Stream display. Add a static CSS minimum height using either Tailwind class min-h-[400px] or inline style={{ minHeight: '400px' }} to prevent the UI from collapsing when setTranscript([]) empties the transcript content.",
       "reqIds": [
         "REQ-149"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-166",
-      "summary": "In frontend/src/App.tsx, audit the Boardroom component render body and all useEffect hooks to identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the main render body outside of event handlers. Move all such state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect hooks with strict dependency arrays like [] or [specificDependency].",
-      "reqIds": [
-        "REQ-150"
       ],
       "status": "pending"
     },
@@ -1837,6 +1804,14 @@
       "summary": "In the Auth Context file (frontend/src/hooks/useInternetIdentity.ts or AuthProvider), verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure.",
       "reqIds": [
         "REQ-160"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-178",
+      "summary": "In backend/main.mo, restore the start_boardroom_debate function to use dynamic agent routing logic that checks the Agent Registry is_enabled status for each agent (Skippy, GLaDOS, Robby). If an agent's is_enabled field is true, append their stubbed response to the transcript. If is_enabled is false, append the message '[Agent Name] is currently offline. Bypassing routing segment.' to the transcript.",
+      "reqIds": [
+        "REQ-167"
       ],
       "status": "pending"
     }

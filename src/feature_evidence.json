@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-in-the-main-layout-component-frontend-src-app-tsx-locate-and-delete-all-guard-clauses-that-check-backend-initialization-status-backend-or-authentication-loading-state-isloading-the-main-app-tsx-layout-must-not-render-any-loading-spinners-connecting-messages-or-error-screens-itself-the-layout-should-only-render-the-header-navbar-component-and-the-main-content-area-routing-tabs",
-      "featureTitle": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+      "featureId": "feature-in-frontend-src-app-tsx-remove-the-settranscript-call-from-the-handlepushtotalk-function-that-clears-the-transcript-at-the-start-of-each-recording-the-transcript-should-persist-across-multiple-push-to-talk-sessions-and-accumulate-agent-responses-without-being-reset",
+      "featureTitle": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -18,13 +18,13 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-161"
+        "REQ-168"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-in-the-boardroom-component-within-frontend-src-app-tsx-or-a-separate-boardroom-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-boardroom-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
-      "featureTitle": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "featureId": "feature-in-frontend-src-app-tsx-remove-the-try-catch-finally-error-handling-wrapper-from-the-backend-start-boardroom-debate-call-in-the-handlepushtotalk-function-the-function-should-call-backend-start-boardroom-debate-directly-without-explicit-error-boundaries",
+      "featureTitle": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -39,13 +39,13 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-162"
+        "REQ-169"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-in-the-swarmhealth-component-within-frontend-src-app-tsx-or-a-separate-swarmhealth-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-swarmhealth-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
-      "featureTitle": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "featureId": "feature-in-frontend-src-hooks-usequeries-ts-or-frontend-src-app-tsx-wherever-the-debate-status-polling-hook-is-defined-restore-the-useeffect-dependency-array-for-the-speech-recognition-update-logic-to-include-the-transcript-state-variable-the-useeffect-that-manages-speechsynthesis-or-transcript-updates-should-have-transcript-in-its-dependency-array",
+      "featureTitle": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -60,15 +60,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-163"
+        "REQ-170"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-in-the-sensorycortex-component-within-frontend-src-app-tsx-or-frontend-src-components-sensorycortextab-tsx-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-sensorycortex-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
-      "featureTitle": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "featureId": "feature-in-frontend-src-app-tsx-change-the-push-to-talk-button-onclick-handler-to-use-direct-function-reference-syntax-onclick-handlespeech-instead-of-arrow-function-syntax-onclick-handlespeech-the-button-should-trigger-the-handler-directly-without-wrapping-it-in-an-arrow-function",
+      "featureTitle": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
       "files": [
-        "frontend/src/components/SensoryCortexTab.tsx"
+        "frontend/src/App.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -81,7 +81,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-164"
+        "REQ-171"
       ],
       "confidence": "high"
     }

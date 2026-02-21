@@ -1,105 +1,69 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix silent actor crash and eliminate duplicate guard clauses",
+  "title": "Restore Version 34 functionality",
   "requirements": [
     {
-      "id": "REQ-159",
-      "summary": "Wrap createActor logic in strict try/catch block to prevent silent failures",
+      "id": "REQ-168",
+      "summary": "Remove transcript clearing on Push-to-Talk to allow transcript persistence across multiple recording sessions",
       "acceptanceCriteria": [
-        "createActor call is wrapped in try/catch block",
-        "Errors are logged to console with 'ACTOR CREATION FAILED:' prefix",
-        "Backend actor state is set successfully in try block on success"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useActor.ts",
-          "operation": "modify",
-          "description": "Wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to provide visibility into initialization errors and prevent silent failures."
-        }
-      ]
-    },
-    {
-      "id": "REQ-160",
-      "summary": "Verify import statement for createActor and canisterId points to correct declarations path",
-      "acceptanceCriteria": [
-        "Import statement references correct declarations path",
-        "createActor and canisterId are successfully imported",
-        "No module resolution errors occur"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useActor.ts",
-          "operation": "modify",
-          "description": "Verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure. Ensure no module resolution errors occur."
-        }
-      ]
-    },
-    {
-      "id": "REQ-161",
-      "summary": "Remove all guard clauses from main App.tsx layout",
-      "acceptanceCriteria": [
-        "No if (!backend) guard clauses exist in App.tsx main render",
-        "No if (isLoading) guard clauses exist in App.tsx main render",
-        "Header/Navbar always renders regardless of backend or auth state",
-        "Only the tab content area shows conditional loading states"
+        "setTranscript([]) is removed from the Push-to-Talk handler",
+        "Transcript content persists across multiple recordings",
+        "New agent responses append to existing transcript without clearing"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading) from the main App.tsx layout render function. The main layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs). Remove any early returns or conditional rendering that prevents the Header/Navbar from always displaying."
+          "description": "In the handlePushToTalk function, remove the setTranscript([]) call that clears the transcript at the start of each recording. The transcript state should persist and accumulate across multiple Push-to-Talk sessions without being reset."
         }
       ]
     },
     {
-      "id": "REQ-162",
-      "summary": "Implement strict early return pattern in Boardroom component",
+      "id": "REQ-169",
+      "summary": "Remove error handling wrapper from boardroom debate backend call to restore direct execution pattern",
       "acceptanceCriteria": [
-        "Exactly three early return statements exist at the top of Boardroom component",
-        "Return order is: isLoading, !isAuthenticated, !backend",
-        "Only ONE message displays at any given time",
-        "Main UI only renders when all three conditions pass"
+        "try/catch/finally block is removed from the debate call",
+        "backend.start_boardroom_debate() executes without error wrapper",
+        "No finally block that resets loading state variables"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "In the Boardroom component (BoardroomTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
+          "description": "In the handlePushToTalk function, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call. The function should call backend.start_boardroom_debate() directly without explicit error boundaries or finally blocks."
         }
       ]
     },
     {
-      "id": "REQ-163",
-      "summary": "Implement strict early return pattern in SwarmHealth component",
+      "id": "REQ-170",
+      "summary": "Restore transcript dependency in speech synthesis useEffect to trigger properly on transcript updates",
       "acceptanceCriteria": [
-        "Exactly three early return statements exist at the top of SwarmHealth component",
-        "Return order is: isLoading, !isAuthenticated, !backend",
-        "Only ONE message displays at any given time",
-        "Main UI only renders when all three conditions pass"
+        "useEffect dependency array includes transcript variable",
+        "Speech synthesis triggers properly when transcript updates",
+        "Component responds to transcript changes as expected"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "In the SwarmHealth component (HealthTab or SwarmHealthTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
+          "description": "Locate the useEffect hook that manages SpeechSynthesis or transcript updates and restore the transcript state variable to its dependency array. This ensures speech synthesis triggers properly when the transcript changes."
         }
       ]
     },
     {
-      "id": "REQ-164",
-      "summary": "Implement strict early return pattern in SensoryCortex component",
+      "id": "REQ-171",
+      "summary": "Change Push-to-Talk button onClick handler to use direct function reference instead of arrow function wrapper",
       "acceptanceCriteria": [
-        "Exactly three early return statements exist at the top of SensoryCortex component",
-        "Return order is: isLoading, !isAuthenticated, !backend",
-        "Only ONE message displays at any given time",
-        "Main UI only renders when all three conditions pass"
+        "Button uses onClick={handleSpeech} syntax",
+        "Arrow function wrapper is removed",
+        "Handler executes when button is clicked"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "In the SensoryCortex component (SensoryCortexTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
+          "description": "Change the Push-to-Talk button onClick handler from arrow function syntax (onClick={() => handleSpeech()}) to direct function reference syntax (onClick={handleSpeech}). Remove the arrow function wrapper so the handler is triggered directly."
         }
       ]
     }

@@ -26,10 +26,12 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
 
+        // CRITICAL FIX: Use functional update pattern to prevent stale closure issues
         recognitionRef.current.onresult = (event: any) => {
           try {
             const speechResult = event.results[0][0].transcript;
-            setTranscript(speechResult);
+            // Use functional update pattern instead of direct state update
+            setTranscript(() => speechResult);
             setError(null);
           } catch (err) {
             console.error('Speech recognition result error:', err);
@@ -76,8 +78,6 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
-        // CRITICAL: Clear transcript at the very start before recording begins
-        setTranscript('');
         setError(null);
         recognitionRef.current.start();
         setIsListening(true);

@@ -2,7 +2,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useDebateStatus, useStartBoardroomDebate } from './hooks/useQueries';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useActor } from './hooks/useActor';
@@ -26,12 +26,8 @@ function BoardroomTab() {
   const [systemError, setSystemError] = useState<string | null>(null);
   const [isDebating, setIsDebating] = useState(false);
 
-  // Strict early returns - only ONE message at a time
-  if (isLoading) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
-  if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
-  if (!actor) return <div className="mt-10 text-center text-red-500">Actor missing. Check console for errors.</div>;
-
-  const handleTranscriptComplete = async (transcriptText: string) => {
+  // CRITICAL FIX: useCallback MUST be called at the top level, before any early returns
+  const handleTranscriptComplete = useCallback(async (transcriptText: string) => {
     if (!actor) {
       console.warn('Backend not ready - cannot process transcript');
       toast.error('Backend not initialized. Please wait.');
@@ -43,21 +39,17 @@ function BoardroomTab() {
       return;
     }
 
-    try {
-      setSystemError(null);
-      setIsDebating(true);
-      
-      await startDebate.mutateAsync(transcriptText);
-      toast.success('Debate started successfully!');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Backend debate start failed:', error);
-      toast.error(`Failed to start debate: ${errorMessage}`);
-      setSystemError(`System Error: Backend connection failed. ${errorMessage}`);
-    } finally {
-      setIsDebating(false);
-    }
-  };
+    setSystemError(null);
+    setIsDebating(true);
+    
+    await startDebate.mutateAsync(transcriptText);
+    toast.success('Debate started successfully!');
+  }, [actor, startDebate]);
+
+  // Strict early returns - only ONE message at a time (AFTER all hooks)
+  if (isLoading) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
+  if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
+  if (!actor) return <div className="mt-10 text-center text-red-500">Actor missing. Check console for errors.</div>;
 
   // Main UI
   return (
@@ -165,15 +157,15 @@ export default function App() {
 
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     login();
     toast.info('Redirecting to Internet Identity...');
-  };
+  }, [login]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     clear();
     toast.success('Logged out successfully');
-  };
+  }, [clear]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>

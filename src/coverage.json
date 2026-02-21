@@ -1,36 +1,25 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T02:49:28.722Z",
+  "generatedAt": "2026-02-21T04:01:10.104Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
+    "total": 5,
     "implemented": 4,
     "items": [
       {
-        "id": "REQ-159",
-        "summary": "In the file managing Auth Context (frontend/src/hooks/useInternetIdentity.ts or the AuthProvider component), wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to prevent silent failures and provide visibility into initialization errors.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
-        ],
+        "id": "REQ-167",
+        "summary": "In backend/main.mo, restore the start_boardroom_debate function to use dynamic agent routing logic that checks the Agent Registry is_enabled status for each agent (Skippy, GLaDOS, Robby). If an agent's is_enabled field is true, append their stubbed response to the transcript. If is_enabled is false, append the message '[Agent Name] is currently offline. Bypassing routing segment.' to the transcript.",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-160",
-        "summary": "In the Auth Context file (frontend/src/hooks/useInternetIdentity.ts or AuthProvider), verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-161",
-        "summary": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+        "id": "REQ-168",
+        "summary": "In frontend/src/App.tsx, remove the setTranscript([]) call from the handlePushToTalk function that clears the transcript at the start of each recording. The transcript should persist across multiple Push-to-Talk sessions and accumulate agent responses without being reset.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -40,8 +29,8 @@
         ]
       },
       {
-        "id": "REQ-162",
-        "summary": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "id": "REQ-169",
+        "summary": "In frontend/src/App.tsx, remove the try/catch/finally error handling wrapper from the backend.start_boardroom_debate() call in the handlePushToTalk function. The function should call backend.start_boardroom_debate() directly without explicit error boundaries.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -51,8 +40,8 @@
         ]
       },
       {
-        "id": "REQ-163",
-        "summary": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "id": "REQ-170",
+        "summary": "In frontend/src/hooks/useQueries.ts or frontend/src/App.tsx (wherever the debate status polling hook is defined), restore the useEffect dependency array for the speech recognition update logic to include the transcript state variable. The useEffect that manages SpeechSynthesis or transcript updates should have transcript in its dependency array.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/App.tsx"
@@ -62,25 +51,27 @@
         ]
       },
       {
-        "id": "REQ-164",
-        "summary": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "id": "REQ-171",
+        "summary": "In frontend/src/App.tsx, change the Push-to-Talk button onClick handler to use direct function reference syntax (onClick={handleSpeech}) instead of arrow function syntax (onClick={() => handleSpeech()}). The button should trigger the handler directly without wrapping it in an arrow function.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/SensoryCortexTab.tsx"
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/SensoryCortexTab.tsx"
+          "frontend/src/App.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/components/SensoryCortexTab.tsx",
+    "frontend/src/components/PushToTalkButton.tsx",
+    "frontend/src/hooks/useSpeechRecognition.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

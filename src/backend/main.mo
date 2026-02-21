@@ -147,16 +147,13 @@ actor {
     };
 
     currentState := {
-      currentState with
-      isDebating = false;
-      transcript = currentState.transcript # "\n" # userInterruption;
+      currentState with isDebating = false; transcript = currentState.transcript # "\n" # userInterruption;
     };
   };
 
   func getAgentByName(agentName : Text) : ?Agent {
     let iter = agents.values();
-    let agentOpt = iter.find(func(agent) { agent.name == agentName });
-    agentOpt;
+    iter.find(func(agent) { agent.name == agentName });
   };
 
   func appendSystemMessage(message : Text) {
@@ -170,29 +167,32 @@ actor {
       Runtime.trap("Unauthorized: Only users can start debates");
     };
 
-    var response = "";
+    var systemMessage = "SYSTEM: Routing input to boardroom panel agents...\n\n";
+    systemMessage #= "Prompt: " # prompt # "\n\n";
 
-    func processAgent(agentName : Text, stubbedResponse : Text) {
-      let agent = getAgentByName(agentName);
-      switch (agent) {
-        case (null) {
-          response #= agentName # " is offline. Bypassed.\n\n";
-        };
-        case (?a) {
-          if (a.isEnabled) {
-            response #= agentName # ": " # stubbedResponse # "\n\n";
-          } else {
-            response #= agentName # " is offline. Bypassed.\n\n";
-          };
+    systemMessage #= processAgent("Skippy", "This is a stubbed response.");
+    systemMessage #= processAgent("GLaDOS", "This is a stubbed response.");
+    systemMessage #= processAgent("Robby", "This is a stubbed response.");
+
+    systemMessage #= "SYSTEM: Boardroom debate initiated.\n";
+
+    systemMessage;
+  };
+
+  func processAgent(agentName : Text, stubbedResponse : Text) : Text {
+    let agent = getAgentByName(agentName);
+    switch (agent) {
+      case (null) {
+        agentName # " is currently offline. Bypassing routing segment.\n\n";
+      };
+      case (?a) {
+        if (a.isEnabled) {
+          agentName # ": " # stubbedResponse # "\n\n";
+        } else {
+          agentName # " is currently offline. Bypassing routing segment.\n\n";
         };
       };
     };
-
-    processAgent("Skippy", "This is a stubbed response.");
-    processAgent("GLaDOS", "This is a stubbed response.");
-    processAgent("Robby", "This is a stubbed response.");
-
-    response;
   };
 
   public shared ({ caller }) func routeDocument(filename : Text, filePreview : Text, fileSize : Nat) : async Text {

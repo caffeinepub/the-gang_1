@@ -1,14 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Fix silent actor creation crashes and eliminate duplicate loading/error guard clauses across the application.
+**Goal:** Restore Version 34 functionality by reverting recent changes to the Push-to-Talk workflow, dynamic agent routing, and transcript persistence behavior.
 
 **Planned changes:**
-- Wrap createActor logic in try/catch block with console error logging in Auth Context
-- Verify createActor and canisterId import path points to correct declarations folder
-- Remove all backend/loading guard clauses from main App.tsx layout
-- Implement strict early return pattern (isLoading → !isAuthenticated → !backend) at top of Boardroom component
-- Implement strict early return pattern (isLoading → !isAuthenticated → !backend) at top of SwarmHealth component
-- Implement strict early return pattern (isLoading → !isAuthenticated → !backend) at top of SensoryCortex component
+- Restore dynamic agent routing in backend that checks Agent Registry is_enabled status and shows offline messages for disabled agents
+- Remove transcript clearing logic so conversation history persists across multiple Push-to-Talk sessions
+- Remove try/catch/finally error handling wrapper from the boardroom debate backend call
+- Add transcript variable back to the useEffect dependency array for speech recognition updates
+- Change Push-to-Talk button to use direct function reference syntax instead of arrow function wrapper
 
-**User-visible outcome:** The application will display clear, single status messages ("Checking session...", "Please authenticate.", or "Actor missing. Check console for errors.") in tab content areas only, while the header/navbar always remains visible. Actor creation errors will be logged to console for debugging.
+**User-visible outcome:** The Push-to-Talk feature will work as it did in Version 34, with persistent transcript history, dynamic agent routing based on enabled/disabled status, and proper speech synthesis triggering when agents respond.

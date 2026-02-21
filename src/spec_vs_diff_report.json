@@ -1,15 +1,46 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T02:49:28.716Z",
-  "summary": "All six requirements (REQ-159 through REQ-164) appear to be fully implemented. The diff shows try/catch wrapping in useActor.ts for actor creation, correct import paths, removal of guard clauses from App.tsx main layout, and strict early return patterns implemented in BoardroomTab, SwarmHealthTab (mentioned in summary), and SensoryCortexTab with the exact specified order and messages.",
+  "generatedAt": "2026-02-21T04:01:10.097Z",
+  "summary": "The diff implements all five requirements from the BuildRequest. Backend dynamic agent routing with is_enabled checks is present in main.mo. Frontend changes include removal of transcript clearing, removal of try/catch/finally wrapper, restoration of useEffect dependencies with transcript, and push-to-talk button syntax changes. All requested modifications appear to be implemented.",
   "missing_requirements": [],
-  "hallucinated_features": [],
+  "hallucinated_features": [
+    {
+      "description": "Comprehensive try/catch error handling added to useSpeechRecognition.ts onresult, onerror, and onend handlers",
+      "reason": "BuildRequest explicitly states as a non-goal: 'Adding error handling for backend call failures' and 'Preventing button stuck states with finally blocks'. The diff shows extensive try/catch blocks added throughout useSpeechRecognition.ts that were not requested.",
+      "evidence": [
+        "frontend/src/hooks/useSpeechRecognition.ts"
+      ]
+    },
+    {
+      "description": "Functional update pattern for setTranscript in useSpeechRecognition.ts",
+      "reason": "The diff shows 'setTranscript(() => speechResult)' using a functional update pattern, which was not specified in any requirement. REQ-170 only requested adding transcript to useEffect dependencies.",
+      "evidence": [
+        "frontend/src/hooks/useSpeechRecognition.ts"
+      ]
+    },
+    {
+      "description": "lastProcessedTranscriptRef tracking logic in PushToTalkButton.tsx",
+      "reason": "The diff introduces a ref-based tracking mechanism to avoid duplicate transcript processing. This feature was not requested in the BuildRequest and represents additional logic beyond the specified requirements.",
+      "evidence": [
+        "frontend/src/components/PushToTalkButton.tsx"
+      ]
+    },
+    {
+      "description": "Reduced polling intervals mentioned in frontend-file-summaries.txt",
+      "reason": "The file summary mentions 'reduced polling intervals (3s for debate status, 5s for agent statuses)' which was not part of any requirement. The original REQ-28 specified 500ms polling.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
   "confidence": 0.85,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/SensoryCortexTab.tsx",
+    "frontend/src/components/PushToTalkButton.tsx",
+    "frontend/src/hooks/useSpeechRecognition.ts",
     "project_state.json"
   ]
 }

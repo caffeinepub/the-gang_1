@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface PushToTalkButtonProps {
   onTranscriptComplete: (transcript: string) => void;
@@ -12,22 +12,28 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
   const { isListening, transcript, error, isSupported, startListening, stopListening } =
     useSpeechRecognition();
 
+  // Track the last processed transcript to avoid duplicate processing
+  const lastProcessedTranscriptRef = useRef<string>('');
+
+  // Process transcript when speech recognition stops and we have new content
   useEffect(() => {
-    if (transcript && !isListening) {
-      // Speech recognition has stopped and we have a transcript
+    if (!isListening && transcript && transcript !== lastProcessedTranscriptRef.current) {
+      // Speech recognition has stopped and we have a new transcript
+      lastProcessedTranscriptRef.current = transcript;
       try {
         onTranscriptComplete(transcript);
       } catch (error) {
         console.error('Error in onTranscriptComplete callback:', error);
       }
     }
-  }, [transcript, isListening, onTranscriptComplete]);
+  }, [isListening, transcript, onTranscriptComplete]);
 
   const handlePushToTalk = () => {
     if (isListening) {
       stopListening();
     } else {
-      // Clear transcript immediately when starting new recording
+      // Reset the last processed transcript when starting new recording
+      lastProcessedTranscriptRef.current = '';
       startListening();
     }
   };
