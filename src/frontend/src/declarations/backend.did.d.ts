@@ -10,7 +10,24 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface Agent { 'id' : bigint, 'name' : string, 'isEnabled' : boolean }
+export interface Agent {
+  'id' : bigint,
+  'name' : string,
+  'lastCycles' : [] | [bigint],
+  'agentType' : [] | [AgentType],
+  'isEnabled' : boolean,
+  'principalId' : [] | [string],
+}
+export type AgentType = { 'cybersecurityToolbox' : null } |
+  { 'dataAnalysis' : null } |
+  { 'documentRouting' : null } |
+  { 'decisionMaking' : null } |
+  { 'generalPurpose' : null } |
+  { 'archiveManagement' : null } |
+  { 'contentGeneration' : null } |
+  { 'researchLibrary' : null } |
+  { 'fileOcrSystem' : null } |
+  { 'mathLawAI' : null };
 export interface DebateState {
   'isDebating' : boolean,
   'emergencyMode' : boolean,

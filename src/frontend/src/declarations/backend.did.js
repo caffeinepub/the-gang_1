@@ -24,10 +24,25 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const AgentType = IDL.Variant({
+  'cybersecurityToolbox' : IDL.Null,
+  'dataAnalysis' : IDL.Null,
+  'documentRouting' : IDL.Null,
+  'decisionMaking' : IDL.Null,
+  'generalPurpose' : IDL.Null,
+  'archiveManagement' : IDL.Null,
+  'contentGeneration' : IDL.Null,
+  'researchLibrary' : IDL.Null,
+  'fileOcrSystem' : IDL.Null,
+  'mathLawAI' : IDL.Null,
+});
 export const Agent = IDL.Record({
   'id' : IDL.Nat,
   'name' : IDL.Text,
+  'lastCycles' : IDL.Opt(IDL.Nat),
+  'agentType' : IDL.Opt(AgentType),
   'isEnabled' : IDL.Bool,
+  'principalId' : IDL.Opt(IDL.Text),
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const FileMetadata = IDL.Record({
@@ -125,10 +140,25 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const AgentType = IDL.Variant({
+    'cybersecurityToolbox' : IDL.Null,
+    'dataAnalysis' : IDL.Null,
+    'documentRouting' : IDL.Null,
+    'decisionMaking' : IDL.Null,
+    'generalPurpose' : IDL.Null,
+    'archiveManagement' : IDL.Null,
+    'contentGeneration' : IDL.Null,
+    'researchLibrary' : IDL.Null,
+    'fileOcrSystem' : IDL.Null,
+    'mathLawAI' : IDL.Null,
+  });
   const Agent = IDL.Record({
     'id' : IDL.Nat,
     'name' : IDL.Text,
+    'lastCycles' : IDL.Opt(IDL.Nat),
+    'agentType' : IDL.Opt(AgentType),
     'isEnabled' : IDL.Bool,
+    'principalId' : IDL.Opt(IDL.Text),
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const FileMetadata = IDL.Record({

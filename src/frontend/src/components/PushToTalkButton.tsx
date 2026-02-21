@@ -15,9 +15,21 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
   useEffect(() => {
     if (transcript && !isListening) {
       // Speech recognition has stopped and we have a transcript
-      onTranscriptComplete(transcript);
+      try {
+        onTranscriptComplete(transcript);
+      } catch (error) {
+        console.error('Error in onTranscriptComplete callback:', error);
+      }
     }
   }, [transcript, isListening, onTranscriptComplete]);
+
+  const handlePushToTalk = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   if (!isSupported) {
     return (
@@ -31,7 +43,7 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
   return (
     <div className="space-y-2">
       <Button
-        onClick={isListening ? stopListening : startListening}
+        onClick={handlePushToTalk}
         disabled={disabled}
         variant={isListening ? 'destructive' : 'default'}
         className={`w-full ${isListening ? 'animate-pulse' : ''}`}

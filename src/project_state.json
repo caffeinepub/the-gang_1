@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 35,
+  "projectStateVersion": 53,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -15,9 +15,9 @@
     "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
   ],
   "known_issues": [
-    "Swarm Health dashboard displaying static mock data instead of real backend state",
-    "Agent toggle switches in Swarm Health not connected to backend toggle_agent_status function",
-    "Swarm Health table not dynamically rendering from backend agent registry query"
+    "White Screen of Death regression caused by missing try/catch/finally blocks around backend.start_boardroom_debate call",
+    "Transcript state not being cleared at start of new Push-to-Talk recording, causing old content to persist",
+    "Agent registry check causing false 'offline' status even with valid agent data"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -468,6 +468,134 @@
         "REQ-101"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-debatedisplay-tsx-remove-the-text-authentication-required-to-view-robby-s-responses-and-enable-text-to-speech-from-the-component-render-output",
+      "title": "In frontend/src/components/DebateDisplay.tsx, remove the text 'Authentication required to view Robby's responses and enable Text-to-Speech.' from the component render output",
+      "reqIds": [
+        "REQ-110"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-debatedisplay-tsx-remove-all-conditional-logic-that-blurs-hides-or-blocks-the-transcript-output-based-on-authentication-state-the-transcript-must-always-be-fully-visible-and-readable-when-the-boardroom-tab-is-active",
+      "title": "In frontend/src/components/DebateDisplay.tsx, remove all conditional logic that blurs, hides, or blocks the transcript output based on authentication state. The transcript must always be fully visible and readable when the Boardroom tab is active",
+      "reqIds": [
+        "REQ-111"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-debatedisplay-tsx-remove-all-conditional-logic-that-disables-or-prevents-the-text-to-speech-functionality-based-on-authentication-state-the-speechsynthesis-api-must-function-for-all-users-viewing-the-boardroom-tab",
+      "title": "In frontend/src/components/DebateDisplay.tsx, remove all conditional logic that disables or prevents the Text-to-Speech functionality based on authentication state. The SpeechSynthesis API must function for all users viewing the Boardroom tab",
+      "reqIds": [
+        "REQ-112"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-or-the-component-managing-boardroom-state-ensure-all-state-variables-controlling-the-push-to-talk-button-such-as-isrecording-isdebating-or-islistening-are-strictly-initialized-to-false-using-usestate-false-the-button-must-default-to-displaying-push-to-talk-on-initial-render",
+      "title": "In frontend/src/App.tsx or the component managing Boardroom state, ensure all state variables controlling the Push to Talk button (such as isRecording, isDebating, or isListening) are strictly initialized to false using useState(false). The button must default to displaying 'Push to Talk' on initial render.",
+      "reqIds": [
+        "REQ-116"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-speech-recognition-event-handler-onresult-or-onend-callback-or-the-function-that-calls-backend-start-boardroom-debate-wrap-the-entire-execution-block-in-a-try-catch-statement-if-the-backend-call-fails-or-throws-an-error-catch-it-using-console-error-to-log-the-error-and-append-the-text-system-error-backend-connection-failed-to-the-transcript-state-variable-to-provide-user-feedback",
+      "title": "In the Speech Recognition event handler (onResult or onEnd callback) or the function that calls backend.start_boardroom_debate, wrap the entire execution block in a try/catch statement. If the backend call fails or throws an error, catch it using console.error to log the error, and append the text 'System Error: Backend connection failed.' to the transcript state variable to provide user feedback.",
+      "reqIds": [
+        "REQ-117"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-the-component-that-renders-the-boardroom-debate-interface-add-a-guard-clause-at-the-very-beginning-of-the-component-render-function-check-if-the-backend-actor-is-null-or-undefined-using-if-backend-if-the-backend-actor-is-not-initialized-return-early-with-a-simple-loading-indicator-div-connecting-to-the-gang-div-do-not-render-the-full-boardroom-ui-buttons-or-any-interactive-elements-until-the-backend-connection-is-confirmed",
+      "title": "In the Boardroom component (frontend/src/App.tsx or the component that renders the Boardroom debate interface), add a guard clause at the very beginning of the component render function. Check if the backend actor is null or undefined using if (!backend). If the backend actor is not initialized, return early with a simple loading indicator: <div>Connecting to The Gang...</div>. Do not render the full Boardroom UI, buttons, or any interactive elements until the backend connection is confirmed.",
+      "reqIds": [
+        "REQ-118"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-the-component-managing-debate-state-locate-the-async-function-that-calls-backend-start-boardroom-debate-this-function-should-already-have-a-try-catch-block-for-error-handling-add-a-finally-block-after-the-catch-block-inside-the-finally-block-explicitly-reset-all-loading-state-variables-to-false-this-must-include-setisdebating-false-and-setisrecording-false-or-any-equivalent-state-setters-that-control-button-disabled-states-the-finally-block-ensures-buttons-re-enable-even-if-the-backend-call-fails-or-throws-an-error",
+      "title": "In the Boardroom component (frontend/src/App.tsx or the component managing debate state), locate the async function that calls backend.start_boardroom_debate. This function should already have a try/catch block for error handling. Add a finally block after the catch block. Inside the finally block, explicitly reset all loading state variables to false. This must include setIsDebating(false) and setIsRecording(false), or any equivalent state setters that control button disabled states. The finally block ensures buttons re-enable even if the backend call fails or throws an error.",
+      "reqIds": [
+        "REQ-119"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-wherever-the-boardroom-debate-interface-is-rendered-locate-the-backend-actor-import-initialization-logic-replace-any-local-const-backend-declarations-with-the-exact-same-pattern-used-by-swarmhealth-and-sensorycortex-components-to-access-the-backend-actor-from-the-global-auth-context-e-g-const-backend-useactor-or-destructuring-from-authcontext-useauth-hook",
+      "title": "In the Boardroom component (frontend/src/App.tsx or wherever the Boardroom debate interface is rendered), locate the backend actor import/initialization logic. Replace any local const backend declarations with the exact same pattern used by SwarmHealth and SensoryCortex components to access the backend actor from the global Auth context (e.g., const { backend } = useActor() or destructuring from AuthContext/useAuth hook).",
+      "reqIds": [
+        "REQ-120"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-render-logic-remove-or-replace-any-dead-local-variable-declarations-such-as-const-backend-null-or-backend-undefined-that-prevent-the-component-from-accessing-the-live-global-backend-actor-ensure-the-backend-variable-is-exclusively-sourced-from-the-global-auth-state-context-and-is-never-locally-overridden-to-null-or-undefined",
+      "title": "In the Boardroom component render logic, remove or replace any dead local variable declarations such as const backend = null; or backend = undefined that prevent the component from accessing the live global backend actor. Ensure the backend variable is exclusively sourced from the global Auth state/context and is never locally overridden to null or undefined.",
+      "reqIds": [
+        "REQ-121"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-boardroom-component-re-renders-automatically-when-the-global-auth-state-initializes-the-backend-actor-verify-that-the-component-s-guard-clause-if-backend-correctly-evaluates-the-live-backend-state-and-drops-the-connecting-to-the-gang-loading-screen-the-moment-the-backend-actor-becomes-available-from-the-global-context",
+      "title": "Ensure the Boardroom component re-renders automatically when the global Auth state initializes the backend actor. Verify that the component's guard clause (if (!backend)) correctly evaluates the live backend state and drops the 'Connecting to The Gang...' loading screen the moment the backend actor becomes available from the global context.",
+      "reqIds": [
+        "REQ-122"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-the-component-rendering-the-boardroom-interface-import-and-destructure-three-values-from-the-useauth-hook-or-authprovider-context-isauthenticated-boolean-backend-actor-instance-and-isloading-or-equivalent-loading-state-variable-that-signals-the-auth-system-is-still-initializing-the-session",
+      "title": "In the Boardroom component (frontend/src/App.tsx or the component rendering the Boardroom interface), import and destructure three values from the useAuth hook or AuthProvider context: isAuthenticated (boolean), backend (Actor instance), and isLoading (or equivalent loading state variable that signals the auth system is still initializing the session)",
+      "reqIds": [
+        "REQ-123"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-strict-conditional-rendering-order-in-the-boardroom-component-with-four-distinct-states-1-if-isloading-is-true-display-a-generic-loading-spinner-or-message-2-if-isloading-is-false-and-isauthenticated-is-false-display-the-sign-in-with-internet-identity-button-3-if-isloading-is-false-and-isauthenticated-is-true-and-backend-is-null-or-undefined-display-initializing-backend-message-4-only-render-the-full-push-to-talk-ui-and-debate-interface-if-isloading-is-false-and-isauthenticated-is-true-and-backend-is-not-null",
+      "title": "Implement strict conditional rendering order in the Boardroom component with four distinct states: (1) If isLoading is true, display a generic loading spinner or message. (2) If isLoading is false AND isAuthenticated is false, display the 'Sign in with Internet Identity' button. (3) If isLoading is false AND isAuthenticated is true AND backend is null or undefined, display 'Initializing Backend...' message. (4) ONLY render the full Push-to-Talk UI and debate interface if isLoading is false AND isAuthenticated is true AND backend is NOT null",
+      "reqIds": [
+        "REQ-124"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-handlespeech-function-or-any-function-in-the-boardroom-component-that-calls-backend-start-boardroom-debate-or-other-backend-methods-add-a-guard-clause-at-the-very-beginning-if-backend-return-this-prevents-the-actor-not-initialized-crash-if-the-user-clicks-a-button-before-the-actor-is-fully-ready",
+      "title": "In the handleSpeech function or any function in the Boardroom component that calls backend.start_boardroom_debate or other backend methods, add a guard clause at the very beginning: if (!backend) return;. This prevents the 'Actor not initialized' crash if the user clicks a button before the actor is fully ready",
+      "reqIds": [
+        "REQ-125"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-wherever-the-push-to-talk-button-handler-is-implemented-add-settranscript-at-the-very-beginning-of-the-function-that-triggers-speech-recognition-this-clears-the-transcript-state-immediately-when-the-user-presses-push-to-talk-ensuring-each-new-recording-starts-with-a-fresh-empty-transcript-window",
+      "title": "In the Boardroom component (frontend/src/App.tsx or wherever the Push-to-Talk button handler is implemented), add setTranscript([]) at the very beginning of the function that triggers speech recognition. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a fresh, empty transcript window.",
+      "reqIds": [
+        "REQ-127"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-or-the-component-containing-the-handlepushtotalk-function-wrap-the-await-backend-start-boardroom-debate-call-in-a-try-catch-finally-block-in-the-catch-block-log-the-error-using-console-error-and-append-system-error-backend-connection-failed-to-the-transcript-state-in-the-finally-block-explicitly-reset-setisdebating-false-and-setisrecording-false-to-unlock-the-buttons-ensuring-this-happens-even-if-the-backend-call-throws-an-error",
+      "title": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
+      "reqIds": [
+        "REQ-129"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-or-the-component-containing-the-handlepushtotalk-function-add-settranscript-as-the-very-first-line-of-the-function-before-any-other-logic-executes-this-clears-the-transcript-state-immediately-when-the-user-presses-push-to-talk-ensuring-each-new-recording-starts-with-a-completely-empty-transcript-window",
+      "title": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
+      "reqIds": [
+        "REQ-130"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -812,12 +940,6 @@
     {
       "id": "AR-50",
       "summary": "Integrate @dfinity/auth-client in React frontend and add 'Login with Internet Identity' button to dashboard",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-51",
-      "summary": "Implement 'High-Stakes' UI lock: hide/blur Robby's transcript output and disable Text-to-Speech unless user is authenticated via Internet Identity",
       "reqIds": [],
       "status": "pending"
     },
@@ -1188,6 +1310,184 @@
       "summary": "Create a public query function named get_agent_registry in backend/main.mo with signature get_agent_registry() : async [Agent] that returns the complete current list of all registered agents and their status fields including is_enabled",
       "reqIds": [
         "REQ-95"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-109",
+      "summary": "Pre-populate the backend Agent Registry in The_Orchestrator with all 9 core agents (Skippy, GLaDOS, Robby, The_Architect, Deep_Thought, VINCENT, Janet, The_Librarian, Sensory_Cortex) upon deployment, each with is_enabled = true by default",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-110",
+      "summary": "In backend/main.mo, modify the initialization of the Agent Registry data structure (whether HashMap, Trie, or Array) to be explicitly pre-populated with all 9 core agents upon canister deployment. The agents must be: Skippy, GLaDOS, Robby, The_Architect, Deep_Thought, VINCENT, Janet, The_Librarian, and Sensory_Cortex.",
+      "reqIds": [
+        "REQ-102"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-111",
+      "summary": "Set default field values for every pre-populated agent in the registry: is_enabled must be true by default. If the Agent record includes id or cycles tracking fields, set dummy initial values (e.g., id = \"\", last_cycles = 0).",
+      "reqIds": [
+        "REQ-103"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-112",
+      "summary": "Verify that the get_agent_registry() query function in backend/main.mo correctly returns the full list of 9 pre-populated agents when called. The function must return this data immediately upon component mount in the frontend, ensuring the Swarm Health table populates with all agents.",
+      "reqIds": [
+        "REQ-104"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-113",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate update function. Before executing Skippy's segment, look up 'Skippy' in the Agent Registry state using the exact key string 'Skippy'. Only execute Skippy's mock/stub response if the registry lookup returns an agent record AND agent.is_enabled == true.",
+      "reqIds": [
+        "REQ-105"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-114",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, before executing GLaDOS's segment, look up 'GLaDOS' in the Agent Registry state using the exact key string 'GLaDOS'. Only execute GLaDOS's mock/stub response if the registry lookup returns an agent record AND agent.is_enabled == true.",
+      "reqIds": [
+        "REQ-106"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-115",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, before executing Robby's segment, look up 'Robby' in the Agent Registry state using the exact key string 'Robby'. Only execute Robby's mock/stub response if the registry lookup returns an agent record AND agent.is_enabled == true.",
+      "reqIds": [
+        "REQ-107"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-116",
+      "summary": "Verify that the Agent Registry lookup keys used in start_boardroom_debate exactly match the keys used during registry initialization. The keys must be case-sensitive and match exactly: 'Skippy', 'GLaDOS', 'Robby'. Ensure no typos or case mismatches exist between lookup and initialization.",
+      "reqIds": [
+        "REQ-108"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-117",
+      "summary": "In backend/main.mo, ensure the start_boardroom_debate function only appends the 'bypassing' offline message when agent.is_enabled is explicitly false. When is_enabled is true, append the mock/stub response text to the transcript as normal.",
+      "reqIds": [
+        "REQ-109"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-121",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate function. Before appending Skippy's mock response to the transcript, look up the agent named 'Skippy' in the Agent Registry state. Only append Skippy's response if the registry returns an agent record with is_enabled == true. If is_enabled == false, append the system message 'Skippy is currently offline. Bypassing...' to the transcript instead",
+      "reqIds": [
+        "REQ-113"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-122",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, before appending GLaDOS's mock response to the transcript, look up the agent named 'GLaDOS' in the Agent Registry state. Only append GLaDOS's response if the registry returns an agent record with is_enabled == true. If is_enabled == false, append the system message 'GLaDOS is currently offline. Bypassing...' to the transcript instead",
+      "reqIds": [
+        "REQ-114"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-123",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, before appending Robby's mock response to the transcript, look up the agent named 'Robby' in the Agent Registry state. Only append Robby's response if the registry returns an agent record with is_enabled == true. If is_enabled == false, append the system message 'Robby is currently offline. Bypassing...' to the transcript instead",
+      "reqIds": [
+        "REQ-115"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-124",
+      "summary": "Add guard clause at the beginning of Boardroom component render that returns <div>Connecting to The Gang...</div> if !backend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-125",
+      "summary": "Add finally block to async function calling backend.start_boardroom_debate that resets loading state variables (setIsDebating(false), setIsRecording(false)) to prevent buttons getting stuck in disabled state on error",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-126",
+      "summary": "Fix Boardroom component to correctly import and use the backend actor from the same global AuthContext/useAuth hook that SwarmHealth and SensoryCortex use. Ensure the backend variable is populated from live global state and is not shadowed by local declarations or undefined assignments.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-127",
+      "summary": "Remove any dead local variables in the Boardroom component that initialize backend to null or undefined. The backend must be pulled from the global Auth state/context using the same pattern as other components.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-128",
+      "summary": "Ensure the Boardroom component re-renders automatically when the global Auth state initializes the backend actor. The component should drop the 'Connecting to The Gang...' loading screen the moment the backend actor resolves from the global context.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-129",
+      "summary": "Add setTranscript([]) to clear transcript state at the start of each new Push-to-Talk recording in Boardroom component",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-130",
+      "summary": "Add fallback in start_boardroom_debate backend function: if registry lookup fails for an agent, default to { is_enabled: true } to prevent false offline status",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-131",
+      "summary": "In frontend/src/components/DebateDisplay.tsx, locate and permanently delete the string 'Authentication required to view Robby's responses and enable Text-to-Speech.' from the component render output. This text should not exist anywhere in the component code.",
+      "reqIds": [
+        "REQ-126"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-133",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate function. For each agent lookup in the registry (Skippy, GLaDOS, Robby), add a fallback operator to prevent false offline status. If the registry.get(agentName) returns null, default to { is_enabled = true }. Use the Motoko null coalescing pattern: let agentStatus = registry.get(agentName) ?? { is_enabled = true };",
+      "reqIds": [
+        "REQ-128"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-134",
+      "summary": "Restore try/catch/finally safety net in handlePushToTalk to prevent White Screen of Death when backend call fails",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-135",
+      "summary": "Add setTranscript([]) at the very start of handlePushToTalk function to clear transcript stream before each new recording",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-136",
+      "summary": "Temporarily remove registry checks in start_boardroom_debate backend function and hardcode mock responses for Skippy, GLaDOS, and Robby to prove routing plumbing works",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-139",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate function. Remove all agent registry lookup checks for Skippy, GLaDOS, and Robby. Hardcode the function to always append the mock responses for these three agents to the transcript in sequential order (Skippy -> GLaDOS -> Robby), regardless of their registry status. Ignore the is_enabled field temporarily to prove the inter-canister routing plumbing works correctly.",
+      "reqIds": [
+        "REQ-131"
       ],
       "status": "pending"
     }

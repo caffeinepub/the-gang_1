@@ -1,10 +1,11 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useDebateStatus, useStartBoardroomDebate } from './hooks/useQueries';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
+import { useActor } from './hooks/useActor';
 import { DebateDisplay } from './components/DebateDisplay';
 import { PushToTalkButton } from './components/PushToTalkButton';
 import { InterruptButton } from './components/InterruptButton';
@@ -16,26 +17,77 @@ type TabType = 'boardroom' | 'sensory' | 'health';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('boardroom');
+  const [systemError, setSystemError] = useState<string | null>(null);
+  const [isDebating, setIsDebating] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  
+  const { actor, isFetching } = useActor();
   const { data: debateState, isLoading, error } = useDebateStatus();
   const startDebate = useStartBoardroomDebate();
   const { login, clear, loginStatus, identity, isLoggingIn, isLoginSuccess } = useInternetIdentity();
 
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
 
-  const handleTranscriptComplete = (transcript: string) => {
-    if (!transcript.trim()) {
+  // Guard clause: Check if backend actor is available before rendering UI
+  if (!actor && isFetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a1a' }}>
+        <div className="text-center">
+          <Mic className="h-16 w-16 mx-auto mb-4 animate-pulse" style={{ color: '#39FF14' }} />
+          <p className="text-xl font-semibold" style={{ color: '#39FF14' }}>
+            Connecting to The Gang...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!actor && !isFetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a1a' }}>
+        <div className="text-center">
+          <AlertCircle className="h-16 w-16 mx-auto mb-4" style={{ color: '#FF0000' }} />
+          <p className="text-xl font-semibold mb-2" style={{ color: '#FF0000' }}>
+            Failed to connect to backend
+          </p>
+          <p className="text-sm" style={{ color: '#FFA500' }}>
+            Please refresh the page or check your Internet Identity authentication.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleTranscriptComplete = async (transcriptText: string) => {
+    // Guard: Prevent execution if backend is not ready
+    if (!actor) {
+      console.warn('Backend not ready - cannot process transcript');
+      toast.error('Backend not initialized. Please wait.');
+      return;
+    }
+
+    if (!transcriptText.trim()) {
       toast.error('No speech detected. Please try again.');
       return;
     }
 
-    startDebate.mutate(transcript, {
-      onSuccess: () => {
-        toast.success('Debate started successfully!');
-      },
-      onError: (error) => {
-        toast.error(`Failed to start debate: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      },
-    });
+    try {
+      setSystemError(null);
+      setIsDebating(true);
+      setIsRecording(false);
+      
+      await startDebate.mutateAsync(transcriptText);
+      toast.success('Debate started successfully!');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Backend debate start failed:', error);
+      toast.error(`Failed to start debate: ${errorMessage}`);
+      setSystemError(`System Error: Backend connection failed. ${errorMessage}`);
+    } finally {
+      // CRITICAL: Always reset loading states regardless of success or failure
+      setIsDebating(false);
+      setIsRecording(false);
+    }
   };
 
   const handleLogin = () => {
@@ -191,12 +243,11 @@ export default function App() {
             </Alert>
           )}
 
-          {!isAuthenticated && (
-            <Alert variant="default" className="border-primary/50 bg-primary/5">
-              <Shield className="h-4 w-4" />
+          {systemError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong className="font-semibold">High-Stakes Content Locked:</strong> Robby's transcript output and voice synthesis 
-                are restricted. Please authenticate with Internet Identity to access premium features.
+                {systemError}
               </AlertDescription>
             </Alert>
           )}
@@ -210,154 +261,197 @@ export default function App() {
             </Alert>
           )}
 
-          {isLoading ? (
-            <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
-                Initializing voice interface...
-              </CardContent>
-            </Card>
-          ) : (
+          {/* Boardroom Tab */}
+          {activeTab === 'boardroom' && (
             <>
-              {/* Boardroom Tab */}
-              {activeTab === 'boardroom' && (
-                <div className="space-y-6">
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Voice-enabled boardroom debate system. Use Push to Talk to speak your prompt, and the
-                      system will automatically route through Skippy, GLaDOS, and Robby. 
-                      <strong className="font-semibold"> Authentication required to view Robby's responses and enable Text-to-Speech.</strong>
-                    </AlertDescription>
-                  </Alert>
-
-                  <DebateDisplay debateState={debateState} isAuthenticated={isAuthenticated} />
-
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <Card>
-                      <CardContent className="pt-6 space-y-4">
-                        <div>
-                          <h3 className="font-semibold mb-1">Push to Talk</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Click to start recording your prompt. Release or click again to stop.
-                            {debateState?.emergencyMode && (
-                              <span className="block mt-1 text-destructive font-semibold">
-                                Emergency Mode: Only Skippy will respond
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        <PushToTalkButton
-                          onTranscriptComplete={handleTranscriptComplete}
-                          disabled={debateState?.isDebating || startDebate.isPending}
-                        />
-                        {startDebate.isPending && (
-                          <p className="text-sm text-muted-foreground text-center">
-                            Starting debate...
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardContent className="pt-6 space-y-4">
-                        <div>
-                          <h3 className="font-semibold mb-1">Barge-In Control</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Interrupt the debate and stop speech synthesis immediately.
-                          </p>
-                        </div>
-                        <InterruptButton disabled={!debateState?.isDebating} />
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <Card>
-                    <CardContent className="pt-6 space-y-4">
-                      <div>
-                        <h3 className="font-semibold mb-1">The Gang (Agent Interfaces)</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          8 external agent interfaces for inter-canister communication
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {[
-                          'Robby',
-                          'Skippy',
-                          'The_Architect',
-                          'Deep_Thought',
-                          'GLaDOS',
-                          'VINCENT',
-                          'Janet',
-                          'The_Librarian',
-                        ].map((agent) => (
-                          <div
-                            key={agent}
-                            className={`px-3 py-2 rounded-md text-sm font-mono text-center transition-all ${
-                              debateState?.emergencyMode && agent === 'Skippy'
-                                ? 'bg-destructive text-destructive-foreground font-bold ring-2 ring-destructive'
-                                : debateState?.emergencyMode && (agent === 'GLaDOS' || agent === 'Robby')
-                                ? 'bg-muted/50 text-muted-foreground line-through opacity-50'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            {agent}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+              {/* State 1: Loading - Actor is initializing */}
+              {isFetching && (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin" style={{ color: '#39FF14' }} />
+                    <p className="text-lg font-semibold" style={{ color: '#39FF14' }}>
+                      Loading...
+                    </p>
+                    <p className="text-sm mt-2" style={{ color: '#888' }}>
+                      Initializing backend connection
+                    </p>
+                  </CardContent>
+                </Card>
               )}
 
-              {/* Sensory Cortex Tab */}
-              {activeTab === 'sensory' && <SensoryCortexTab />}
+              {/* State 2: Not Authenticated - Show login prompt */}
+              {!isFetching && !isAuthenticated && (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Shield className="h-16 w-16 mx-auto mb-4" style={{ color: '#39FF14' }} />
+                    <h2 className="text-2xl font-bold mb-2" style={{ color: '#39FF14' }}>
+                      Authentication Required
+                    </h2>
+                    <p className="mb-6" style={{ color: '#888' }}>
+                      Please sign in with Internet Identity to access the Boardroom
+                    </p>
+                    <button
+                      onClick={handleLogin}
+                      disabled={isLoggingIn}
+                      style={{
+                        backgroundColor: '#39FF14',
+                        color: '#1a1a1a',
+                        border: 'none',
+                        borderRadius: '0px',
+                        padding: '12px 32px',
+                        cursor: isLoggingIn ? 'not-allowed' : 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        opacity: isLoggingIn ? 0.6 : 1,
+                      }}
+                      className="flex items-center gap-2 mx-auto"
+                    >
+                      <LogIn className="h-5 w-5" />
+                      {isLoggingIn ? 'Connecting...' : 'Sign in with Internet Identity'}
+                    </button>
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Swarm Health Tab */}
-              {activeTab === 'health' && (
-                <div className="space-y-6">
-                  <Card style={{ backgroundColor: '#2a2a2a', border: '1px solid #39FF14', borderRadius: '0px' }}>
-                    <CardContent className="py-8">
-                      <h2 className="text-2xl font-bold mb-2" style={{ color: '#39FF14' }}>
-                        C2 DASHBOARD - SWARM HEALTH
-                      </h2>
-                      <p className="mb-6" style={{ color: '#FFA500', fontSize: '14px' }}>
-                        Command & Control interface for AI agent registry and kill switches
-                      </p>
-                      
-                      {!isAuthenticated && (
-                        <Alert variant="default" className="mb-6 border-primary/50 bg-primary/5">
-                          <Shield className="h-4 w-4" />
-                          <AlertDescription>
-                            <strong className="font-semibold">Admin Access Required:</strong> Please authenticate with Internet Identity to manage agent status.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                      
-                      <AgentRegistryTable />
-                    </CardContent>
-                  </Card>
-                </div>
+              {/* State 3: Authenticated but backend not ready */}
+              {!isFetching && isAuthenticated && !actor && (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin" style={{ color: '#39FF14' }} />
+                    <p className="text-lg font-semibold" style={{ color: '#39FF14' }}>
+                      Initializing Backend...
+                    </p>
+                    <p className="text-sm mt-2" style={{ color: '#888' }}>
+                      Connecting to The Gang
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* State 4: Fully Ready - Show full Boardroom UI */}
+              {!isFetching && isAuthenticated && actor && (
+                <>
+                  {isLoading ? (
+                    <Card>
+                      <CardContent className="py-12 text-center text-muted-foreground">
+                        Initializing voice interface...
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-6">
+                      <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          Voice-enabled boardroom debate system. Use Push to Talk to speak your prompt, and the
+                          system will automatically route through Skippy, GLaDOS, and Robby.
+                        </AlertDescription>
+                      </Alert>
+
+                      <DebateDisplay debateState={debateState} isAuthenticated={isAuthenticated} />
+
+                      <div className="grid gap-6 md:grid-cols-2">
+                        <Card>
+                          <CardContent className="pt-6 space-y-4">
+                            <div>
+                              <h3 className="font-semibold mb-1">Push to Talk</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Click to start recording your prompt. Release or click again to stop.
+                                {debateState?.emergencyMode && (
+                                  <span className="block mt-1 text-destructive font-semibold">
+                                    Emergency Mode: Only Skippy will respond
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                            <PushToTalkButton
+                              onTranscriptComplete={handleTranscriptComplete}
+                              disabled={debateState?.isDebating || startDebate.isPending || isDebating}
+                            />
+                            {(startDebate.isPending || isDebating) && (
+                              <p className="text-sm text-muted-foreground text-center">
+                                Starting debate...
+                              </p>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card>
+                          <CardContent className="pt-6 space-y-4">
+                            <div>
+                              <h3 className="font-semibold mb-1">Barge-In Control</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Interrupt the debate and stop speech synthesis immediately.
+                              </p>
+                            </div>
+                            <InterruptButton disabled={!debateState?.isDebating} />
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <Card>
+                        <CardContent className="pt-6 space-y-4">
+                          <div>
+                            <h3 className="font-semibold mb-1">The Gang (Agent Interfaces)</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              8 external agent interfaces for inter-canister communication
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {[
+                              'Robby',
+                              'Skippy',
+                              'The_Architect',
+                              'Deep_Thought',
+                              'GLaDOS',
+                              'VINCENT',
+                              'Janet',
+                              'The_Librarian',
+                            ].map((agent) => (
+                              <div
+                                key={agent}
+                                className="p-3 rounded-md border border-border bg-muted/30 text-center"
+                              >
+                                <p className="text-sm font-medium">{agent}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
+
+          {/* Sensory Cortex Tab */}
+          {activeTab === 'sensory' && <SensoryCortexTab />}
+
+          {/* Swarm Health Tab */}
+          {activeTab === 'health' && <AgentRegistryTable />}
         </div>
       </main>
 
-      <footer className="border-t mt-24" style={{ borderColor: '#333', backgroundColor: '#1a1a1a' }}>
-        <div className="container mx-auto px-4 py-6">
-          <p className="text-center text-sm" style={{ color: '#888' }}>
-            © {new Date().getFullYear()} Built with love using{' '}
-            <a
-              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                typeof window !== 'undefined' ? window.location.hostname : 'the-gang-voice-assistant'
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#39FF14', textDecoration: 'underline' }}
-            >
-              caffeine.ai
-            </a>
-          </p>
+      <footer className="border-t mt-16" style={{ borderColor: '#333', backgroundColor: '#1a1a1a' }}>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm" style={{ color: '#888' }}>
+              © {new Date().getFullYear()} The Gang Voice Assistant. All rights reserved.
+            </p>
+            <p className="text-sm" style={{ color: '#888' }}>
+              Built with ❤️ using{' '}
+              <a
+                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+                  typeof window !== 'undefined' ? window.location.hostname : 'the-gang-voice-assistant'
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#39FF14', textDecoration: 'underline' }}
+              >
+                caffeine.ai
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

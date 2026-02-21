@@ -100,11 +100,6 @@ export interface FileMetadata {
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
 }
-export interface Agent {
-    id: bigint;
-    name: string;
-    isEnabled: boolean;
-}
 export interface DebateState {
     isDebating: boolean;
     emergencyMode: boolean;
@@ -115,12 +110,32 @@ export interface _CaffeineStorageCreateCertificateResult {
     method: string;
     blob_hash: string;
 }
+export interface Agent {
+    id: bigint;
+    name: string;
+    lastCycles?: bigint;
+    agentType?: AgentType;
+    isEnabled: boolean;
+    principalId?: string;
+}
 export interface UserProfile {
     name: string;
 }
 export interface _CaffeineStorageRefillResult {
     success?: boolean;
     topped_up_amount?: bigint;
+}
+export enum AgentType {
+    cybersecurityToolbox = "cybersecurityToolbox",
+    dataAnalysis = "dataAnalysis",
+    documentRouting = "documentRouting",
+    decisionMaking = "decisionMaking",
+    generalPurpose = "generalPurpose",
+    archiveManagement = "archiveManagement",
+    contentGeneration = "contentGeneration",
+    researchLibrary = "researchLibrary",
+    fileOcrSystem = "fileOcrSystem",
+    mathLawAI = "mathLawAI"
 }
 export enum UserRole {
     admin = "admin",
@@ -147,11 +162,11 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     routeDocument(filename: string, filePreview: string, fileSize: bigint, sensoryCortex: Principal): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    startBoardroomDebate(userPrompt: string, _skippy: Principal, _glados: Principal, _robby: Principal): Promise<void>;
+    startBoardroomDebate(userPrompt: string, skippy: Principal, glados: Principal, robby: Principal): Promise<void>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
     topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
 }
-import type { UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { Agent as _Agent, AgentType as _AgentType, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
@@ -284,42 +299,42 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getAgentRegistry();
-                return result;
+                return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getAgentRegistry();
-            return result;
+            return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserProfile();
-                return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserProfile();
-            return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n11(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n18(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n11(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n18(this._uploadFile, this._downloadFile, result);
         }
     }
     async getFileRegistry(): Promise<Array<[string, FileMetadata]>> {
@@ -354,14 +369,14 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
         }
     }
     async initializeAgents(): Promise<void> {
@@ -463,13 +478,25 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_UserRole_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n12(_uploadFile, _downloadFile, value);
+function from_candid_AgentType_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _AgentType): AgentType {
+    return from_candid_variant_n15(_uploadFile, _downloadFile, value);
+}
+function from_candid_Agent_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Agent): Agent {
+    return from_candid_record_n12(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserRole_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n19(_uploadFile, _downloadFile, value);
 }
 function from_candid__CaffeineStorageRefillResult_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: __CaffeineStorageRefillResult): _CaffeineStorageRefillResult {
     return from_candid_record_n5(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+function from_candid_opt_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_AgentType]): AgentType | null {
+    return value.length === 0 ? null : from_candid_AgentType_n14(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [boolean]): boolean | null {
@@ -477,6 +504,30 @@ function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 }
 function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    name: string;
+    lastCycles: [] | [bigint];
+    agentType: [] | [_AgentType];
+    isEnabled: boolean;
+    principalId: [] | [string];
+}): {
+    id: bigint;
+    name: string;
+    lastCycles?: bigint;
+    agentType?: AgentType;
+    isEnabled: boolean;
+    principalId?: string;
+} {
+    return {
+        id: value.id,
+        name: value.name,
+        lastCycles: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.lastCycles)),
+        agentType: record_opt_to_undefined(from_candid_opt_n13(_uploadFile, _downloadFile, value.agentType)),
+        isEnabled: value.isEnabled,
+        principalId: record_opt_to_undefined(from_candid_opt_n16(_uploadFile, _downloadFile, value.principalId))
+    };
 }
 function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     success: [] | [boolean];
@@ -490,7 +541,30 @@ function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint
         topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
     };
 }
-function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    cybersecurityToolbox: null;
+} | {
+    dataAnalysis: null;
+} | {
+    documentRouting: null;
+} | {
+    decisionMaking: null;
+} | {
+    generalPurpose: null;
+} | {
+    archiveManagement: null;
+} | {
+    contentGeneration: null;
+} | {
+    researchLibrary: null;
+} | {
+    fileOcrSystem: null;
+} | {
+    mathLawAI: null;
+}): AgentType {
+    return "cybersecurityToolbox" in value ? AgentType.cybersecurityToolbox : "dataAnalysis" in value ? AgentType.dataAnalysis : "documentRouting" in value ? AgentType.documentRouting : "decisionMaking" in value ? AgentType.decisionMaking : "generalPurpose" in value ? AgentType.generalPurpose : "archiveManagement" in value ? AgentType.archiveManagement : "contentGeneration" in value ? AgentType.contentGeneration : "researchLibrary" in value ? AgentType.researchLibrary : "fileOcrSystem" in value ? AgentType.fileOcrSystem : "mathLawAI" in value ? AgentType.mathLawAI : value;
+}
+function from_candid_variant_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;
@@ -498,6 +572,9 @@ function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Ui
     guest: null;
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function from_candid_vec_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Agent>): Array<Agent> {
+    return value.map((x)=>from_candid_Agent_n11(_uploadFile, _downloadFile, x));
 }
 function to_candid_UserRole_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n9(_uploadFile, _downloadFile, value);

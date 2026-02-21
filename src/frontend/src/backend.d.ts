@@ -15,19 +15,34 @@ export interface FileMetadata {
     size: bigint;
     filename: string;
 }
-export interface Agent {
-    id: bigint;
-    name: string;
-    isEnabled: boolean;
-}
 export interface DebateState {
     isDebating: boolean;
     emergencyMode: boolean;
     transcript: string;
     currentSpeaker: string;
 }
+export interface Agent {
+    id: bigint;
+    name: string;
+    lastCycles?: bigint;
+    agentType?: AgentType;
+    isEnabled: boolean;
+    principalId?: string;
+}
 export interface UserProfile {
     name: string;
+}
+export enum AgentType {
+    cybersecurityToolbox = "cybersecurityToolbox",
+    dataAnalysis = "dataAnalysis",
+    documentRouting = "documentRouting",
+    decisionMaking = "decisionMaking",
+    generalPurpose = "generalPurpose",
+    archiveManagement = "archiveManagement",
+    contentGeneration = "contentGeneration",
+    researchLibrary = "researchLibrary",
+    fileOcrSystem = "fileOcrSystem",
+    mathLawAI = "mathLawAI"
 }
 export enum UserRole {
     admin = "admin",
@@ -47,7 +62,7 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     routeDocument(filename: string, filePreview: string, fileSize: bigint, sensoryCortex: Principal): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    startBoardroomDebate(userPrompt: string, _skippy: Principal, _glados: Principal, _robby: Principal): Promise<void>;
+    startBoardroomDebate(userPrompt: string, skippy: Principal, glados: Principal, robby: Principal): Promise<void>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
     topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
 }

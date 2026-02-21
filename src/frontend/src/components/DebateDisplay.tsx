@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { User, FileText, Lock, AlertTriangle } from 'lucide-react';
+import { User, FileText, AlertTriangle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { parseTranscript } from '../utils/transcriptParser';
@@ -12,7 +12,7 @@ interface DebateDisplayProps {
   isAuthenticated: boolean;
 }
 
-export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayProps) {
+export function DebateDisplay({ debateState }: DebateDisplayProps) {
   const { speak } = useSpeechSynthesis();
   const previousSpeakerRef = useRef<string>('');
   const previousTranscriptRef = useRef<string>('');
@@ -25,14 +25,12 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
     const currentTranscript = debateState.transcript;
 
     // Check if speaker changed to Robby and transcript has new content
-    // ONLY speak if user is authenticated (High-Stakes UI lock)
     if (
       currentSpeaker === 'Robby' &&
       previousSpeakerRef.current !== 'Robby' &&
       currentTranscript !== previousTranscriptRef.current &&
       currentTranscript.length > 0 &&
-      !hasSpokenRobby &&
-      isAuthenticated // TTS disabled unless authenticated
+      !hasSpokenRobby
     ) {
       // Extract Robby's response (last part of transcript)
       const lines = currentTranscript.split('\n').filter((line) => line.trim());
@@ -50,7 +48,7 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
 
     previousSpeakerRef.current = currentSpeaker;
     previousTranscriptRef.current = currentTranscript;
-  }, [debateState, speak, hasSpokenRobby, isAuthenticated]);
+  }, [debateState, speak, hasSpokenRobby]);
 
   if (!debateState) {
     return (
@@ -68,9 +66,6 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
   };
 
   const parsedTranscript = parseTranscript(debateState.transcript);
-  
-  // Check if current speaker is Robby and user is not authenticated
-  const isRobbyLocked = debateState.currentSpeaker === 'Robby' && !isAuthenticated;
 
   return (
     <Card>
@@ -82,12 +77,6 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
               <Badge variant="destructive" className="gap-1.5">
                 <AlertTriangle className="h-3 w-3" />
                 Emergency
-              </Badge>
-            )}
-            {isRobbyLocked && (
-              <Badge variant="outline" className="gap-1.5 border-primary/50 text-primary">
-                <Lock className="h-3 w-3" />
-                Locked
               </Badge>
             )}
             <Badge variant={debateState.isDebating ? 'default' : 'secondary'}>
@@ -112,32 +101,12 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
             <FileText className="h-4 w-4" />
             Transcript Stream
           </div>
-          <ScrollArea className="h-[400px] rounded-md border border-border bg-muted/50 p-4 relative">
+          <ScrollArea className="h-[400px] rounded-md border border-border bg-muted/50 p-4">
             {parsedTranscript ? (
-              <div className={isRobbyLocked ? 'relative' : ''}>
-                <div
-                  className={`text-sm whitespace-pre-wrap font-mono leading-relaxed transition-all duration-300 ${
-                    isRobbyLocked ? 'blur-[8px] select-none' : ''
-                  }`}
-                  dangerouslySetInnerHTML={{ __html: parsedTranscript }}
-                />
-                {isRobbyLocked && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                    <div className="text-center space-y-3 max-w-md px-6">
-                      <div className="flex justify-center">
-                        <div className="rounded-full bg-primary/10 p-4">
-                          <Lock className="h-8 w-8 text-primary" />
-                        </div>
-                      </div>
-                      <h3 className="text-lg font-semibold">Authentication Required</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Robby's responses are restricted to authenticated users only. 
-                        Please login with Internet Identity to view this content and enable Text-to-Speech.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <div
+                className="text-sm whitespace-pre-wrap font-mono leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: parsedTranscript }}
+              />
             ) : (
               <p className="text-sm text-muted-foreground italic">
                 No transcript yet. Start speaking to begin...

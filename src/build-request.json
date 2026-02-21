@@ -1,174 +1,83 @@
 {
   "kind": "build_request",
-  "title": "Sync Swarm Health Dashboard with Backend Agent Registry",
-  "projectName": "The Gang",
+  "title": "Fix White Screen of Death regression and transcript clearing",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-94",
-      "text": "In backend/main.mo, ensure the Agent record type includes an is_enabled field of type Bool that defaults to true when agents are initialized in the agent registry",
+      "id": "REQ-129",
+      "text": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, wrap the await backend.start_boardroom_debate() call in a try/catch/finally block. In the catch block, log the error using console.error() and append 'System Error: Backend connection failed.' to the transcript state. In the finally block, explicitly reset setIsDebating(false) and setIsRecording(false) to unlock the buttons, ensuring this happens even if the backend call throws an error.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Wrap the start_boardroom_debate call in a try/catch/finally block.",
+          "In the finally block, you MUST reset setIsDebating(false) so the buttons unlock."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The backend.start_boardroom_debate() call is wrapped in a try block",
+        "A catch block logs errors and appends 'System Error: Backend connection failed.' to transcript",
+        "A finally block explicitly calls setIsDebating(false) and setIsRecording(false)",
+        "Buttons remain functional and unlock even when backend throws errors",
+        "No White Screen of Death occurs when backend call fails"
+      ]
+    },
+    {
+      "id": "REQ-130",
+      "text": "In frontend/src/App.tsx or the component containing the handlePushToTalk function, add setTranscript([]) as the very first line of the function before any other logic executes. This clears the transcript state immediately when the user presses Push-to-Talk, ensuring each new recording starts with a completely empty transcript window.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "At the very start of the handlePushToTalk function, you must call setTranscript([]);",
+          "The transcript window must be wiped clean every time the user starts a new recording."
+        ]
+      },
+      "acceptanceCriteria": [
+        "setTranscript([]) is the first line executed in handlePushToTalk",
+        "Transcript window displays empty state when Push-to-Talk is pressed",
+        "No residual content from previous recordings appears in new sessions",
+        "Clearing happens before speech recognition starts"
+      ]
+    },
+    {
+      "id": "REQ-131",
+      "text": "In backend/main.mo, locate the start_boardroom_debate function. Remove all agent registry lookup checks for Skippy, GLaDOS, and Robby. Hardcode the function to always append the mock responses for these three agents to the transcript in sequential order (Skippy -> GLaDOS -> Robby), regardless of their registry status. Ignore the is_enabled field temporarily to prove the inter-canister routing plumbing works correctly.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-user-final"
         ],
         "quotes": [
-          "Ensure the Agent record is initialized with is_enabled = true by default"
+          "In the Motoko backend, stop checking the registry for this build.",
+          "Hardcode the start_boardroom_debate to return the mock responses for Skippy, GLaDOS, and Robby regardless of registry status.",
+          "We need to prove the plumbing works before we re-introduce the registry check."
         ]
       },
       "acceptanceCriteria": [
-        "Agent record type definition includes is_enabled: Bool field",
-        "All agents in the registry are initialized with is_enabled = true by default"
-      ]
-    },
-    {
-      "id": "REQ-95",
-      "text": "Create a public query function named get_agent_registry in backend/main.mo with signature get_agent_registry() : async [Agent] that returns the complete current list of all registered agents and their status fields including is_enabled",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Create a public query function called get_agent_registry() : async [Agent] that returns the current list of all agents and their statuses"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Function is marked as public query",
-        "Function signature is get_agent_registry() : async [Agent]",
-        "Function returns array containing all 9 agents (Robby, Skippy, The_Architect, Deep_Thought, GLaDOS, VINCENT, Janet, The_Librarian, Sensory_Cortex)",
-        "Each returned Agent record includes name, is_enabled, and any other defined fields"
-      ]
-    },
-    {
-      "id": "REQ-96",
-      "text": "In frontend/src/components/AgentRegistryTable.tsx, import the backend actor using the useActor hook, create a React state variable using useState with signature const [agents, setAgents] = useState<any[]>([]) to store the agent list",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "In the Swarm Health tab component, import the backend actor",
-          "Create a React state: const [agents, setAgents] = useState([])"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend actor is destructured from useActor hook at component top",
-        "React state agents is declared with type annotation",
-        "State is initialized as empty array"
-      ]
-    },
-    {
-      "id": "REQ-97",
-      "text": "In frontend/src/components/AgentRegistryTable.tsx, implement a useEffect hook that runs on component mount, calls await backend.get_agent_registry(), and updates the agents state with the returned data using setAgents",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Use a useEffect hook to call await backend.get_agent_registry() on component mount and update the agents state"
-        ]
-      },
-      "acceptanceCriteria": [
-        "useEffect has empty dependency array [] to run only on mount",
-        "useEffect contains async function that calls backend.get_agent_registry()",
-        "Returned agent data is stored in agents state via setAgents",
-        "Error handling is included for failed backend calls"
-      ]
-    },
-    {
-      "id": "REQ-98",
-      "text": "Refactor the table rendering logic in frontend/src/components/AgentRegistryTable.tsx to dynamically generate rows by mapping over the agents state array instead of using hardcoded HTML. Each row must display the agent's name and current status",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "The table MUST render dynamically by mapping over this agents state variable, not hardcoded HTML"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Table body uses agents.map() to generate rows",
-        "No hardcoded agent names in JSX",
-        "Each row displays agent.name field",
-        "Rows update automatically when agents state changes"
-      ]
-    },
-    {
-      "id": "REQ-99",
-      "text": "In frontend/src/components/AgentRegistryTable.tsx, update each Toggle component in the mapped table rows to reflect the true agent.is_enabled boolean value from the backend state, showing enabled state when is_enabled is true and disabled state when is_enabled is false",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Update the Toggle component in the mapped table to reflect the true agent.is_enabled boolean"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Toggle component receives agent.is_enabled as checked or value prop",
-        "Toggle visual state matches backend is_enabled value",
-        "Green indicator displays when is_enabled is true",
-        "Red indicator displays when is_enabled is false"
-      ]
-    },
-    {
-      "id": "REQ-100",
-      "text": "Add an onChange or onClick event handler to each Toggle component in frontend/src/components/AgentRegistryTable.tsx that executes await backend.toggle_agent_status(agent.name, !agent.is_enabled) when the toggle is clicked, passing the agent's name and the inverted enabled status",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Add an onChange or onClick handler to the Toggle",
-          "When clicked, it must execute await backend.toggle_agent_status(agent.name, !agent.is_enabled)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Toggle has onChange or onClick handler implemented",
-        "Handler calls backend.toggle_agent_status with correct parameters",
-        "First parameter is agent.name from current row",
-        "Second parameter is !agent.is_enabled (inverted current state)",
-        "Handler is properly async or wrapped in async function"
-      ]
-    },
-    {
-      "id": "REQ-101",
-      "text": "In frontend/src/components/AgentRegistryTable.tsx, after the toggle_agent_status backend call resolves successfully, immediately call backend.get_agent_registry() again to fetch the updated agent data from the backend and call setAgents with the fresh data to update the UI state in real-time",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Immediately after the await resolves, call the backend query again to re-fetch the fresh data and update the UI state"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After toggle_agent_status completes, get_agent_registry is called",
-        "Fresh agent data is stored in agents state via setAgents",
-        "UI updates reflect the new backend state immediately",
-        "Toggle indicators update to show new enabled/disabled status without page refresh"
+        "start_boardroom_debate function does not check registry.get() for Skippy, GLaDOS, or Robby",
+        "Mock responses for all three agents always append to transcript",
+        "Function executes full Skippy -> GLaDOS -> Robby sequence every time",
+        "No 'offline' or 'bypassing' messages appear for these agents",
+        "Registry status has no effect on debate flow"
       ]
     }
   ],
   "constraints": [
-    "All backend logic must remain in the single main actor file backend/main.mo",
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts",
-    "Maintain the tactical dark aesthetic with green (#39FF14) for enabled and red for disabled states",
-    "Do not create new backend canisters - all logic goes in The_Orchestrator main actor"
+    "Do not remove the agent registry data structure or get_agent_registry function",
+    "Do not modify the toggle_agent_status function",
+    "Preserve all existing error handling in other components",
+    "Keep the emergency mode and Steel Rain override logic intact"
   ],
   "nonGoals": [
-    "Adding new agent canisters beyond the existing 9",
-    "Changing the agent toggle authentication/authorization logic",
-    "Modifying the existing toggle_agent_status backend function implementation",
-    "Adding WebSocket or real-time subscription features",
-    "Changing the UI component library or styling framework"
+    "Re-implementing registry checks in this build",
+    "Adding new agent routing logic",
+    "Modifying the Speech Recognition or Speech Synthesis APIs",
+    "Changing authentication or Internet Identity flows"
   ],
   "imageRequirements": {
     "required": [],
