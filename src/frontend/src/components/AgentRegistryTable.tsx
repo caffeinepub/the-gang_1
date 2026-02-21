@@ -10,7 +10,7 @@ export function AgentRegistryTable() {
   const { actor, isFetching } = useActor();
   const { data: agents, isLoading } = useGetAgentStatuses();
   const toggleAgent = useToggleAgentStatus();
-  const [togglingAgent, setTogglingAgent] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Guard clause: Prevent rendering if backend actor is not initialized
   if (!actor && isFetching) {
@@ -44,16 +44,18 @@ export function AgentRegistryTable() {
   }
 
   const handleToggle = async (agentName: string, currentStatus: boolean) => {
-    setTogglingAgent(agentName);
+    setUpdatingId(agentName);
     const newStatus = !currentStatus;
     
     try {
       await toggleAgent.mutateAsync({ agentName, status: newStatus });
       toast.success(`${agentName} ${newStatus ? 'enabled' : 'disabled'} successfully`);
     } catch (error) {
+      console.error('Toggle agent error:', error);
       toast.error(`Failed to toggle ${agentName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setTogglingAgent(null);
+      // CRITICAL: Always reset loading state in finally block
+      setUpdatingId(null);
     }
   };
 
@@ -123,9 +125,9 @@ export function AgentRegistryTable() {
                   <Switch
                     checked={agent.isEnabled}
                     onCheckedChange={() => handleToggle(agent.name, agent.isEnabled)}
-                    disabled={togglingAgent === agent.name}
+                    disabled={updatingId === agent.name}
                     style={{
-                      opacity: togglingAgent === agent.name ? 0.5 : 1,
+                      opacity: updatingId === agent.name ? 0.5 : 1,
                     }}
                   />
                 </div>

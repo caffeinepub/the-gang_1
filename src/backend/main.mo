@@ -169,7 +169,30 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start debates");
     };
-    return "Skippy: This is a stubbed response.\n\nGLaDOS: This is a stubbed response.\n\nRobby: This is a stubbed response";
+
+    var response = "";
+
+    func processAgent(agentName : Text, stubbedResponse : Text) {
+      let agent = getAgentByName(agentName);
+      switch (agent) {
+        case (null) {
+          response #= agentName # " is offline. Bypassed.\n\n";
+        };
+        case (?a) {
+          if (a.isEnabled) {
+            response #= agentName # ": " # stubbedResponse # "\n\n";
+          } else {
+            response #= agentName # " is offline. Bypassed.\n\n";
+          };
+        };
+      };
+    };
+
+    processAgent("Skippy", "This is a stubbed response.");
+    processAgent("GLaDOS", "This is a stubbed response.");
+    processAgent("Robby", "This is a stubbed response.");
+
+    response;
   };
 
   public shared ({ caller }) func routeDocument(filename : Text, filePreview : Text, fileSize : Nat) : async Text {

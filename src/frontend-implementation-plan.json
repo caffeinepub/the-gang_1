@@ -1,22 +1,105 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix React Error 185 infinite loop in App.tsx",
+  "title": "Fix silent actor crash and eliminate duplicate guard clauses",
   "requirements": [
     {
-      "id": "REQ-140",
-      "summary": "Fix React Error 185 infinite loop by moving state setters from render body to event handlers and adding proper useEffect dependency arrays",
+      "id": "REQ-159",
+      "summary": "Wrap createActor logic in strict try/catch block to prevent silent failures",
       "acceptanceCriteria": [
-        "No state setter functions are called directly in the component render body",
-        "All useEffect hooks have explicit dependency arrays",
-        "React Error 185 (Maximum update depth exceeded) is resolved",
-        "State updates only occur in event handlers or properly configured useEffect hooks"
+        "createActor call is wrapped in try/catch block",
+        "Errors are logged to console with 'ACTOR CREATION FAILED:' prefix",
+        "Backend actor state is set successfully in try block on success"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to provide visibility into initialization errors and prevent silent failures."
+        }
+      ]
+    },
+    {
+      "id": "REQ-160",
+      "summary": "Verify import statement for createActor and canisterId points to correct declarations path",
+      "acceptanceCriteria": [
+        "Import statement references correct declarations path",
+        "createActor and canisterId are successfully imported",
+        "No module resolution errors occur"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure. Ensure no module resolution errors occur."
+        }
+      ]
+    },
+    {
+      "id": "REQ-161",
+      "summary": "Remove all guard clauses from main App.tsx layout",
+      "acceptanceCriteria": [
+        "No if (!backend) guard clauses exist in App.tsx main render",
+        "No if (isLoading) guard clauses exist in App.tsx main render",
+        "Header/Navbar always renders regardless of backend or auth state",
+        "Only the tab content area shows conditional loading states"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency]. Ensure no state setters are called in the main render flow outside of event handlers or properly configured useEffect hooks."
+          "description": "Locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading) from the main App.tsx layout render function. The main layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs). Remove any early returns or conditional rendering that prevents the Header/Navbar from always displaying."
+        }
+      ]
+    },
+    {
+      "id": "REQ-162",
+      "summary": "Implement strict early return pattern in Boardroom component",
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of Boardroom component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "In the Boardroom component (BoardroomTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-163",
+      "summary": "Implement strict early return pattern in SwarmHealth component",
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of SwarmHealth component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "In the SwarmHealth component (HealthTab or SwarmHealthTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-164",
+      "summary": "Implement strict early return pattern in SensoryCortex component",
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of SensoryCortex component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SensoryCortexTab.tsx",
+          "operation": "modify",
+          "description": "In the SensoryCortex component (SensoryCortexTab function), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component. Remove any other conditional rendering or guard clauses that exist elsewhere in the component."
         }
       ]
     }

@@ -1,4 +1,89 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-in-the-main-layout-component-frontend-src-app-tsx-locate-and-delete-all-guard-clauses-that-check-backend-initialization-status-backend-or-authentication-loading-state-isloading-the-main-app-tsx-layout-must-not-render-any-loading-spinners-connecting-messages-or-error-screens-itself-the-layout-should-only-render-the-header-navbar-component-and-the-main-content-area-routing-tabs",
+      "featureTitle": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-161"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-boardroom-component-within-frontend-src-app-tsx-or-a-separate-boardroom-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-boardroom-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "featureTitle": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-162"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-swarmhealth-component-within-frontend-src-app-tsx-or-a-separate-swarmhealth-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-swarmhealth-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "featureTitle": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-163"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-sensorycortex-component-within-frontend-src-app-tsx-or-frontend-src-components-sensorycortextab-tsx-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-sensorycortex-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "featureTitle": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "files": [
+        "frontend/src/components/SensoryCortexTab.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-164"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

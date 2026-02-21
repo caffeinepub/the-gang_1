@@ -1,44 +1,86 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:52:06.631Z",
+  "generatedAt": "2026-02-21T02:49:28.722Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 0,
+    "total": 6,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-140",
-        "summary": "In frontend/src/App.tsx, locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency].",
+        "id": "REQ-159",
+        "summary": "In the file managing Auth Context (frontend/src/hooks/useInternetIdentity.ts or the AuthProvider component), wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to prevent silent failures and provide visibility into initialization errors.",
         "status": "missing",
         "plannedFiles": [
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/useActor.ts"
         ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-141",
-        "summary": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
-        "status": "unknown",
-        "plannedFiles": [],
+        "id": "REQ-160",
+        "summary": "In the Auth Context file (frontend/src/hooks/useInternetIdentity.ts or AuthProvider), verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/hooks/useActor.ts"
+        ],
         "matchedFiles": []
+      },
+      {
+        "id": "REQ-161",
+        "summary": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-162",
+        "summary": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-163",
+        "summary": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-164",
+        "summary": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/SensoryCortexTab.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/SensoryCortexTab.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/SensoryCortexTab.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,62 +1,134 @@
 {
   "kind": "build_request",
-  "title": "Fix React Error 185 infinite loop and hardcode backend debate response",
+  "title": "Fix silent actor crash and eliminate duplicate guard clauses",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-140",
-      "text": "In frontend/src/App.tsx, locate the Boardroom component render body and all useEffect hooks. Identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the render body or inside a useEffect without a proper dependency array. Move all state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect with strict dependency arrays like [] or [specificDependency].",
+      "id": "REQ-159",
+      "text": "In the file managing Auth Context (frontend/src/hooks/useInternetIdentity.ts or the AuthProvider component), wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to prevent silent failures and provide visibility into initialization errors.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-critical-fix"
+          "msg-latest"
         ],
         "quotes": [
-          "You are calling a state setter (like setTranscript, setIsDebating, or similar) directly in the main render body or inside a useEffect that is missing a dependency array.",
-          "Ensure ALL state updates only happen inside explicit event handlers (e.g., triggered by onClick inside handlePushToTalk) or inside a useEffect with a strict dependency array like []."
+          "Wrap your createActor logic in a strict try/catch block so it doesn't fail silently.",
+          "console.error(\"ACTOR CREATION FAILED:\", error);"
         ]
       },
       "acceptanceCriteria": [
-        "No state setter functions are called directly in the component render body",
-        "All useEffect hooks have explicit dependency arrays",
-        "React Error 185 (Maximum update depth exceeded) is resolved",
-        "State updates only occur in event handlers or properly configured useEffect hooks"
+        "createActor call is wrapped in try/catch block",
+        "Errors are logged to console with 'ACTOR CREATION FAILED:' prefix",
+        "Backend actor state is set successfully in try block on success"
       ]
     },
     {
-      "id": "REQ-141",
-      "text": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
-      "target": "backend",
+      "id": "REQ-160",
+      "text": "In the Auth Context file (frontend/src/hooks/useInternetIdentity.ts or AuthProvider), verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-critical-fix"
+          "msg-latest"
         ],
         "quotes": [
-          "Replace the ENTIRE start_boardroom_debate function in the Motoko backend (The_Orchestrator) with exactly this code",
-          "Do NOT add any other logic to this function. Do not check the agent registry. Do not make cross-canister calls. Just return that exact string."
+          "CRITICAL: Verify your import for createActor and canisterId is pointing to the correct local declarations folder."
         ]
       },
       "acceptanceCriteria": [
-        "start_boardroom_debate function body contains ONLY the return statement with the hardcoded string",
-        "No agent registry lookups are performed in the function",
-        "No cross-canister calls are made in the function",
-        "No state updates to current_state are performed in the function",
-        "Function returns the exact string: 'Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.'",
-        "Backend fetch errors are resolved and the function returns cleanly to the frontend"
+        "Import statement references correct declarations path",
+        "createActor and canisterId are successfully imported",
+        "No module resolution errors occur"
+      ]
+    },
+    {
+      "id": "REQ-161",
+      "text": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "DELETE ALL if (!backend) or if (isLoading) guard clauses from the main layout.",
+          "The layout should ONLY render the Header/Navbar and the main content area (routing/tabs). It should not render any loading spinners or error messages itself."
+        ]
+      },
+      "acceptanceCriteria": [
+        "No if (!backend) guard clauses exist in App.tsx main render",
+        "No if (isLoading) guard clauses exist in App.tsx main render",
+        "Header/Navbar always renders regardless of backend or auth state",
+        "Only the tab content area shows conditional loading states"
+      ]
+    },
+    {
+      "id": "REQ-162",
+      "text": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "ensure the strict return pattern is at the very top of the component:\nif (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>;\nif (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>;\nif (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>;"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of Boardroom component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
+      ]
+    },
+    {
+      "id": "REQ-163",
+      "text": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "In Boardroom, SwarmHealth, and SensoryCortex, ensure the strict return pattern is at the very top of the component"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of SwarmHealth component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
+      ]
+    },
+    {
+      "id": "REQ-164",
+      "text": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "In Boardroom, SwarmHealth, and SensoryCortex, ensure the strict return pattern is at the very top of the component"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Exactly three early return statements exist at the top of SensoryCortex component",
+        "Return order is: isLoading, !isAuthenticated, !backend",
+        "Only ONE message displays at any given time",
+        "Main UI only renders when all three conditions pass"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any other backend functions beyond start_boardroom_debate",
-    "Do not change the function signature of start_boardroom_debate (must accept prompt: Text and return async Text)",
-    "Do not add additional logic to start_boardroom_debate beyond the hardcoded return statement",
-    "Ensure React state setters are never called in component render body"
+    "Do not change the backend main.mo file",
+    "Header/Navbar must always render regardless of backend or authentication state",
+    "Only ONE loading/error message must display at any time",
+    "Early return pattern order must be: isLoading, !isAuthenticated, !backend"
   ],
   "nonGoals": [
-    "Implementing actual multi-agent debate logic",
-    "Restoring agent registry integration",
-    "Adding new features to the debate system",
-    "Modifying other components beyond fixing the infinite loop"
+    "Implementing new authentication methods",
+    "Changing the backend actor interface",
+    "Modifying the debate logic or agent routing",
+    "Adding new UI components beyond fixing existing ones"
   ],
   "imageRequirements": {
     "required": [],

@@ -55,7 +55,7 @@ export function DebateDisplay({ debateState, isAuthenticated }: DebateDisplayPro
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="space-y-4 max-h-96 overflow-y-auto min-h-[400px]">
           {messages.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
               No debate transcript yet. Use Push to Talk to start a conversation.

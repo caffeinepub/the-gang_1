@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 59,
+  "projectStateVersion": 69,
   "summary": "A sovereign, decentralized multi-agent system called 'The Gang' on the Internet Computer, consisting of 8 AI agent canisters plus 1 ingestion canister, all controlled by a single Principal ID with strict sovereignty",
   "architectural_notes": [
     "Multi-canister architecture: 8 AI agents + 1 ingestion canister",
@@ -15,8 +15,12 @@
     "HTTP polling-based real-time simulation: frontend polls get_debate_status every 500ms"
   ],
   "known_issues": [
-    "React Error 185: Maximum update depth exceeded in Boardroom component caused by state setter being called in render body or useEffect without dependency array",
-    "Backend start_boardroom_debate function failing to return clean string causing frontend fetch errors"
+    "SwarmHealth toggle onChange handlers execute immediately on render causing infinite loops",
+    "Stuck disabled buttons in SwarmHealth due to missing loading state reset in error conditions",
+    "Boardroom transcript container has no min-height causing layout shifts when setTranscript([]) is called",
+    "React Error 185 in Boardroom component from state setters called directly in main render body",
+    "createActor fails silently without try/catch causing permanent loading screen",
+    "Duplicate guard clauses in parent Layout and child components render multiple stacked loading messages simultaneously"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -625,6 +629,102 @@
       "title": "In frontend/src/components/DebateDisplay.tsx or frontend/src/App.tsx (wherever 'Authentication required' text appears), search for and permanently delete all hardcoded strings containing 'Authentication required to view Robby's responses' or 'Authentication Required' from the component render output. These strings must not exist anywhere in the Boardroom UI.",
       "reqIds": [
         "REQ-135"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-locate-all-toggle-or-switch-component-onchange-handlers-replace-any-direct-function-call-syntax-like-onchange-handletoggle-agent-id-with-arrow-function-syntax-onchange-handletoggle-agent-id-to-prevent-immediate-execution-on-render",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, locate all Toggle or Switch component onChange handlers. Replace any direct function call syntax like onChange={handleToggle(agent.id)} with arrow function syntax onChange={() => handleToggle(agent.id)} to prevent immediate execution on render.",
+      "reqIds": [
+        "REQ-147"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-components-agentregistrytable-tsx-wrap-the-backend-toggle-agent-status-call-inside-the-handletoggle-function-with-a-try-catch-finally-block-in-the-finally-block-explicitly-reset-any-loading-state-variable-e-g-setupdatingid-null-or-setisloading-false-to-ensure-toggle-buttons-unlock-even-if-the-backend-call-fails-or-throws-an-error",
+      "title": "In frontend/src/components/AgentRegistryTable.tsx, wrap the backend toggle_agent_status call inside the handleToggle function with a try/catch/finally block. In the finally block, explicitly reset any loading state variable (e.g., setUpdatingId(null) or setIsLoading(false)) to ensure toggle buttons unlock even if the backend call fails or throws an error.",
+      "reqIds": [
+        "REQ-148"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-locate-the-root-component-return-statement-move-all-guard-clauses-that-check-backend-initialization-status-backend-authentication-status-isauthenticated-or-loading-state-isloading-below-the-header-navbar-render-the-header-component-containing-the-internet-identity-login-logout-button-must-always-render-at-the-top-of-the-page-regardless-of-auth-or-backend-status",
+      "title": "In frontend/src/App.tsx, locate the root component return statement. Move all guard clauses that check backend initialization status (!backend), authentication status (!isAuthenticated), or loading state (isLoading) BELOW the Header/Navbar render. The Header component containing the Internet Identity Login/Logout button MUST ALWAYS RENDER at the top of the page, regardless of auth or backend status.",
+      "reqIds": [
+        "REQ-151"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-refactor-the-conditional-rendering-logic-so-that-error-messages-like-failed-to-connect-to-backend-please-log-in-or-connecting-only-render-inside-the-main-content-main-area-positioned-below-the-header-navbar-these-messages-must-not-prevent-the-header-from-rendering",
+      "title": "In frontend/src/App.tsx, refactor the conditional rendering logic so that error messages like 'Failed to connect to backend', 'Please log in', or 'Connecting...' only render inside the main content <main> area, positioned below the Header/Navbar. These messages must NOT prevent the header from rendering.",
+      "reqIds": [
+        "REQ-152"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-implement-graceful-degradation-in-the-auth-hook-error-handling-if-the-backend-actor-fails-to-initialize-wrap-the-failure-in-a-try-catch-block-and-set-a-local-error-state-variable-display-the-error-message-in-the-content-area-while-keeping-the-header-and-login-button-functional-the-app-must-not-crash-or-hide-critical-ui-elements-when-backend-initialization-fails",
+      "title": "In frontend/src/App.tsx, implement graceful degradation in the Auth hook error handling. If the backend actor fails to initialize, wrap the failure in a try/catch block and set a local error state variable. Display the error message in the content area while keeping the Header and Login button functional. The app must not crash or hide critical UI elements when backend initialization fails.",
+      "reqIds": [
+        "REQ-153"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-app-tsx-ensure-the-authentication-flow-allows-users-to-click-the-internet-identity-login-button-and-complete-authentication-even-when-the-backend-actor-has-not-yet-initialized-the-login-flow-must-be-independent-of-backend-status-after-successful-authentication-the-backend-actor-can-initialize-asynchronously",
+      "title": "In frontend/src/App.tsx, ensure the authentication flow allows users to click the Internet Identity Login button and complete authentication even when the backend actor has not yet initialized. The login flow must be independent of backend status. After successful authentication, the backend actor can initialize asynchronously.",
+      "reqIds": [
+        "REQ-154"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-frontend-src-app-tsx-or-the-component-that-renders-the-boardroom-interface-replace-all-existing-conditional-rendering-logic-with-strict-early-returns-in-this-exact-order-1-if-isloading-return-div-classname-p-8-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-p-8-text-center-text-yellow-500-please-authenticate-to-continue-div-3-if-backend-return-div-classname-p-8-text-center-text-blue-500-connecting-to-the-orchestrator-div-4-return-main-ui-inside-a-fragment-or-main-div",
+      "title": "In the Boardroom component (frontend/src/App.tsx or the component that renders the Boardroom interface), replace all existing conditional rendering logic with strict early returns in this exact order: (1) if (isLoading) return <div className=\"p-8 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"p-8 text-center text-yellow-500\">Please authenticate to continue.</div>; (3) if (!backend) return <div className=\"p-8 text-center text-blue-500\">Connecting to The Orchestrator...</div>; (4) return ( /* Main UI inside a fragment or main div */ );",
+      "reqIds": [
+        "REQ-157"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-swarmhealth-component-frontend-src-app-tsx-or-wherever-the-swarm-health-agent-table-is-rendered-replace-all-existing-conditional-rendering-logic-with-strict-early-returns-in-this-exact-order-1-if-isloading-return-div-classname-p-8-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-p-8-text-center-text-yellow-500-please-authenticate-to-continue-div-3-if-backend-return-div-classname-p-8-text-center-text-blue-500-connecting-to-the-orchestrator-div-4-return-main-ui-inside-a-fragment-or-main-div",
+      "title": "In the SwarmHealth component (frontend/src/App.tsx or wherever the Swarm Health agent table is rendered), replace all existing conditional rendering logic with strict early returns in this exact order: (1) if (isLoading) return <div className=\"p-8 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"p-8 text-center text-yellow-500\">Please authenticate to continue.</div>; (3) if (!backend) return <div className=\"p-8 text-center text-blue-500\">Connecting to The Orchestrator...</div>; (4) return ( /* Main UI inside a fragment or main div */ );",
+      "reqIds": [
+        "REQ-158"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-main-layout-component-frontend-src-app-tsx-locate-and-delete-all-guard-clauses-that-check-backend-initialization-status-backend-or-authentication-loading-state-isloading-the-main-app-tsx-layout-must-not-render-any-loading-spinners-connecting-messages-or-error-screens-itself-the-layout-should-only-render-the-header-navbar-component-and-the-main-content-area-routing-tabs",
+      "title": "In the main layout component (frontend/src/App.tsx), locate and DELETE ALL guard clauses that check backend initialization status (!backend) or authentication loading state (isLoading). The main App.tsx layout must NOT render any loading spinners, 'Connecting...' messages, or error screens itself. The layout should ONLY render the Header/Navbar component and the main content area (routing/tabs).",
+      "reqIds": [
+        "REQ-161"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-boardroom-component-within-frontend-src-app-tsx-or-a-separate-boardroom-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-boardroom-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "title": "In the Boardroom component (within frontend/src/App.tsx or a separate Boardroom component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main Boardroom UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "reqIds": [
+        "REQ-162"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-swarmhealth-component-within-frontend-src-app-tsx-or-a-separate-swarmhealth-component-file-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-swarmhealth-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "title": "In the SwarmHealth component (within frontend/src/App.tsx or a separate SwarmHealth component file), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SwarmHealth UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "reqIds": [
+        "REQ-163"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-sensorycortex-component-within-frontend-src-app-tsx-or-frontend-src-components-sensorycortextab-tsx-implement-strict-early-return-pattern-at-the-very-top-of-the-component-render-function-in-this-exact-order-1-if-isloading-return-div-classname-mt-10-text-center-text-green-500-checking-session-div-2-if-isauthenticated-return-div-classname-mt-10-text-center-text-yellow-500-please-authenticate-div-3-if-backend-return-div-classname-mt-10-text-center-text-red-500-actor-missing-check-console-for-errors-div-4-return-the-main-sensorycortex-ui-these-early-returns-must-be-the-only-conditional-rendering-logic-in-the-component",
+      "title": "In the SensoryCortex component (within frontend/src/App.tsx or frontend/src/components/SensoryCortexTab.tsx), implement strict early return pattern at the very top of the component render function in this exact order: (1) if (isLoading) return <div className=\"mt-10 text-center text-green-500\">Checking session...</div>; (2) if (!isAuthenticated) return <div className=\"mt-10 text-center text-yellow-500\">Please authenticate.</div>; (3) if (!backend) return <div className=\"mt-10 text-center text-red-500\">Actor missing. Check console for errors.</div>; (4) return the main SensoryCortex UI. These early returns must be the ONLY conditional rendering logic in the component.",
+      "reqIds": [
+        "REQ-164"
       ],
       "version": 1
     }
@@ -1583,6 +1683,160 @@
       "summary": "In backend/main.mo, locate the start_boardroom_debate function and replace the ENTIRE function body with exactly this code: public shared(msg) func start_boardroom_debate(prompt: Text) : async Text { return \"Skippy: This is a stubbed response.\\n\\nGLaDOS: This is a stubbed response.\\n\\nRobby: This is a stubbed response.\"; }; Do NOT add any other logic to this function. Remove all agent registry lookups, all is_enabled checks, all cross-canister calls, and all state updates. The function must ONLY return that exact hardcoded string.",
       "reqIds": [
         "REQ-141"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-154",
+      "summary": "In backend/main.mo, modify start_boardroom_debate to dynamically construct response string by checking Agent Registry is_enabled status for Skippy, GLaDOS, and Robby without any cross-canister calls",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-155",
+      "summary": "In backend/main.mo, locate the start_boardroom_debate function. At the beginning of the function, create a mutable text variable using var response = \"\";",
+      "reqIds": [
+        "REQ-142"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-156",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'Skippy' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'Skippy: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'Skippy is offline. Bypassed.\\n\\n' to the response variable.",
+      "reqIds": [
+        "REQ-143"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-157",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'GLaDOS' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'GLaDOS: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'GLaDOS is offline. Bypassed.\\n\\n' to the response variable.",
+      "reqIds": [
+        "REQ-144"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-158",
+      "summary": "In backend/main.mo, in the start_boardroom_debate function, look up 'Robby' in the Agent Registry data structure. If the registry lookup succeeds and agent.is_enabled is true, append 'Robby: This is a stubbed response.\\n\\n' to the response variable. If is_enabled is false or the lookup fails, append 'Robby is offline. Bypassed.\\n\\n' to the response variable.",
+      "reqIds": [
+        "REQ-145"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-159",
+      "summary": "In backend/main.mo, at the end of the start_boardroom_debate function after all agent status checks are complete, return the final constructed response text string to the frontend. The function signature must remain public shared(msg) func start_boardroom_debate(prompt: Text) : async Text.",
+      "reqIds": [
+        "REQ-146"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-160",
+      "summary": "Fix SwarmHealth component: Change toggle onChange handlers to use arrow functions (onChange={() => handleToggle(agent.id)}), add try/catch/finally blocks that reset loading state (setUpdatingId(null)) in finally block to prevent stuck buttons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-161",
+      "summary": "Fix Boardroom layout shift: Add static CSS minimum height (min-h-[400px] or style={{ minHeight: '400px' }}) to the container div holding the Transcript Stream to prevent UI collapse when transcript is cleared",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-162",
+      "summary": "Fix Boardroom Error 185: Audit Boardroom component for state setters called directly in render body and move them into explicit event handlers or useEffect hooks with strict dependency arrays",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-165",
+      "summary": "In frontend/src/App.tsx or the Boardroom component section, locate the container div that holds the Transcript Stream display. Add a static CSS minimum height using either Tailwind class min-h-[400px] or inline style={{ minHeight: '400px' }} to prevent the UI from collapsing when setTranscript([]) empties the transcript content.",
+      "reqIds": [
+        "REQ-149"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-166",
+      "summary": "In frontend/src/App.tsx, audit the Boardroom component render body and all useEffect hooks to identify any state setter calls (setTranscript, setIsDebating, setIsRecording, or similar) that are being executed directly in the main render body outside of event handlers. Move all such state updates to explicit event handlers (onClick, onSubmit, etc.) or wrap them in useEffect hooks with strict dependency arrays like [] or [specificDependency].",
+      "reqIds": [
+        "REQ-150"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-167",
+      "summary": "Fix AuthProvider actor initialization by importing backend declarations and creating actor with user's identity after authentication: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-168",
+      "summary": "Clean up Boardroom and SwarmHealth UI to use strict early returns that render ONLY ONE message at a time in exact order: isLoading -> 'Checking session...', !isAuthenticated -> 'Please authenticate to continue.', !backend -> 'Connecting to The Orchestrator...', then main UI",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-169",
+      "summary": "In the file managing Auth Context (likely frontend/src/hooks/useInternetIdentity.ts or a custom AuthProvider component), import the backend declarations using the exact import statement: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent path to your local backend declarations",
+      "reqIds": [
+        "REQ-155"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-170",
+      "summary": "Inside the useEffect hook that handles successful Internet Identity authentication in the Auth Context, instantiate the backend actor using the authenticated user's identity with the exact code: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); followed immediately by setBackend(actor); to populate the backend state variable",
+      "reqIds": [
+        "REQ-156"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-171",
+      "summary": "Wrap createActor call in AuthProvider with try/catch block to log ACTOR CREATION FAILED errors and prevent silent crashes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-172",
+      "summary": "Remove all guard clauses (if (!backend), if (isLoading)) from main App.tsx layout component - layout should only render Header/Navbar and content area without loading spinners or error messages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-173",
+      "summary": "Enforce strict early return pattern in Boardroom component at the very top: if (isLoading) return checking session message, if (!isAuthenticated) return authenticate message, if (!backend) return actor missing message with console error reference",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-174",
+      "summary": "Enforce strict early return pattern in SwarmHealth component at the very top: if (isLoading) return checking session message, if (!isAuthenticated) return authenticate message, if (!backend) return actor missing message with console error reference",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-175",
+      "summary": "Enforce strict early return pattern in SensoryCortex component at the very top: if (isLoading) return checking session message, if (!isAuthenticated) return authenticate message, if (!backend) return actor missing message with console error reference",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-176",
+      "summary": "In the file managing Auth Context (frontend/src/hooks/useInternetIdentity.ts or the AuthProvider component), wrap the createActor logic in a strict try/catch block. In the try block, execute: const actor = createActor(canisterId, { agentOptions: { identity: authClient.getIdentity() } }); setBackend(actor);. In the catch block, log the error using console.error('ACTOR CREATION FAILED:', error); to prevent silent failures and provide visibility into initialization errors.",
+      "reqIds": [
+        "REQ-159"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-177",
+      "summary": "In the Auth Context file (frontend/src/hooks/useInternetIdentity.ts or AuthProvider), verify that the import statement for createActor and canisterId points to the correct local declarations folder. The import must use the exact path to the generated backend declarations, typically: import { createActor, canisterId } from '../../declarations/backend'; or the equivalent correct path for this project structure.",
+      "reqIds": [
+        "REQ-160"
       ],
       "status": "pending"
     }
