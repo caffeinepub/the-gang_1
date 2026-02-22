@@ -1,4 +1,47 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-update-the-textarea-in-the-boardroom-text-command-console-frontend-src-app-tsx-to-add-an-onkeydown-event-handler-that-prevents-the-default-new-line-behavior-when-the-enter-key-is-pressed-without-holding-shift-and-instead-triggers-handlesendcommand-to-submit-the-command",
+      "featureTitle": "Update the <Textarea> in the Boardroom Text Command Console (frontend/src/App.tsx) to add an onKeyDown event handler that prevents the default new line behavior when the Enter key is pressed without holding Shift, and instead triggers handleSendCommand() to submit the command.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-auto-scroll-in-the-debatedisplay-component-or-the-transcript-container-in-frontend-src-app-tsx-create-a-useref-pointing-to-an-element-at-the-bottom-of-the-transcript-container-and-add-a-useeffect-hook-that-smoothly-scrolls-that-ref-into-view-whenever-debatestate-transcript-updates",
+      "featureTitle": "Implement auto-scroll in the DebateDisplay component (or the transcript container in frontend/src/App.tsx). Create a useRef pointing to an element at the bottom of the transcript container, and add a useEffect hook that smoothly scrolls that ref into view whenever debateState.transcript updates.",
+      "files": [
+        "frontend/src/components/DebateDisplay.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

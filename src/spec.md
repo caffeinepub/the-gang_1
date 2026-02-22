@@ -1,12 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Remove all authorization and access control code from the backend by deleting specific import statements, initialization code, and permission check blocks.
+**Goal:** Improve Boardroom Text Command Console usability with Enter key submission and auto-scrolling transcript.
 
 **Planned changes:**
-- Delete import statements for MixinAuthorization and AccessControl from backend/main.mo
-- Delete accessControlState initialization and MixinAuthorization include statement
-- Remove all permission check if blocks containing 'AccessControl.hasPermission' from affected functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom)
-- Deploy the modified backend
+- Add onKeyDown handler to Textarea so Enter (without Shift) submits the command instead of adding a new line
+- Implement auto-scroll in the transcript container using useRef and useEffect to smoothly scroll to the bottom when new debate messages appear
 
-**User-visible outcome:** Backend functions execute without authorization checks, allowing all users to access previously restricted operations.
+**User-visible outcome:** Users can press Enter to quickly submit commands (Shift+Enter for new lines), and the debate transcript automatically scrolls to show the latest messages without manual scrolling.

@@ -1,90 +1,56 @@
 {
   "kind": "build_request",
-  "title": "Remove authorization imports and permission checks via raw text deletion",
-  "priority": "high",
+  "title": "Boardroom Quality of Life Updates (Enter Key + Auto-scroll)",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-4",
-      "text": "Open backend/main.mo and delete all lines containing 'import MixinAuthorization' and 'import AccessControl'",
-      "target": "backend",
+      "text": "Update the <Textarea> in the Boardroom Text Command Console (frontend/src/App.tsx) to add an onKeyDown event handler that prevents the default new line behavior when the Enter key is pressed without holding Shift, and instead triggers handleSendCommand() to submit the command.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-final"
         ],
         "quotes": [
-          "Delete the lines that say import MixinAuthorization and import AccessControl."
+          "Update the <Textarea> in the Text Command Console. Add an onKeyDown event so that pressing the \"Enter\" key (without holding Shift) prevents the default new line and triggers handleSendCommand()."
         ]
       },
       "acceptanceCriteria": [
-        "No import statements for MixinAuthorization remain in backend/main.mo",
-        "No import statements for AccessControl remain in backend/main.mo"
+        "Pressing Enter without Shift submits the command and clears the textarea",
+        "Pressing Shift+Enter inserts a new line in the textarea",
+        "The onKeyDown handler calls event.preventDefault() to block default Enter behavior before triggering handleSendCommand()"
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Delete all lines containing 'let accessControlState = AccessControl.initState();' and 'include MixinAuthorization(accessControlState);' from backend/main.mo",
-      "target": "backend",
+      "text": "Implement auto-scroll in the DebateDisplay component (or the transcript container in frontend/src/App.tsx). Create a useRef pointing to an element at the bottom of the transcript container, and add a useEffect hook that smoothly scrolls that ref into view whenever debateState.transcript updates.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-final"
         ],
         "quotes": [
-          "Delete the lines that say let accessControlState = AccessControl.initState(); and include MixinAuthorization(accessControlState);."
+          "In the DebateDisplay (or the container holding the transcript), implement a standard React auto-scroll. Use a useRef at the bottom of the transcript container and a useEffect that scrolls that ref into view smoothly whenever debateState.transcript updates."
         ]
       },
       "acceptanceCriteria": [
-        "No accessControlState initialization remains in backend/main.mo",
-        "No MixinAuthorization include statement remains in backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Find every instance of 'if (not (AccessControl.hasPermission' in backend/main.mo and delete the entire if block for each occurrence",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Find every instance of if (not (AccessControl.hasPermission and delete that if block entirely."
-        ]
-      },
-      "acceptanceCriteria": [
-        "No if blocks containing 'AccessControl.hasPermission' remain in backend/main.mo",
-        "No Runtime.trap calls related to permission checks remain",
-        "All affected functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom) execute their core logic without permission checks"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Deploy the modified backend/main.mo using the standard deploy command after completing the text deletions",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Save the text file and run the standard deploy command."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend deploys successfully without build errors",
-        "All backend functions remain accessible to the frontend",
-        "Candid interface is updated and synchronized"
+        "A ref element is placed at the bottom of the transcript container",
+        "A useEffect hook monitors debateState.transcript changes",
+        "When transcript updates, the ref scrolls into view with smooth behavior",
+        "The auto-scroll does not interfere with manual scrolling by the user"
       ]
     }
   ],
   "constraints": [
-    "Do not use backend scaffolding templates or code generation",
-    "Perform raw text deletion only—do not attempt to understand or rebuild the code",
-    "Do not modify any other parts of backend/main.mo beyond the specified deletions",
-    "Use exact text matching for deletion—no intelligent parsing or AST manipulation"
+    "Do NOT modify, read, or rebuild backend/main.mo (Version 56 Golden Master)",
+    "Only modify frontend files, specifically frontend/src/App.tsx or related Boardroom UI components",
+    "Preserve all existing Boardroom functionality including Push-to-Talk and Send button"
   ],
   "nonGoals": [
-    "Refactoring or improving the backend code structure",
-    "Adding new functionality or features",
-    "Regenerating the entire backend from scratch",
-    "Using the simpler approach mentioned by the system"
+    "Backend changes of any kind",
+    "Changes to debate logic or agent behavior",
+    "Command history or preset prompts",
+    "Changes to authentication or identity management"
   ],
   "imageRequirements": {
     "required": [],

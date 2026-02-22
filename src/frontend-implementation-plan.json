@@ -1,6 +1,40 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove authorization imports and permission checks via raw text deletion",
-  "requirements": []
+  "title": "Boardroom Quality of Life Updates (Enter Key + Auto-scroll)",
+  "requirements": [
+    {
+      "id": "REQ-4",
+      "summary": "Update the Textarea in the Boardroom Text Command Console to add an onKeyDown event handler that prevents default Enter behavior (without Shift) and triggers command submission.",
+      "acceptanceCriteria": [
+        "Pressing Enter without Shift submits the command and clears the textarea",
+        "Pressing Shift+Enter inserts a new line in the textarea",
+        "The onKeyDown handler calls event.preventDefault() to block default Enter behavior before triggering handleSendCommand()"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add an onKeyDown event handler to the Textarea component in the Text Command Console section. The handler should check if the Enter key is pressed without the Shift modifier, and if so, call event.preventDefault() to prevent the default newline insertion, then call handleSendCommand() to submit the command. If Shift+Enter is pressed, allow the default behavior to insert a new line. This preserves all existing functionality including the Send button and push-to-talk features."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Implement auto-scroll in the DebateDisplay component to automatically scroll to the bottom when the transcript updates.",
+      "acceptanceCriteria": [
+        "A ref element is placed at the bottom of the transcript container",
+        "A useEffect hook monitors debateState.transcript changes",
+        "When transcript updates, the ref scrolls into view with smooth behavior",
+        "The auto-scroll does not interfere with manual scrolling by the user"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DebateDisplay.tsx",
+          "operation": "modify",
+          "description": "Add a useRef hook to create a reference to an anchor element at the bottom of the transcript container. Create a useEffect hook that monitors changes to debateState.transcript and calls scrollIntoView({ behavior: 'smooth', block: 'end' }) on the ref element whenever the transcript updates. Place an empty div with the ref at the end of the transcript message list. This ensures the view automatically scrolls to show the latest messages as they appear, while still allowing users to manually scroll up to review earlier messages."
+        }
+      ]
+    }
+  ]
 }

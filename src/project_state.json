@@ -1,72 +1,76 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 9,
   "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
   "architectural_notes": [
     "Single-user application secured exclusively via Internet Identity",
     "All internal #admin and #user permission checks removed from backend",
     "No Runtime.trap calls in backend functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom)",
     "toggleAgentStatus uses agents.remove then agents.add pattern for Map persistence",
-    "clearBoardroom only resets transcript field in currentState"
+    "clearBoardroom only resets transcript field in currentState",
+    "Version 56 backend is the 'Golden Master' and must not be altered or rebuilt"
   ],
   "known_issues": [],
-  "isFixRequest": true,
-  "existing_features": [],
-  "new_feature_requests": [
+  "isFixRequest": false,
+  "existing_features": [
     {
-      "id": "AR-1",
-      "summary": "Delete every if block containing Runtime.trap calls from backend/main.mo, specifically from toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, and clearBoardroom functions",
+      "id": "feature-add-a-text-input-field-textarea-or-input-to-the-boardroom-tab-ui-for-manual-command-entry-positioned-alongside-the-existing-push-to-talk-feature",
+      "title": "Add a text input field (textarea or input) to the Boardroom tab UI for manual command entry, positioned alongside the existing Push-to-Talk feature",
       "reqIds": [
         "REQ-1"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-2",
-      "summary": "Verify toggleAgentStatus function body contains only agents.remove followed by agents.add logic with no conditional checks",
+      "id": "feature-add-a-send-button-next-to-the-text-input-field-that-triggers-the-start-boardroom-debate-backend-function-with-the-typed-text-as-the-prompt-parameter",
+      "title": "Add a Send button next to the text input field that triggers the start_boardroom_debate backend function with the typed text as the prompt parameter",
       "reqIds": [
         "REQ-2"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-3",
-      "summary": "Verify clearBoardroom function body contains only the state reset logic: currentState := { currentState with transcript = \"\" }",
+      "id": "feature-clear-the-text-input-field-after-successfully-sending-a-command",
+      "title": "Clear the text input field after successfully sending a command",
       "reqIds": [
         "REQ-3"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-4",
-      "summary": "Open backend/main.mo and delete all lines containing 'import MixinAuthorization' and 'import AccessControl'",
+      "id": "feature-update-the-textarea-in-the-boardroom-text-command-console-frontend-src-app-tsx-to-add-an-onkeydown-event-handler-that-prevents-the-default-new-line-behavior-when-the-enter-key-is-pressed-without-holding-shift-and-instead-triggers-handlesendcommand-to-submit-the-command",
+      "title": "Update the <Textarea> in the Boardroom Text Command Console (frontend/src/App.tsx) to add an onKeyDown event handler that prevents the default new line behavior when the Enter key is pressed without holding Shift, and instead triggers handleSendCommand() to submit the command.",
       "reqIds": [
         "REQ-4"
       ],
-      "status": "pending"
+      "version": 1
     },
     {
-      "id": "AR-5",
-      "summary": "Delete all lines containing 'let accessControlState = AccessControl.initState();' and 'include MixinAuthorization(accessControlState);' from backend/main.mo",
+      "id": "feature-implement-auto-scroll-in-the-debatedisplay-component-or-the-transcript-container-in-frontend-src-app-tsx-create-a-useref-pointing-to-an-element-at-the-bottom-of-the-transcript-container-and-add-a-useeffect-hook-that-smoothly-scrolls-that-ref-into-view-whenever-debatestate-transcript-updates",
+      "title": "Implement auto-scroll in the DebateDisplay component (or the transcript container in frontend/src/App.tsx). Create a useRef pointing to an element at the bottom of the transcript container, and add a useEffect hook that smoothly scrolls that ref into view whenever debateState.transcript updates.",
       "reqIds": [
         "REQ-5"
       ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-8",
+      "summary": "Add text input field and Send button to Boardroom UI that triggers start_boardroom_debate with typed text (frontend only)",
+      "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-6",
-      "summary": "Find every instance of 'if (not (AccessControl.hasPermission' in backend/main.mo and delete the entire if block for each occurrence",
-      "reqIds": [
-        "REQ-6"
-      ],
+      "id": "AR-9",
+      "summary": "Enter key to send in Boardroom text command console (without Shift for new line)",
+      "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-7",
-      "summary": "Deploy the modified backend/main.mo using the standard deploy command after completing the text deletions",
-      "reqIds": [
-        "REQ-7"
-      ],
+      "id": "AR-10",
+      "summary": "Auto-scroll in Boardroom transcript display when new messages arrive",
+      "reqIds": [],
       "status": "pending"
     }
   ],

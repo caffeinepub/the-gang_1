@@ -2,7 +2,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle, Download, Trash2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle, Download, Trash2, Send } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import { useDebateStatus, useStartBoardroomDebate, useClearBoardroom } from './hooks/useQueries';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
@@ -27,6 +28,7 @@ function BoardroomTab() {
   
   const [systemError, setSystemError] = useState<string | null>(null);
   const [isDebating, setIsDebating] = useState(false);
+  const [commandText, setCommandText] = useState('');
 
   // CRITICAL FIX: useCallback MUST be called at the top level, before any early returns
   const handleTranscriptComplete = useCallback(async (transcriptText: string) => {
@@ -54,6 +56,40 @@ function BoardroomTab() {
       setIsDebating(false);
     }
   }, [actor, startDebate]);
+
+  const handleSendCommand = useCallback(async () => {
+    if (!actor) {
+      console.warn('Backend not ready - cannot process command');
+      toast.error('Backend not initialized. Please wait.');
+      return;
+    }
+
+    if (!commandText.trim()) {
+      toast.error('Please enter a command.');
+      return;
+    }
+
+    setSystemError(null);
+    setIsDebating(true);
+    
+    try {
+      await startDebate.mutateAsync(commandText);
+      toast.success('Command sent successfully!');
+      setCommandText(''); // Clear the text field after successful submission
+    } catch (error) {
+      console.error('Failed to send command:', error);
+      toast.error('Failed to send command. Please try again.');
+    } finally {
+      setIsDebating(false);
+    }
+  }, [actor, startDebate, commandText]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendCommand();
+    }
+  }, [handleSendCommand]);
 
   const handleDownloadTranscript = useCallback(() => {
     if (!debateState?.transcript) {
@@ -112,8 +148,8 @@ function BoardroomTab() {
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Voice-enabled boardroom debate system. Use Push to Talk to speak your prompt, and the
-          system will automatically route through Skippy, GLaDOS, and Robby.
+          Voice-enabled boardroom debate system. Use Push to Talk to speak your prompt, or type commands manually below.
+          The system will automatically route through Skippy, GLaDOS, and Robby.
         </AlertDescription>
       </Alert>
 
@@ -187,6 +223,36 @@ function BoardroomTab() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Text Command Console */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Text Command Console</CardTitle>
+          <CardDescription>
+            Type commands manually instead of using voice input. Press Enter to send, Shift+Enter for new line.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Enter your command here..."
+              value={commandText}
+              onChange={(e) => setCommandText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="min-h-[100px] resize-none"
+              disabled={debateState?.isDebating || startDebate.isPending || isDebating}
+            />
+            <Button
+              onClick={handleSendCommand}
+              disabled={!commandText.trim() || debateState?.isDebating || startDebate.isPending || isDebating}
+              className="w-full"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              {startDebate.isPending || isDebating ? 'Sending...' : 'Send Command'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
