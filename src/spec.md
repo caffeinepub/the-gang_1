@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Regenerate Candid interface declarations to expose the clearBoardroom method to the frontend.
+**Goal:** Remove all authorization and access control code from the backend by deleting specific import statements, initialization code, and permission check blocks.
 
 **Planned changes:**
-- Regenerate backend Candid declarations (.did file) to include clearBoardroom method signature
-- Synchronize frontend Candid declarations (.did.js and .did.d.ts files) with the updated backend interface
+- Delete import statements for MixinAuthorization and AccessControl from backend/main.mo
+- Delete accessControlState initialization and MixinAuthorization include statement
+- Remove all permission check if blocks containing 'AccessControl.hasPermission' from affected functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom)
+- Deploy the modified backend
 
-**User-visible outcome:** The React app can successfully call the clearBoardroom method without 'Actor missing' errors, enabling users to clear the boardroom functionality.
+**User-visible outcome:** Backend functions execute without authorization checks, allowing all users to access previously restricted operations.

@@ -1,53 +1,90 @@
 {
   "kind": "build_request",
-  "title": "Regenerate Candid declarations for clearBoardroom method",
+  "title": "Remove authorization imports and permission checks via raw text deletion",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Regenerate the backend Candid interface declarations (.did file) to include the clearBoardroom method that was added to backend/main.mo",
+      "id": "REQ-4",
+      "text": "Open backend/main.mo and delete all lines containing 'import MixinAuthorization' and 'import AccessControl'",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Run the necessary internal workspace commands to regenerate the backend Candid declarations"
+          "Delete the lines that say import MixinAuthorization and import AccessControl."
         ]
       },
       "acceptanceCriteria": [
-        "The .did file in the backend workspace contains the clearBoardroom method signature",
-        "The generated declarations match the current main.mo actor interface"
+        "No import statements for MixinAuthorization remain in backend/main.mo",
+        "No import statements for AccessControl remain in backend/main.mo"
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Synchronize the frontend Candid declarations (.did.js and .did.d.ts files) so that the React app can recognize and call the clearBoardroom method without 'Actor missing' errors",
-      "target": "frontend",
+      "id": "REQ-5",
+      "text": "Delete all lines containing 'let accessControlState = AccessControl.initState();' and 'include MixinAuthorization(accessControlState);' from backend/main.mo",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-latest"
         ],
         "quotes": [
-          "Ensure the generated .did and .did.js/.did.d.ts files in the frontend workspace are fully synced so the React app recognizes clearBoardroom"
+          "Delete the lines that say let accessControlState = AccessControl.initState(); and include MixinAuthorization(accessControlState);."
         ]
       },
       "acceptanceCriteria": [
-        "The frontend .did.js file includes the clearBoardroom method",
-        "The frontend .did.d.ts TypeScript declarations include the clearBoardroom method signature",
-        "The useClearBoardroom hook can successfully call the backend method without type errors"
+        "No accessControlState initialization remains in backend/main.mo",
+        "No MixinAuthorization include statement remains in backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Find every instance of 'if (not (AccessControl.hasPermission' in backend/main.mo and delete the entire if block for each occurrence",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Find every instance of if (not (AccessControl.hasPermission and delete that if block entirely."
+        ]
+      },
+      "acceptanceCriteria": [
+        "No if blocks containing 'AccessControl.hasPermission' remain in backend/main.mo",
+        "No Runtime.trap calls related to permission checks remain",
+        "All affected functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom) execute their core logic without permission checks"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Deploy the modified backend/main.mo using the standard deploy command after completing the text deletions",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Save the text file and run the standard deploy command."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend deploys successfully without build errors",
+        "All backend functions remain accessible to the frontend",
+        "Candid interface is updated and synchronized"
       ]
     }
   ],
   "constraints": [
-    "Do NOT modify ANY frontend React files (.tsx, .ts)",
-    "Do NOT modify backend/main.mo",
-    "Only regenerate Candid declaration files"
+    "Do not use backend scaffolding templates or code generation",
+    "Perform raw text deletion only—do not attempt to understand or rebuild the code",
+    "Do not modify any other parts of backend/main.mo beyond the specified deletions",
+    "Use exact text matching for deletion—no intelligent parsing or AST manipulation"
   ],
   "nonGoals": [
-    "Adding new functionality to the backend",
-    "Modifying frontend components or hooks",
-    "Changing the clearBoardroom implementation"
+    "Refactoring or improving the backend code structure",
+    "Adding new functionality or features",
+    "Regenerating the entire backend from scratch",
+    "Using the simpler approach mentioned by the system"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,31 +1,41 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T02:35:53.205Z",
+  "generatedAt": "2026-02-22T19:42:30.649Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
+    "total": 4,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "Regenerate the backend Candid interface declarations (.did file) to include the clearBoardroom method that was added to backend/main.mo",
+        "id": "REQ-4",
+        "summary": "Open backend/main.mo and delete all lines containing 'import MixinAuthorization' and 'import AccessControl'",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-2",
-        "summary": "Synchronize the frontend Candid declarations (.did.js and .did.d.ts files) so that the React app can recognize and call the clearBoardroom method without 'Actor missing' errors",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/declarations/backend/backend.did.js",
-          "frontend/src/declarations/backend/backend.did.d.ts",
-          "frontend/src/backend.d.ts"
-        ],
+        "id": "REQ-5",
+        "summary": "Delete all lines containing 'let accessControlState = AccessControl.initState();' and 'include MixinAuthorization(accessControlState);' from backend/main.mo",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Find every instance of 'if (not (AccessControl.hasPermission' in backend/main.mo and delete the entire if block for each occurrence",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Deploy the modified backend/main.mo using the standard deploy command after completing the text deletions",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       }
     ]
@@ -35,6 +45,10 @@
     "build-request.json",
     "feature_evidence.json",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

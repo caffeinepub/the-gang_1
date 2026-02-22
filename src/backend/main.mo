@@ -3,14 +3,15 @@ import Principal "mo:core/Principal";
 import Map "mo:core/Map";
 import Iter "mo:core/Iter";
 import Runtime "mo:core/Runtime";
-import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import MixinStorage "blob-storage/Mixin";
 
 actor {
+  include MixinStorage();
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
-  include MixinStorage();
 
   public type UserProfile = {
     name : Text;
@@ -62,7 +63,7 @@ actor {
     emergencyMode = false;
   };
 
-  private func prePopulateAgents() {
+  func prePopulateAgents() {
     let coreAgents : [(Nat, Text, AgentType)] = [
       (0, "Skippy", #generalPurpose),
       (1, "GLaDOS", #documentRouting),
@@ -95,7 +96,7 @@ actor {
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     userProfiles.get(caller);
   };
@@ -116,7 +117,7 @@ actor {
 
   public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can toggle agent status");
+      Runtime.trap("Unauthorized: Only admins can perform this action");
     };
     let agentOpt = getAgentByName(agentName);
     switch (agentOpt) {
@@ -131,14 +132,14 @@ actor {
 
   public query ({ caller }) func getStatus() : async DebateState {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view debate status");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     currentState;
   };
 
   public shared ({ caller }) func abortDebate(userInterruption : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can abort debates");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     currentState := {
       currentState with isDebating = false;
@@ -159,7 +160,7 @@ actor {
 
   public shared ({ caller }) func start_boardroom_debate(prompt : Text) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can start boardroom debates");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     var systemMessage = "SYSTEM: Routing input to boardroom panel agents...\n\n";
     systemMessage #= "Prompt: " # prompt # "\n\n";
@@ -194,7 +195,7 @@ actor {
 
   public shared ({ caller }) func routeDocument(filename : Text, _filePreview : Text, fileSize : Nat) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can route documents");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     fileRegistry.add(
       filename,
@@ -212,34 +213,34 @@ actor {
 
   public query ({ caller }) func getFileRegistry() : async [(Text, FileMetadata)] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view file registry");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     fileRegistry.toArray();
   };
 
   public shared ({ caller }) func topUpSwarm(_targetCanister : Principal, _amount : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can top up swarm");
+      Runtime.trap("Unauthorized: Only admins can perform this action");
     };
   };
 
   public query ({ caller }) func getAgentRegistry() : async [Agent] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view agent registry");
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     agents.values().toArray();
   };
 
   public shared ({ caller }) func initializeAgents() : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can initialize agents");
+      Runtime.trap("Unauthorized: Only admins can perform this action");
     };
     prePopulateAgents();
   };
 
   public shared ({ caller }) func clearBoardroom() : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can clear boardroom");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save profiles");
     };
     currentState := { currentState with transcript = "" };
   };

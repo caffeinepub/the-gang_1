@@ -1,33 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Regenerate Candid declarations for clearBoardroom method",
-  "requirements": [
-    {
-      "id": "REQ-2",
-      "summary": "Synchronize the frontend Candid declarations (.did.js and .did.d.ts files) so that the React app can recognize and call the clearBoardroom method without 'Actor missing' errors",
-      "acceptanceCriteria": [
-        "The frontend .did.js file includes the clearBoardroom method",
-        "The frontend .did.d.ts TypeScript declarations include the clearBoardroom method signature",
-        "The useClearBoardroom hook can successfully call the backend method without type errors"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/declarations/backend/backend.did.js",
-          "operation": "modify",
-          "description": "Regenerate the Candid JavaScript interface declarations to include the clearBoardroom method exported from backend/main.mo actor interface"
-        },
-        {
-          "path": "frontend/src/declarations/backend/backend.did.d.ts",
-          "operation": "modify",
-          "description": "Regenerate the TypeScript type declarations to include the clearBoardroom method signature with proper return type (Promise<void>)"
-        },
-        {
-          "path": "frontend/src/backend.d.ts",
-          "operation": "modify",
-          "description": "Update the backend interface TypeScript declarations to ensure clearBoardroom method signature is present and matches the regenerated Candid declarations"
-        }
-      ]
-    }
-  ]
+  "title": "Remove authorization imports and permission checks via raw text deletion",
+  "requirements": []
 }

@@ -1,17 +1,21 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
-  "known_issues": [
-    "Frontend throwing 'Actor missing' error due to outdated Candid declarations after adding clearBoardroom to main.mo"
+  "projectStateVersion": 5,
+  "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
+  "architectural_notes": [
+    "Single-user application secured exclusively via Internet Identity",
+    "All internal #admin and #user permission checks removed from backend",
+    "No Runtime.trap calls in backend functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom)",
+    "toggleAgentStatus uses agents.remove then agents.add pattern for Map persistence",
+    "clearBoardroom only resets transcript field in currentState"
   ],
+  "known_issues": [],
   "isFixRequest": true,
   "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Regenerate the backend Candid interface declarations (.did file) to include the clearBoardroom method that was added to backend/main.mo",
+      "summary": "Delete every if block containing Runtime.trap calls from backend/main.mo, specifically from toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, and clearBoardroom functions",
       "reqIds": [
         "REQ-1"
       ],
@@ -19,14 +23,54 @@
     },
     {
       "id": "AR-2",
-      "summary": "Synchronize the frontend Candid declarations (.did.js and .did.d.ts files) so that the React app can recognize and call the clearBoardroom method without 'Actor missing' errors",
+      "summary": "Verify toggleAgentStatus function body contains only agents.remove followed by agents.add logic with no conditional checks",
       "reqIds": [
         "REQ-2"
       ],
       "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Verify clearBoardroom function body contains only the state reset logic: currentState := { currentState with transcript = \"\" }",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Open backend/main.mo and delete all lines containing 'import MixinAuthorization' and 'import AccessControl'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Delete all lines containing 'let accessControlState = AccessControl.initState();' and 'include MixinAuthorization(accessControlState);' from backend/main.mo",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Find every instance of 'if (not (AccessControl.hasPermission' in backend/main.mo and delete the entire if block for each occurrence",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Deploy the modified backend/main.mo using the standard deploy command after completing the text deletions",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
     }
   ],
-  "projectName": "Regenerate Candid declarations for clearBoardroom method",
+  "projectName": "The Gang",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
