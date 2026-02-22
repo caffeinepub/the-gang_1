@@ -1,56 +1,43 @@
 {
   "kind": "build_request",
-  "title": "Boardroom Quality of Life Updates (Enter Key + Auto-scroll)",
-  "priority": "normal",
+  "title": "Replace useActor.ts with dual-actor setup for telemetry",
+  "projectName": "The Gang",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-4",
-      "text": "Update the <Textarea> in the Boardroom Text Command Console (frontend/src/App.tsx) to add an onKeyDown event handler that prevents the default new line behavior when the Enter key is pressed without holding Shift, and instead triggers handleSendCommand() to submit the command.",
+      "id": "REQ-21",
+      "text": "Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template that implements dual-actor initialization: main orchestrator actor (Golden Master) and telemetry side master actor with defensive loading",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-final"
+          "msg-user-template"
         ],
         "quotes": [
-          "Update the <Textarea> in the Text Command Console. Add an onKeyDown event so that pressing the \"Enter\" key (without holding Shift) prevents the default new line and triggers handleSendCommand()."
+          "This is what I'm expecting the frontend/src/hooks/useActor.ts file to look like when you are done."
         ]
       },
       "acceptanceCriteria": [
-        "Pressing Enter without Shift submits the command and clears the textarea",
-        "Pressing Shift+Enter inserts a new line in the textarea",
-        "The onKeyDown handler calls event.preventDefault() to block default Enter behavior before triggering handleSendCommand()"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Implement auto-scroll in the DebateDisplay component (or the transcript container in frontend/src/App.tsx). Create a useRef pointing to an element at the bottom of the transcript container, and add a useEffect hook that smoothly scrolls that ref into view whenever debateState.transcript updates.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-final"
-        ],
-        "quotes": [
-          "In the DebateDisplay (or the container holding the transcript), implement a standard React auto-scroll. Use a useRef at the bottom of the transcript container and a useEffect that scrolls that ref into view smoothly whenever debateState.transcript updates."
-        ]
-      },
-      "acceptanceCriteria": [
-        "A ref element is placed at the bottom of the transcript container",
-        "A useEffect hook monitors debateState.transcript changes",
-        "When transcript updates, the ref scrolls into view with smooth behavior",
-        "The auto-scroll does not interfere with manual scrolling by the user"
+        "The file frontend/src/hooks/useActor.ts matches the user-provided template exactly",
+        "The file imports createTelemetryActor from '../../../declarations/telemetry'",
+        "The useActor hook initializes both the main actor (actorQuery) and telemetry actor (telemetryActorQuery) using separate React Query queries",
+        "The telemetry actor query checks for CANISTER_ID_TELEMETRY or VITE_TELEMETRY_CANISTER_ID environment variables",
+        "The telemetry actor query includes defensive error handling with console.warn and console.error",
+        "The telemetry actor query returns null if canister ID is missing or initialization fails",
+        "The useEffect hook invalidates and refetches dependent queries when actorQuery.data changes, excluding ACTOR_QUERY_KEY and TELEMETRY_QUERY_KEY",
+        "The hook returns an object with actor, telemetryActor, and isFetching properties"
       ]
     }
   ],
   "constraints": [
-    "Do NOT modify, read, or rebuild backend/main.mo (Version 56 Golden Master)",
-    "Only modify frontend files, specifically frontend/src/App.tsx or related Boardroom UI components",
-    "Preserve all existing Boardroom functionality including Push-to-Talk and Send button"
+    "Do not modify any other files besides frontend/src/hooks/useActor.ts",
+    "The file must match the user-provided template exactly with no variations",
+    "Do not change the implementation logic, imports, or structure from the template"
   ],
   "nonGoals": [
-    "Backend changes of any kind",
-    "Changes to debate logic or agent behavior",
-    "Command history or preset prompts",
-    "Changes to authentication or identity management"
+    "Creating or modifying the telemetry canister backend code",
+    "Adding telemetry functionality to other components",
+    "Modifying the main actor initialization logic beyond what's in the template",
+    "Adding additional environment variable handling"
   ],
   "imageRequirements": {
     "required": [],
