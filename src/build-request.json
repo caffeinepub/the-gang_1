@@ -1,53 +1,54 @@
 {
   "kind": "build_request",
-  "title": "Fix agent registry mutability in backend",
+  "title": "Fix backend map persistence and remove access control traps",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Change the agents map declaration in backend/main.mo from 'let agents = Map.empty<Nat, Agent>();' to 'var agents = Map.empty<Nat, Agent>();' to make it mutable",
+      "text": "In backend/main.mo, locate the toggleAgentStatus function and change the map update logic from agents.add(agent.id, updatedAgent) to agents.put(agent.id, updatedAgent) to explicitly overwrite existing entries. If the Map implementation does not support .put(), use agents.remove(agent.id) immediately before agents.add(agent.id, updatedAgent) to ensure proper overwriting.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-5"
         ],
         "quotes": [
-          "Find the declaration: let agents = Map.empty<Nat, Agent>(); Change it to be mutable: var agents = Map.empty<Nat, Agent>();"
+          "Fix the Map Persistence: In toggleAgentStatus, change agents.add(agent.id, updatedAgent); so it explicitly OVERWRITES the existing entry. Use agents.put(agent.id, updatedAgent);. If your specific Map implementation lacks .put, explicitly use agents.remove(agent.id); right before agents.add(...)."
         ]
       },
       "acceptanceCriteria": [
-        "The agents map is declared with 'var' instead of 'let'",
-        "The map can be reassigned during runtime"
+        "The toggleAgentStatus function uses agents.put() or agents.remove() + agents.add() pattern",
+        "Agent status toggles persist correctly across function calls",
+        "No duplicate or stale entries exist in the agents map"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "In the toggleAgentStatus function in backend/main.mo, explicitly reassign the updated map to the agents state variable using 'agents := agents.put(agent.id, updatedAgent);' or equivalent syntax for the Map library",
+      "text": "In backend/main.mo, remove all AccessControl trap blocks from every function including toggleAgentStatus, start_boardroom_debate, getStatus, and any other functions. Delete every if (not (AccessControl...)) { Runtime.trap(...) } statement to allow functions to execute without authentication checks.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-5"
         ],
         "quotes": [
-          "In toggleAgentStatus, ensure the updated map is explicitly reassigned to the state variable. For example: agents := agents.put(agent.id, updatedAgent);"
+          "Remove the Access Control Traps: You restored the AccessControl checks, which is locking the UI out. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; block from EVERY function (toggleAgentStatus, start_boardroom_debate, getStatus, etc.). Let them execute freely."
         ]
       },
       "acceptanceCriteria": [
-        "The toggleAgentStatus function reassigns the agents variable after updating",
-        "Agent status changes persist after the function completes",
-        "Kill switch toggles maintain their state across function calls"
+        "No Runtime.trap() calls related to AccessControl remain in any function",
+        "All backend functions execute without authentication barriers",
+        "UI can successfully call backend functions without access control errors"
       ]
     }
   ],
   "constraints": [
-    "Do NOT modify ANY frontend files - the React UI is stable and should not be touched",
+    "Do not modify any frontend React files",
     "Only modify backend/main.mo",
-    "Preserve all existing backend functionality and data structures"
+    "Preserve all existing agent data and debate functionality"
   ],
   "nonGoals": [
-    "Changing the frontend components",
-    "Modifying the UI behavior or styling",
-    "Altering the Map library choice or data structure beyond mutability"
+    "Adding new features or functionality",
+    "Refactoring unrelated code",
+    "Modifying frontend components or hooks"
   ],
   "imageRequirements": {
     "required": [],

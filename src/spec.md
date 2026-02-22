@@ -1,10 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Fix agent registry mutability in the backend to enable persistent agent status changes.
+**Goal:** Fix backend map persistence for agent status toggles and remove all access control authentication barriers.
 
 **Planned changes:**
-- Change the agents map declaration from 'let' to 'var' in backend/main.mo to make it mutable
-- Update the toggleAgentStatus function to explicitly reassign the updated map to the agents state variable
+- Change the map update logic in toggleAgentStatus to use agents.put() or agents.remove() + agents.add() pattern to ensure proper overwriting of existing entries
+- Remove all AccessControl trap blocks from every backend function to allow execution without authentication checks
 
-**User-visible outcome:** Agent kill switch toggles will now persist their state correctly, allowing users to enable/disable agents and have those changes maintained across function calls.
+**User-visible outcome:** Agent status toggles will persist correctly without duplicates or stale data, and all backend functions will execute successfully from the UI without access control errors.

@@ -2,19 +2,17 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [
-    "Backend agents map must be mutable (var) to persist toggle state changes",
-    "Frontend React UI is stable and should not be modified"
-  ],
+  "architectural_notes": [],
   "known_issues": [
-    "toggleAgentStatus fails to save changes due to immutable agents map"
+    "Map persistence issue: agents.add() not overwriting existing entries in toggleAgentStatus",
+    "AccessControl traps blocking UI from executing backend functions"
   ],
   "isFixRequest": true,
   "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Change the agents map declaration in backend/main.mo from 'let agents = Map.empty<Nat, Agent>();' to 'var agents = Map.empty<Nat, Agent>();' to make it mutable",
+      "summary": "In backend/main.mo, locate the toggleAgentStatus function and change the map update logic from agents.add(agent.id, updatedAgent) to agents.put(agent.id, updatedAgent) to explicitly overwrite existing entries. If the Map implementation does not support .put(), use agents.remove(agent.id) immediately before agents.add(agent.id, updatedAgent) to ensure proper overwriting.",
       "reqIds": [
         "REQ-1"
       ],
@@ -22,14 +20,14 @@
     },
     {
       "id": "AR-2",
-      "summary": "In the toggleAgentStatus function in backend/main.mo, explicitly reassign the updated map to the agents state variable using 'agents := agents.put(agent.id, updatedAgent);' or equivalent syntax for the Map library",
+      "summary": "In backend/main.mo, remove all AccessControl trap blocks from every function including toggleAgentStatus, start_boardroom_debate, getStatus, and any other functions. Delete every if (not (AccessControl...)) { Runtime.trap(...) } statement to allow functions to execute without authentication checks.",
       "reqIds": [
         "REQ-2"
       ],
       "status": "pending"
     }
   ],
-  "projectName": "Fix agent registry mutability in backend",
+  "projectName": "Fix backend map persistence and remove access control traps",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
