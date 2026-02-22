@@ -58,9 +58,9 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    routeDocument(filename: string, filePreview: string, fileSize: bigint): Promise<string>;
+    routeDocument(filename: string, _filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     start_boardroom_debate(prompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
-    topUpSwarm(targetCanister: Principal, amount: bigint): Promise<void>;
+    topUpSwarm(_targetCanister: Principal, _amount: bigint): Promise<void>;
 }

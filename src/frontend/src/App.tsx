@@ -1,9 +1,10 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle, Download, Trash2 } from 'lucide-react';
 import { useState, useCallback } from 'react';
-import { useDebateStatus, useStartBoardroomDebate } from './hooks/useQueries';
+import { useDebateStatus, useStartBoardroomDebate, useClearBoardroom } from './hooks/useQueries';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useActor } from './hooks/useActor';
 import { DebateDisplay } from './components/DebateDisplay';
@@ -20,6 +21,7 @@ function BoardroomTab() {
   const { identity } = useInternetIdentity();
   const { data: debateState, isLoading, error } = useDebateStatus();
   const startDebate = useStartBoardroomDebate();
+  const clearBoardroom = useClearBoardroom();
 
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
   
@@ -52,6 +54,24 @@ function BoardroomTab() {
       setIsDebating(false);
     }
   }, [actor, startDebate]);
+
+  const handleDownloadTranscript = useCallback(() => {
+    if (!debateState?.transcript) {
+      toast.error('No transcript available to download');
+      return;
+    }
+
+    const blob = new Blob([debateState.transcript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'boardroom-archive.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Transcript downloaded successfully');
+  }, [debateState?.transcript]);
 
   // Strict early returns - only ONE message at a time (AFTER all hooks)
   if (isLoading) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
@@ -99,7 +119,7 @@ function BoardroomTab() {
 
       <DebateDisplay debateState={debateState} isAuthenticated={isAuthenticated} />
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardContent className="pt-6 space-y-4">
             <div>
@@ -134,6 +154,36 @@ function BoardroomTab() {
               </p>
             </div>
             <InterruptButton disabled={!debateState?.isDebating} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Session Management</CardTitle>
+            <CardDescription>
+              Archive session transcripts or reset the boardroom for a fresh start.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                onClick={handleDownloadTranscript}
+                className="w-full"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Archive
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => clearBoardroom.mutate()}
+                disabled={clearBoardroom.isPending}
+                className="w-full"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear Boardroom
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

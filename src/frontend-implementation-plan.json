@@ -1,6 +1,119 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove Access Control Traps and Add Boardroom Clear Function",
-  "requirements": []
+  "title": "Add Session Management UI: Download Transcript & Clear Boardroom",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add useClearBoardroom mutation hook to useQueries.ts",
+      "acceptanceCriteria": [
+        "useClearBoardroom mutation hook is exported from useQueries.ts",
+        "Calls actor.clearBoardroom() when invoked",
+        "Invalidates ['debateStatus'] query on successful completion"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a new mutation hook named useClearBoardroom that calls actor.clearBoardroom() and invalidates the ['debateStatus'] query on success. Follow the existing mutation pattern in the file (similar to useAbortDebate). Export the hook for use in components."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Import Download and Trash2 icons from lucide-react in App.tsx",
+      "acceptanceCriteria": [
+        "Download icon is imported from lucide-react",
+        "Trash2 icon is imported from lucide-react"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add Download and Trash2 to the existing lucide-react import statement at the top of the file. These icons will be used in the Session Management card buttons."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Initialize useClearBoardroom hook in BoardroomTab component",
+      "acceptanceCriteria": [
+        "useClearBoardroom hook is called inside BoardroomTab component",
+        "clearBoardroom mutation instance is available for use"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Inside the BoardroomTab component, import and initialize the useClearBoardroom hook. Add this hook call in the existing hook section at the top of the component, before any conditional returns, to maintain proper hook ordering and prevent conditional hook call errors."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Add handleDownloadTranscript helper function to BoardroomTab",
+      "acceptanceCriteria": [
+        "handleDownloadTranscript function is defined inside BoardroomTab",
+        "Function checks for debateState?.transcript existence",
+        "Creates a Blob from transcript text",
+        "Triggers browser download with filename boardroom-archive.txt"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add a handleDownloadTranscript function inside the BoardroomTab component. The function should check if debateState?.transcript exists, create a new Blob with type 'text/plain' containing the transcript text, create an object URL, create a temporary anchor element, set its href to the blob URL and download attribute to 'boardroom-archive.txt', programmatically click it to trigger the download, and clean up by revoking the object URL."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update action cards grid layout from 2 to 3 columns",
+      "acceptanceCriteria": [
+        "Action cards grid uses 'md:grid-cols-3' class instead of 'md:grid-cols-2'"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "In the BoardroomTab component, locate the action cards grid container and change the className from 'grid gap-6 md:grid-cols-2' to 'grid gap-6 md:grid-cols-3' to accommodate the third Session Management card."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add Session Management Card to action cards grid",
+      "acceptanceCriteria": [
+        "Third Card component is added to the action cards grid",
+        "Card title is 'Session Management'",
+        "Card includes a descriptive text about session management functionality"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add a third Card component to the action cards grid in BoardroomTab. Use CardHeader with CardTitle 'Session Management' and CardDescription explaining the download and clear functionality (e.g., 'Archive session transcripts or reset the boardroom for a fresh start.'). Follow the existing card structure and styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Add Download Archive and Clear Boardroom buttons to Session Management Card",
+      "acceptanceCriteria": [
+        "CardContent contains a flex flex-col gap-2 container",
+        "Download Archive button uses outline variant and Download icon",
+        "Download Archive button calls handleDownloadTranscript on click",
+        "Clear Boardroom button uses destructive variant and Trash2 icon",
+        "Clear Boardroom button calls clearBoardroom.mutate() on click",
+        "Clear Boardroom button is disabled when clearBoardroom.isPending is true"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Inside the Session Management Card's CardContent, add a flex container with className 'flex flex-col gap-2'. Add two Button components: 1) 'Download Archive' button with variant='outline', onClick={handleDownloadTranscript}, and a Download icon positioned before the text. 2) 'Clear Boardroom' button with variant='destructive', onClick={() => clearBoardroom.mutate()}, disabled={clearBoardroom.isPending}, and a Trash2 icon positioned before the text. Follow the existing button patterns in the file, including icon size classes (e.g., className='h-4 w-4 mr-2')."
+        }
+      ]
+    }
+  ]
 }

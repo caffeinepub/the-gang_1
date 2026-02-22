@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Remove all access control restrictions from backend functions and add boardroom transcript clearing capability.
+**Goal:** Add session management UI to the Boardroom tab with download transcript and clear boardroom functionality.
 
 **Planned changes:**
-- Remove all AccessControl trap blocks from backend/main.mo across all functions (getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, initializeAgents)
-- Fix toggleAgentStatus function to match exact implementation without traps or access control
-- Add clearBoardroom function to clear transcript from currentState
-- Regenerate frontend declarations after backend changes
+- Add useClearBoardroom mutation hook in useQueries.ts that calls actor.clearBoardroom() and invalidates debateStatus query
+- Import Download and Trash2 icons from lucide-react in App.tsx
+- Add handleDownloadTranscript helper function to download transcript as boardroom-archive.txt
+- Change action cards grid layout from 2 columns to 3 columns on medium screens
+- Add new "Session Management" card with two buttons: "Download Archive" and "Clear Boardroom"
 
-**User-visible outcome:** Users can access all backend functions without authentication restrictions, toggle agent status freely, and clear the boardroom transcript on demand.
+**User-visible outcome:** Users can download the current boardroom transcript as a text file and clear the boardroom to start a new session using two new buttons in a Session Management card.

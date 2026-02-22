@@ -1,47 +1,101 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T01:55:17.660Z",
+  "generatedAt": "2026-02-22T02:20:17.944Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 0,
+    "total": 7,
+    "implemented": 7,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Remove all AccessControl trap blocks from backend/main.mo. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; statement from the entire file, including those in getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, and initializeAgents functions.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "In frontend/src/hooks/useQueries.ts, add a new mutation hook named useClearBoardroom that calls actor.clearBoardroom() and invalidates the ['debateStatus'] query on success",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
       },
       {
         "id": "REQ-2",
-        "summary": "Fix toggleAgentStatus function in backend/main.mo to match the exact implementation provided: public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () { let agentOpt = getAgentByName(agentName); switch (agentOpt) { case (null) {}; case (?agent) { let updatedAgent = { agent with isEnabled = status }; agents.remove(agent.id); agents.add(agent.id, updatedAgent); }; }; };",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "In frontend/src/App.tsx, import Download and Trash2 icons from lucide-react",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
       },
       {
         "id": "REQ-3",
-        "summary": "Add clearBoardroom function to the bottom of the actor in backend/main.mo with exact implementation: public shared ({ caller }) func clearBoardroom() : async () { currentState := { currentState with transcript = \"\" }; };",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "In frontend/src/App.tsx BoardroomTab component, initialize the useClearBoardroom hook",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "In frontend/src/App.tsx BoardroomTab component, add a handleDownloadTranscript helper function that checks if debateState?.transcript exists, creates a Blob with the transcript text, and triggers a programmatic download of boardroom-archive.txt",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "In frontend/src/App.tsx BoardroomTab component, change the action cards grid layout from 'md:grid-cols-2' to 'md:grid-cols-3'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "In frontend/src/App.tsx BoardroomTab component, add a third Card component titled 'Session Management' with a brief description",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Inside the Session Management Card's CardContent, add a flex container (flex flex-col gap-2) with two buttons: 'Download Archive' button (variant='outline', Download icon, calls handleDownloadTranscript) and 'Clear Boardroom' button (variant='destructive', Trash2 icon, calls clearBoardroom.mutate(), disabled when clearBoardroom.isPending is true)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
+    "frontend/src/App.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

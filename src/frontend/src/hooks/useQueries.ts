@@ -49,6 +49,21 @@ export function useAbortDebate() {
   });
 }
 
+export function useClearBoardroom() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      return actor.clearBoardroom();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
+    },
+  });
+}
+
 export function useRouteDocument() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
