@@ -3,75 +3,30 @@
   "projectStateVersion": 3,
   "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
-  "existing_features": [
-    {
-      "id": "feature-in-frontend-src-hooks-usequeries-ts-add-a-new-mutation-hook-named-useclearboardroom-that-calls-actor-clearboardroom-and-invalidates-the-debatestatus-query-on-success",
-      "title": "In frontend/src/hooks/useQueries.ts, add a new mutation hook named useClearBoardroom that calls actor.clearBoardroom() and invalidates the ['debateStatus'] query on success",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-frontend-src-app-tsx-import-download-and-trash2-icons-from-lucide-react",
-      "title": "In frontend/src/App.tsx, import Download and Trash2 icons from lucide-react",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-frontend-src-app-tsx-boardroomtab-component-initialize-the-useclearboardroom-hook",
-      "title": "In frontend/src/App.tsx BoardroomTab component, initialize the useClearBoardroom hook",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-frontend-src-app-tsx-boardroomtab-component-add-a-handledownloadtranscript-helper-function-that-checks-if-debatestate-transcript-exists-creates-a-blob-with-the-transcript-text-and-triggers-a-programmatic-download-of-boardroom-archive-txt",
-      "title": "In frontend/src/App.tsx BoardroomTab component, add a handleDownloadTranscript helper function that checks if debateState?.transcript exists, creates a Blob with the transcript text, and triggers a programmatic download of boardroom-archive.txt",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-frontend-src-app-tsx-boardroomtab-component-change-the-action-cards-grid-layout-from-md-grid-cols-2-to-md-grid-cols-3",
-      "title": "In frontend/src/App.tsx BoardroomTab component, change the action cards grid layout from 'md:grid-cols-2' to 'md:grid-cols-3'",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-frontend-src-app-tsx-boardroomtab-component-add-a-third-card-component-titled-session-management-with-a-brief-description",
-      "title": "In frontend/src/App.tsx BoardroomTab component, add a third Card component titled 'Session Management' with a brief description",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-inside-the-session-management-card-s-cardcontent-add-a-flex-container-flex-flex-col-gap-2-with-two-buttons-download-archive-button-variant-outline-download-icon-calls-handledownloadtranscript-and-clear-boardroom-button-variant-destructive-trash2-icon-calls-clearboardroom-mutate-disabled-when-clearboardroom-ispending-is-true",
-      "title": "Inside the Session Management Card's CardContent, add a flex container (flex flex-col gap-2) with two buttons: 'Download Archive' button (variant='outline', Download icon, calls handleDownloadTranscript) and 'Clear Boardroom' button (variant='destructive', Trash2 icon, calls clearBoardroom.mutate(), disabled when clearBoardroom.isPending is true)",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    }
+  "known_issues": [
+    "Frontend throwing 'Actor missing' error due to outdated Candid declarations after adding clearBoardroom to main.mo"
   ],
+  "isFixRequest": true,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Session Management UI: download transcript archive and clear boardroom functionality",
-      "reqIds": [],
+      "summary": "Regenerate the backend Candid interface declarations (.did file) to include the clearBoardroom method that was added to backend/main.mo",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Synchronize the frontend Candid declarations (.did.js and .did.d.ts files) so that the React app can recognize and call the clearBoardroom method without 'Actor missing' errors",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Add Session Management UI: Download Transcript & Clear Boardroom",
+  "projectName": "Regenerate Candid declarations for clearBoardroom method",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -1,13 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Add session management UI to the Boardroom tab with download transcript and clear boardroom functionality.
+**Goal:** Regenerate Candid interface declarations to expose the clearBoardroom method to the frontend.
 
 **Planned changes:**
-- Add useClearBoardroom mutation hook in useQueries.ts that calls actor.clearBoardroom() and invalidates debateStatus query
-- Import Download and Trash2 icons from lucide-react in App.tsx
-- Add handleDownloadTranscript helper function to download transcript as boardroom-archive.txt
-- Change action cards grid layout from 2 columns to 3 columns on medium screens
-- Add new "Session Management" card with two buttons: "Download Archive" and "Clear Boardroom"
+- Regenerate backend Candid declarations (.did file) to include clearBoardroom method signature
+- Synchronize frontend Candid declarations (.did.js and .did.d.ts files) with the updated backend interface
 
-**User-visible outcome:** Users can download the current boardroom transcript as a text file and clear the boardroom to start a new session using two new buttons in a Session Management card.
+**User-visible outcome:** The React app can successfully call the clearBoardroom method without 'Actor missing' errors, enabling users to clear the boardroom functionality.
