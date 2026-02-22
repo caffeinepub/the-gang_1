@@ -7,7 +7,6 @@ import { AlertCircle, Mic, LogIn, LogOut, Shield, AlertTriangle, Download, Trash
 import { useState, useCallback } from 'react';
 import { useDebateStatus, useStartBoardroomDebate, useClearBoardroom } from './hooks/useQueries';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useActor } from './hooks/useActor';
 import { DebateDisplay } from './components/DebateDisplay';
 import { PushToTalkButton } from './components/PushToTalkButton';
 import { InterruptButton } from './components/InterruptButton';
@@ -18,7 +17,6 @@ import { toast } from 'sonner';
 type TabType = 'boardroom' | 'sensory' | 'health';
 
 function BoardroomTab() {
-  const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
   const { data: debateState, isLoading, error } = useDebateStatus();
   const startDebate = useStartBoardroomDebate();
@@ -30,14 +28,7 @@ function BoardroomTab() {
   const [isDebating, setIsDebating] = useState(false);
   const [commandText, setCommandText] = useState('');
 
-  // CRITICAL FIX: useCallback MUST be called at the top level, before any early returns
   const handleTranscriptComplete = useCallback(async (transcriptText: string) => {
-    if (!actor) {
-      console.warn('Backend not ready - cannot process transcript');
-      toast.error('Backend not initialized. Please wait.');
-      return;
-    }
-
     if (!transcriptText.trim()) {
       toast.error('No speech detected. Please try again.');
       return;
@@ -55,15 +46,9 @@ function BoardroomTab() {
     } finally {
       setIsDebating(false);
     }
-  }, [actor, startDebate]);
+  }, [startDebate]);
 
   const handleSendCommand = useCallback(async () => {
-    if (!actor) {
-      console.warn('Backend not ready - cannot process command');
-      toast.error('Backend not initialized. Please wait.');
-      return;
-    }
-
     if (!commandText.trim()) {
       toast.error('Please enter a command.');
       return;
@@ -75,14 +60,14 @@ function BoardroomTab() {
     try {
       await startDebate.mutateAsync(commandText);
       toast.success('Command sent successfully!');
-      setCommandText(''); // Clear the text field after successful submission
+      setCommandText('');
     } catch (error) {
       console.error('Failed to send command:', error);
       toast.error('Failed to send command. Please try again.');
     } finally {
       setIsDebating(false);
     }
-  }, [actor, startDebate, commandText]);
+  }, [startDebate, commandText]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -109,12 +94,9 @@ function BoardroomTab() {
     toast.success('Transcript downloaded successfully');
   }, [debateState?.transcript]);
 
-  // Strict early returns - only ONE message at a time (AFTER all hooks)
   if (isLoading) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
   if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
-  if (!actor) return <div className="mt-10 text-center text-red-500">Actor missing. Check console for errors.</div>;
 
-  // Main UI
   return (
     <div className="space-y-6">
       {debateState?.emergencyMode && (
@@ -224,7 +206,6 @@ function BoardroomTab() {
         </Card>
       </div>
 
-      {/* Text Command Console */}
       <Card>
         <CardHeader>
           <CardTitle>Text Command Console</CardTitle>
@@ -258,17 +239,12 @@ function BoardroomTab() {
 }
 
 function SwarmHealthTab() {
-  const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
 
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
 
-  // Strict early returns - only ONE message at a time
-  if (isFetching) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
   if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
-  if (!actor) return <div className="mt-10 text-center text-red-500">Actor missing. Check console for errors.</div>;
 
-  // Main UI
   return <AgentRegistryTable />;
 }
 
@@ -292,7 +268,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#1a1a1a' }}>
-      {/* Header - ALWAYS RENDERS */}
       <header className="border-b" style={{ borderColor: '#333', backgroundColor: '#1a1a1a' }}>
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
@@ -363,7 +338,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Navigation Header - ALWAYS RENDERS */}
       <nav style={{ backgroundColor: '#1a1a1a', borderBottom: '2px solid #333' }}>
         <div className="container mx-auto px-4">
           <div className="flex gap-0">
@@ -379,10 +353,9 @@ export default function App() {
                 fontWeight: 'bold',
                 fontSize: '16px',
                 borderBottom: activeTab === 'boardroom' ? '3px solid #39FF14' : '3px solid transparent',
-                transition: 'all 0.2s',
               }}
             >
-              BOARDROOM
+              Boardroom
             </button>
             <button
               onClick={() => setActiveTab('sensory')}
@@ -396,10 +369,9 @@ export default function App() {
                 fontWeight: 'bold',
                 fontSize: '16px',
                 borderBottom: activeTab === 'sensory' ? '3px solid #39FF14' : '3px solid transparent',
-                transition: 'all 0.2s',
               }}
             >
-              SENSORY CORTEX
+              Sensory Cortex
             </button>
             <button
               onClick={() => setActiveTab('health')}
@@ -413,42 +385,35 @@ export default function App() {
                 fontWeight: 'bold',
                 fontSize: '16px',
                 borderBottom: activeTab === 'health' ? '3px solid #39FF14' : '3px solid transparent',
-                transition: 'all 0.2s',
               }}
             >
-              SWARM HEALTH
+              Swarm Health
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Main Content Area - Tab content handles its own loading/auth states */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="max-w-5xl mx-auto space-y-8">
-          {activeTab === 'boardroom' && <BoardroomTab />}
-          {activeTab === 'sensory' && <SensoryCortexTab />}
-          {activeTab === 'health' && <SwarmHealthTab />}
-        </div>
+      <main className="container mx-auto px-4 py-8">
+        {activeTab === 'boardroom' && <BoardroomTab />}
+        {activeTab === 'sensory' && <SensoryCortexTab />}
+        {activeTab === 'health' && <SwarmHealthTab />}
       </main>
 
-      {/* Footer */}
       <footer className="border-t mt-16" style={{ borderColor: '#333', backgroundColor: '#1a1a1a' }}>
         <div className="container mx-auto px-4 py-6">
-          <div className="text-center" style={{ color: '#888' }}>
-            <p className="text-sm">
-              © {new Date().getFullYear()} Built with love using{' '}
-              <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                  typeof window !== 'undefined' ? window.location.hostname : 'unknown-app'
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#39FF14', textDecoration: 'none' }}
-                className="hover:underline"
-              >
-                caffeine.ai
-              </a>
-            </p>
+          <div className="flex items-center justify-center gap-2 text-sm" style={{ color: '#888' }}>
+            <span>© {new Date().getFullYear()}</span>
+            <span>•</span>
+            <span>Built with ❤️ using</span>
+            <a
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#39FF14', textDecoration: 'none' }}
+              className="hover:underline"
+            >
+              caffeine.ai
+            </a>
           </div>
         </div>
       </footer>

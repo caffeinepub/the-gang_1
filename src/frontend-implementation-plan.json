@@ -1,26 +1,51 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace useActor.ts with dual-actor setup for telemetry",
+  "title": "Generate telemetry declarations and fix import path in useActor.ts",
   "requirements": [
     {
-      "id": "REQ-21",
-      "summary": "Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template that implements dual-actor initialization for main orchestrator actor (Golden Master) and telemetry side master actor with defensive loading",
+      "id": "REQ-27",
+      "summary": "Generate TypeScript declarations for the telemetry canister by running 'dfx generate telemetry'",
       "acceptanceCriteria": [
-        "The file frontend/src/hooks/useActor.ts matches the user-provided template exactly",
-        "The file imports createTelemetryActor from '../../../declarations/telemetry'",
-        "The useActor hook initializes both the main actor (actorQuery) and telemetry actor (telemetryActorQuery) using separate React Query queries",
-        "The telemetry actor query checks for CANISTER_ID_TELEMETRY or VITE_TELEMETRY_CANISTER_ID environment variables",
-        "The telemetry actor query includes defensive error handling with console.warn and console.error",
-        "The telemetry actor query returns null if canister ID is missing or initialization fails",
-        "The useEffect hook invalidates and refetches dependent queries when actorQuery.data changes, excluding ACTOR_QUERY_KEY and TELEMETRY_QUERY_KEY",
-        "The hook returns an object with actor, telemetryActor, and isFetching properties"
+        "Telemetry canister declarations are generated successfully",
+        "TypeScript declaration files exist for the telemetry canister"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Replace the entire file contents with the user-provided template that implements dual-actor initialization. The new implementation will: (1) Import createTelemetryActor from '../../../declarations/telemetry' alongside the existing createBackendActor import. (2) Define separate React Query queries for the main actor (ACTOR_QUERY_KEY) and telemetry actor (TELEMETRY_QUERY_KEY). (3) Initialize the telemetry actor with defensive checks for CANISTER_ID_TELEMETRY or VITE_TELEMETRY_CANISTER_ID environment variables, logging warnings if missing and returning null on initialization failures. (4) Maintain the existing useEffect hook that invalidates dependent queries when the main actor changes, ensuring it excludes both ACTOR_QUERY_KEY and TELEMETRY_QUERY_KEY from invalidation. (5) Return an object containing actor, telemetryActor, and isFetching properties. The template must be applied exactly as provided by the user with no modifications to logic, imports, or structure."
+          "description": "Add a comment documenting that telemetry declarations must be generated via 'dfx generate telemetry' before the import will resolve. This ensures developers understand the prerequisite step."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Correct the import path in useActor.ts from '../../../declarations/telemetry' to the actual location of generated declarations",
+      "acceptanceCriteria": [
+        "Import path in useActor.ts correctly points to the generated telemetry declarations",
+        "No import path errors during build",
+        "The import resolves to the actual location of generated declarations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Update the import statement from '../../../declarations/telemetry' to the correct relative path. Based on typical dfx project structure, declarations are generated at the project root in a 'declarations' folder, so the correct path from frontend/src/hooks/ should be '../../../declarations/telemetry' (three levels up to project root). However, verify the actual folder structure after running 'dfx generate telemetry' and adjust to '../../declarations/telemetry' if declarations are inside the src directory, or '../declarations/telemetry' if they're in the frontend directory."
+        }
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
+      "acceptanceCriteria": [
+        "Build completes successfully without declaration-related errors",
+        "Frontend builds with correct telemetry actor imports"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Ensure the telemetry actor import and initialization code in useActor.ts is ready for the rebuild. Verify that the telemetry actor is properly integrated into the dual-actor pattern without modifying the core authentication or access control initialization logic."
         }
       ]
     }

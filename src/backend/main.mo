@@ -96,7 +96,7 @@ actor {
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can view profiles");
     };
     userProfiles.get(caller);
   };
@@ -132,14 +132,14 @@ actor {
 
   public query ({ caller }) func getStatus() : async DebateState {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can view debate status");
     };
     currentState;
   };
 
   public shared ({ caller }) func abortDebate(userInterruption : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can abort debates");
     };
     currentState := {
       currentState with isDebating = false;
@@ -160,7 +160,7 @@ actor {
 
   public shared ({ caller }) func start_boardroom_debate(prompt : Text) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can start debates");
     };
     var systemMessage = "SYSTEM: Routing input to boardroom panel agents...\n\n";
     systemMessage #= "Prompt: " # prompt # "\n\n";
@@ -195,7 +195,7 @@ actor {
 
   public shared ({ caller }) func routeDocument(filename : Text, _filePreview : Text, fileSize : Nat) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can route documents");
     };
     fileRegistry.add(
       filename,
@@ -213,7 +213,7 @@ actor {
 
   public query ({ caller }) func getFileRegistry() : async [(Text, FileMetadata)] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can view file registry");
     };
     fileRegistry.toArray();
   };
@@ -226,7 +226,7 @@ actor {
 
   public query ({ caller }) func getAgentRegistry() : async [Agent] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can view agent registry");
     };
     agents.values().toArray();
   };
@@ -239,8 +239,8 @@ actor {
   };
 
   public shared ({ caller }) func clearBoardroom() : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can perform this action");
     };
     currentState := { currentState with transcript = "" };
   };

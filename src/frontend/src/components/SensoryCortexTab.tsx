@@ -1,15 +1,13 @@
 import { useState, useRef } from 'react';
 import { useRouteDocument } from '../hooks/useQueries';
-import { useActor } from '../hooks/useActor';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { toast } from 'sonner';
 
-const CHUNK_SIZE = 1_800_000; // Exactly 1,800,000 bytes per chunk
+const CHUNK_SIZE = 1_800_000;
 const TEXT_FILE_EXTENSIONS = ['.txt', '.csv', '.json', '.md', '.log'];
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'];
 
 export function SensoryCortexTab() {
-  const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
   
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
@@ -25,10 +23,7 @@ export function SensoryCortexTab() {
   
   const routeDocument = useRouteDocument();
 
-  // Strict early returns - only ONE message at a time
-  if (isFetching) return <div className="mt-10 text-center text-green-500">Checking session...</div>;
   if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
-  if (!actor) return <div className="mt-10 text-center text-red-500">Actor missing. Check console for errors.</div>;
 
   const handleFileSelect = (file: File) => {
     console.log('[SensoryCortex] File selected:', {

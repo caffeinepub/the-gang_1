@@ -1,18 +1,36 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T22:24:24.203Z",
+  "generatedAt": "2026-02-22T22:58:16.861Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
+    "total": 3,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-21",
-        "summary": "Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template that implements dual-actor initialization: main orchestrator actor (Golden Master) and telemetry side master actor with defensive loading",
+        "id": "REQ-27",
+        "summary": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/hooks/useActor.ts"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-28",
+        "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/hooks/useActor.ts"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-29",
+        "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
         "status": "missing",
         "plannedFiles": [
           "frontend/src/hooks/useActor.ts"
@@ -22,9 +40,9 @@
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "project_state.json",
     "scratch/component-selection.json",

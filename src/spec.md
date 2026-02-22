@@ -1,14 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Replace the useActor.ts hook with a dual-actor setup that initializes both the main orchestrator actor and a telemetry side master actor with defensive loading.
+**Goal:** Generate telemetry canister TypeScript declarations and fix the import path in useActor.ts to resolve build errors.
 
 **Planned changes:**
-- Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template
-- Implement dual-actor initialization using separate React Query queries for main actor and telemetry actor
-- Add defensive error handling for telemetry actor initialization that returns null on failure
-- Add environment variable checks for CANISTER_ID_TELEMETRY or VITE_TELEMETRY_CANISTER_ID
-- Implement useEffect hook to invalidate dependent queries when main actor changes
-- Return object containing actor, telemetryActor, and isFetching properties
+- Run 'dfx generate telemetry' command to generate TypeScript declarations for the telemetry canister
+- Verify the actual folder structure of generated declarations
+- Correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path
+- Trigger a rebuild to verify the fixes
 
-**User-visible outcome:** The application will initialize both the main actor and telemetry actor with proper error handling, enabling telemetry functionality without breaking the app if telemetry canister is unavailable.
+**User-visible outcome:** The application builds successfully without declaration-related errors, and the telemetry actor is properly imported in the frontend.

@@ -4,14 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useGetAgentStatuses, useToggleAgentStatus } from '../hooks/useQueries';
-import { useActor } from '../hooks/useActor';
 import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import type { Agent } from '../backend';
 import { CrashLogModal } from './CrashLogModal';
 
 export function AgentRegistryTable() {
-  const { actor, isFetching } = useActor();
   const { data: agents, isLoading } = useGetAgentStatuses();
   const toggleAgent = useToggleAgentStatus();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -28,37 +26,6 @@ export function AgentRegistryTable() {
     return usage;
   }, [agents]);
 
-  // Guard clause: Prevent rendering if backend actor is not initialized
-  if (!actor && isFetching) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="text-center space-y-4">
-          <div className="text-2xl font-bold" style={{ color: '#39FF14' }}>
-            Initializing connection to The Orchestrator...
-          </div>
-          <div className="text-sm" style={{ color: '#888' }}>
-            Please wait while we establish secure communication
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!actor && !isFetching) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="text-center space-y-4">
-          <div className="text-2xl font-bold" style={{ color: '#FF0000' }}>
-            Failed to connect to backend
-          </div>
-          <div className="text-sm" style={{ color: '#FFA500' }}>
-            Please refresh the page or check your Internet Identity authentication.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const handleToggle = async (agentName: string, currentStatus: boolean) => {
     setUpdatingId(agentName);
     const newStatus = !currentStatus;
@@ -70,7 +37,6 @@ export function AgentRegistryTable() {
       console.error('Toggle agent error:', error);
       toast.error(`Failed to toggle ${agentName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      // CRITICAL: Always reset loading state in finally block
       setUpdatingId(null);
     }
   };

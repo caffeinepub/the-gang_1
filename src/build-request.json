@@ -1,43 +1,71 @@
 {
   "kind": "build_request",
-  "title": "Replace useActor.ts with dual-actor setup for telemetry",
-  "projectName": "The Gang",
+  "title": "Generate telemetry declarations and fix import path in useActor.ts",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-21",
-      "text": "Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template that implements dual-actor initialization: main orchestrator actor (Golden Master) and telemetry side master actor with defensive loading",
-      "target": "frontend",
+      "id": "REQ-27",
+      "text": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-user-template"
+          "msg-latest"
         ],
         "quotes": [
-          "This is what I'm expecting the frontend/src/hooks/useActor.ts file to look like when you are done."
+          "run the terminal command dfx generate telemetry (or your platform's equivalent) to build the TypeScript declarations"
         ]
       },
       "acceptanceCriteria": [
-        "The file frontend/src/hooks/useActor.ts matches the user-provided template exactly",
-        "The file imports createTelemetryActor from '../../../declarations/telemetry'",
-        "The useActor hook initializes both the main actor (actorQuery) and telemetry actor (telemetryActorQuery) using separate React Query queries",
-        "The telemetry actor query checks for CANISTER_ID_TELEMETRY or VITE_TELEMETRY_CANISTER_ID environment variables",
-        "The telemetry actor query includes defensive error handling with console.warn and console.error",
-        "The telemetry actor query returns null if canister ID is missing or initialization fails",
-        "The useEffect hook invalidates and refetches dependent queries when actorQuery.data changes, excluding ACTOR_QUERY_KEY and TELEMETRY_QUERY_KEY",
-        "The hook returns an object with actor, telemetryActor, and isFetching properties"
+        "Telemetry canister declarations are generated successfully",
+        "TypeScript declaration files exist for the telemetry canister"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "frontend/src/hooks/useActor.ts is currently importing from ../../../declarations/telemetry. If the declarations are actually located in ../../declarations/telemetry (inside src), fix the import path"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Import path in useActor.ts correctly points to the generated telemetry declarations",
+        "No import path errors during build",
+        "The import resolves to the actual location of generated declarations"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "text": "Trigger a rebuild after declarations are generated and import paths are verified",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Run the build again"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Build completes successfully without declaration-related errors",
+        "Frontend builds with correct telemetry actor imports"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any other files besides frontend/src/hooks/useActor.ts",
-    "The file must match the user-provided template exactly with no variations",
-    "Do not change the implementation logic, imports, or structure from the template"
+    "Do NOT modify dfx.json or any .mo files - backend is read-only for this request",
+    "Only verify that telemetry canister is registered in dfx.json - do not change it",
+    "Focus solely on declaration generation and path correction"
   ],
   "nonGoals": [
-    "Creating or modifying the telemetry canister backend code",
-    "Adding telemetry functionality to other components",
-    "Modifying the main actor initialization logic beyond what's in the template",
-    "Adding additional environment variable handling"
+    "Modifying backend Motoko code",
+    "Changing dfx.json configuration",
+    "Implementing new telemetry functionality",
+    "Altering the dual-actor pattern in useActor.ts beyond fixing the import path"
   ],
   "imageRequirements": {
     "required": [],

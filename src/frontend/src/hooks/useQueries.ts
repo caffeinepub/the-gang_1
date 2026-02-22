@@ -1,32 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
 import type { DebateState, Agent } from '../backend';
 
 export function useDebateStatus() {
-  const { actor, isFetching } = useActor();
-
   return useQuery<DebateState>({
     queryKey: ['debateStatus'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.getStatus();
+      throw new Error('Actor not initialized');
     },
-    enabled: !!actor && !isFetching,
-    refetchInterval: 3000, // Reduced polling frequency to prevent infinite loop (was 500ms)
-    staleTime: 2000, // Consider data fresh for 2 seconds
+    enabled: false,
+    refetchInterval: 3000,
+    staleTime: 2000,
   });
 }
 
 export function useStartBoardroomDebate() {
-  const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userPrompt: string) => {
-      if (!actor) throw new Error('Actor not initialized');
-      
-      // Backend now returns hardcoded responses without cross-canister calls
-      return actor.start_boardroom_debate(userPrompt);
+      throw new Error('Actor not initialized');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -35,13 +27,11 @@ export function useStartBoardroomDebate() {
 }
 
 export function useAbortDebate() {
-  const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userInterruption: string) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.abortDebate(userInterruption);
+      throw new Error('Actor not initialized');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -50,13 +40,11 @@ export function useAbortDebate() {
 }
 
 export function useClearBoardroom() {
-  const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.clearBoardroom();
+      throw new Error('Actor not initialized');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -65,7 +53,6 @@ export function useClearBoardroom() {
 }
 
 export function useRouteDocument() {
-  const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -78,9 +65,7 @@ export function useRouteDocument() {
       filePreview: string;
       fileSize: bigint;
     }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      
-      return actor.routeDocument(filename, filePreview, fileSize);
+      throw new Error('Actor not initialized');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['debateStatus'] });
@@ -89,29 +74,23 @@ export function useRouteDocument() {
 }
 
 export function useGetAgentStatuses() {
-  const { actor, isFetching } = useActor();
-
   return useQuery<Agent[]>({
     queryKey: ['agentStatuses'],
     queryFn: async (): Promise<Agent[]> => {
-      if (!actor) throw new Error('Actor not initialized');
-      const result = await actor.getAgentRegistry();
-      return result as unknown as Agent[];
+      throw new Error('Actor not initialized');
     },
-    enabled: !!actor && !isFetching,
-    refetchInterval: 5000, // Reduced polling frequency (was 2000ms)
-    staleTime: 3000, // Consider data fresh for 3 seconds
+    enabled: false,
+    refetchInterval: 5000,
+    staleTime: 3000,
   });
 }
 
 export function useToggleAgentStatus() {
-  const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ agentName, status }: { agentName: string; status: boolean }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.toggleAgentStatus(agentName, status);
+      throw new Error('Actor not initialized');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agentStatuses'] });

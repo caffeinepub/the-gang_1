@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 21,
+  "projectStateVersion": 27,
   "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
   "architectural_notes": [
     "Single-user application secured exclusively via Internet Identity",
@@ -128,6 +128,14 @@
         "REQ-20"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-delete-the-file-frontend-src-hooks-useactor-ts-from-the-project",
+      "title": "Delete the file frontend/src/hooks/useActor.ts from the project",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -247,9 +255,71 @@
     },
     {
       "id": "AR-25",
-      "summary": "Replace the entire contents of frontend/src/hooks/useActor.ts with the user-provided template that implements dual-actor initialization: main orchestrator actor (Golden Master) and telemetry side master actor with defensive loading",
+      "summary": "Rebuild frontend/src/hooks/useActor.ts with dual-actor pattern: main actor + defensive telemetry actor with try/catch isolation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Create frontend/src/hooks/useActor.ts from scratch with the following imports: useQuery and useQueryClient from @tanstack/react-query, useEffect from react, useInternetIdentity from ./useInternetIdentity, createActorWithConfig and getSecretParameter from ../utils/urlParams, backend interface types from ../../../declarations/backend, and createActor factory from ../../../declarations/telemetry",
       "reqIds": [
-        "REQ-21"
+        "REQ-22"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement a useQuery block named actorQuery for the main backend actor that initializes it using createActorWithConfig with the user's identity when authenticated, fetches caffeineAdminToken from URL parameters using getSecretParameter, calls _initializeAccessControlWithSecret(adminToken) on the actor, and sets staleTime to Infinity",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Implement a second useQuery block named telemetryActorQuery that wraps all initialization logic in a try/catch block, checks for telemetry canister ID using process.env.CANISTER_ID_TELEMETRY or process.env.VITE_TELEMETRY_CANISTER_ID, console.warns and returns null if the ID is undefined, initializes the telemetry actor using the imported createActor factory if the ID exists, and console.errors and returns null in the catch block without crashing the app",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add a useEffect hook that invalidates and refetches other queries when the main actor data changes, using a predicate that ignores both the main actor query key and the telemetry actor query key to prevent infinite loops",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Return an object from the useActor hook with exactly three properties: actor (from actorQuery), telemetryActor (from telemetryActorQuery), and isFetching (combined fetching state from both queries)",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
+      "reqIds": [
+        "REQ-29"
       ],
       "status": "pending"
     }
