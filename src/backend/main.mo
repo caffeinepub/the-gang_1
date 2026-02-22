@@ -244,4 +244,12 @@ actor {
     };
     currentState := { currentState with transcript = "" };
   };
+
+  public shared ({ caller }) func reset_agents() : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can perform this action");
+    };
+    agents := Map.empty<Nat, Agent>();
+    prePopulateAgents();
+  };
 };

@@ -1,40 +1,16 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T22:58:16.859Z",
-  "summary": "The diff shows modifications to backend/main.mo and project_state.json, but none of the requirements (REQ-27, REQ-28, REQ-29) are implemented. REQ-27 requires running 'dfx generate telemetry' and generating declaration files, REQ-28 requires correcting the import path in useActor.ts, and REQ-29 requires triggering a rebuild. The diff contains no evidence of declaration file generation, no modifications to useActor.ts, and no build artifacts or configuration changes related to the telemetry declarations.",
-  "missing_requirements": [
-    {
-      "id": "REQ-27",
-      "requirement": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
-      "reason": "No telemetry declaration files are present in the diff. The diff shows no added TypeScript declaration files (.d.ts) for the telemetry canister, and no evidence that the dfx generate command was executed.",
-      "evidence": []
-    },
-    {
-      "id": "REQ-28",
-      "requirement": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path",
-      "reason": "The file useActor.ts is not present in the modified files list. Only backend/main.mo and project_state.json were modified, neither of which addresses the import path correction requirement.",
-      "evidence": []
-    },
-    {
-      "id": "REQ-29",
-      "requirement": "Trigger a rebuild after declarations are generated and import paths are verified",
-      "reason": "No build artifacts, build logs, or evidence of a successful rebuild are present in the diff. The modifications to backend/main.mo appear unrelated to telemetry declaration generation or frontend build processes.",
-      "evidence": []
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Modifications to backend Motoko code in main.mo",
-      "reason": "The BuildRequest explicitly states as a constraint 'Do NOT modify dfx.json or any .mo files - backend is read-only for this request' and lists 'Modifying backend Motoko code' as a non-goal. However, backend/main.mo was modified in the diff.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-22T23:10:58.288Z",
+  "summary": "Implementation is complete and fully aligned with the BuildRequest. All three requirements (REQ-30, REQ-31, REQ-32) are implemented as specified, including the backend reset_agents() function, the frontend useResetAgents hook, and the Reset Agents button in the UI.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
   "confidence": 0.95,
   "changed_files": [
     "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/AgentRegistryTable.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }

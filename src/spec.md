@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Generate telemetry canister TypeScript declarations and fix the import path in useActor.ts to resolve build errors.
+**Goal:** Add functionality to reset and repopulate agents in the canister to their original configuration.
 
 **Planned changes:**
-- Run 'dfx generate telemetry' command to generate TypeScript declarations for the telemetry canister
-- Verify the actual folder structure of generated declarations
-- Correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path
-- Trigger a rebuild to verify the fixes
+- Add a `reset_agents()` function in the backend that clears and repopulates the agent registry with the original pre-configured agents
+- Create a `useResetAgents` mutation hook in the frontend that calls the backend function and refreshes the agent list
+- Add a "Reset Agents" button in the Swarm Health tab above the System Vitals section
 
-**User-visible outcome:** The application builds successfully without declaration-related errors, and the telemetry actor is properly imported in the frontend.
+**User-visible outcome:** Users can click a "Reset Agents" button in the Swarm Health tab to restore all agents to their original configuration, with the agent table automatically refreshing to show the reset agents.

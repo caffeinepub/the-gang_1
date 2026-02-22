@@ -1,41 +1,43 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T22:58:16.861Z",
+  "generatedAt": "2026-02-22T23:10:58.291Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 0,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-27",
-        "summary": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
-        ],
+        "id": "REQ-30",
+        "summary": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-28",
-        "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
-        "status": "missing",
+        "id": "REQ-31",
+        "summary": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
+          "frontend/src/hooks/useQueries.ts"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
       },
       {
-        "id": "REQ-29",
-        "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
-        "status": "missing",
+        "id": "REQ-32",
+        "summary": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
+          "frontend/src/components/AgentRegistryTable.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/components/AgentRegistryTable.tsx"
+        ]
       }
     ]
   },
@@ -43,7 +45,14 @@
     "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AgentRegistryTable.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

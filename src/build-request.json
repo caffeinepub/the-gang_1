@@ -1,71 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Generate telemetry declarations and fix import path in useActor.ts",
-  "priority": "high",
+  "title": "Add command to repopulate agents in the canister",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-27",
-      "text": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
-      "target": "both",
+      "id": "REQ-30",
+      "text": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "run the terminal command dfx generate telemetry (or your platform's equivalent) to build the TypeScript declarations"
+          "can you help me create a command that will so I can repopulate my agents in the canister?"
         ]
       },
       "acceptanceCriteria": [
-        "Telemetry canister declarations are generated successfully",
-        "TypeScript declaration files exist for the telemetry canister"
+        "The reset_agents() function is publicly accessible and callable from the frontend",
+        "Calling reset_agents() clears all existing agents from the registry",
+        "The function repopulates the registry with the same agents that were present in the original implementation",
+        "All repopulated agents have their original configurations (name, role, status, etc.)"
       ]
     },
     {
-      "id": "REQ-28",
-      "text": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
+      "id": "REQ-31",
+      "text": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "frontend/src/hooks/useActor.ts is currently importing from ../../../declarations/telemetry. If the declarations are actually located in ../../declarations/telemetry (inside src), fix the import path"
+          "msg-5"
         ]
       },
       "acceptanceCriteria": [
-        "Import path in useActor.ts correctly points to the generated telemetry declarations",
-        "No import path errors during build",
-        "The import resolves to the actual location of generated declarations"
+        "The useResetAgents hook uses useMutation from React Query",
+        "The mutation calls actor.reset_agents() when triggered",
+        "On successful execution, the hook invalidates the agentStatuses query to refresh the UI",
+        "The hook is exported and available for use in components"
       ]
     },
     {
-      "id": "REQ-29",
-      "text": "Trigger a rebuild after declarations are generated and import paths are verified",
-      "target": "both",
+      "id": "REQ-32",
+      "text": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Run the build again"
+          "msg-5"
         ]
       },
       "acceptanceCriteria": [
-        "Build completes successfully without declaration-related errors",
-        "Frontend builds with correct telemetry actor imports"
+        "A clearly labeled 'Reset Agents' button is visible in the Swarm Health tab",
+        "The button is positioned above the System Vitals section for easy access",
+        "Clicking the button executes the useResetAgents mutation",
+        "The button shows appropriate loading state during mutation execution",
+        "The agent table automatically refreshes after successful reset"
       ]
     }
   ],
   "constraints": [
-    "Do NOT modify dfx.json or any .mo files - backend is read-only for this request",
-    "Only verify that telemetry canister is registered in dfx.json - do not change it",
-    "Focus solely on declaration generation and path correction"
+    "Do not modify the single-actor architecture in backend/main.mo",
+    "Do not change the existing agent data structure or types",
+    "Preserve all existing agent registry functionality"
   ],
   "nonGoals": [
-    "Modifying backend Motoko code",
-    "Changing dfx.json configuration",
-    "Implementing new telemetry functionality",
-    "Altering the dual-actor pattern in useActor.ts beyond fixing the import path"
+    "Adding selective agent reset (all agents must be reset together)",
+    "Creating backup/restore functionality for agent states",
+    "Adding confirmation dialogs before reset"
   ],
   "imageRequirements": {
     "required": [],

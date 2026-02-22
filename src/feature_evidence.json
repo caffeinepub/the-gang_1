@@ -1,4 +1,47 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-add-a-mutation-hook-useresetagents-in-frontend-src-hooks-usequeries-ts-that-calls-the-reset-agents-backend-function-and-invalidates-the-agentstatuses-query-upon-success",
+      "featureTitle": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-31"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-reset-agents-button-in-the-swarm-health-tab-frontend-src-components-agentregistrytable-tsx-positioned-above-the-system-vitals-section-that-triggers-the-useresetagents-mutation-when-clicked",
+      "featureTitle": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
+      "files": [
+        "frontend/src/components/AgentRegistryTable.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-32"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

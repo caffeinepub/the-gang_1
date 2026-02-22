@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
+  "projectStateVersion": 29,
   "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
   "architectural_notes": [
     "Single-user application secured exclusively via Internet Identity",
@@ -134,6 +134,22 @@
       "title": "Delete the file frontend/src/hooks/useActor.ts from the project",
       "reqIds": [
         "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-mutation-hook-useresetagents-in-frontend-src-hooks-usequeries-ts-that-calls-the-reset-agents-backend-function-and-invalidates-the-agentstatuses-query-upon-success",
+      "title": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-reset-agents-button-in-the-swarm-health-tab-frontend-src-components-agentregistrytable-tsx-positioned-above-the-system-vitals-section-that-triggers-the-useresetagents-mutation-when-clicked",
+      "title": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
+      "reqIds": [
+        "REQ-32"
       ],
       "version": 1
     }
@@ -320,6 +336,20 @@
       "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
       "reqIds": [
         "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Create a command or function to repopulate agents in the canister",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
+      "reqIds": [
+        "REQ-30"
       ],
       "status": "pending"
     }

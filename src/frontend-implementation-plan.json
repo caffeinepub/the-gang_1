@@ -1,51 +1,40 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Generate telemetry declarations and fix import path in useActor.ts",
+  "title": "Add command to repopulate agents in the canister",
   "requirements": [
     {
-      "id": "REQ-27",
-      "summary": "Generate TypeScript declarations for the telemetry canister by running 'dfx generate telemetry'",
+      "id": "REQ-31",
+      "summary": "Add a mutation hook useResetAgents that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
       "acceptanceCriteria": [
-        "Telemetry canister declarations are generated successfully",
-        "TypeScript declaration files exist for the telemetry canister"
+        "The useResetAgents hook uses useMutation from React Query",
+        "The mutation calls actor.reset_agents() when triggered",
+        "On successful execution, the hook invalidates the agentStatuses query to refresh the UI",
+        "The hook is exported and available for use in components"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useActor.ts",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a comment documenting that telemetry declarations must be generated via 'dfx generate telemetry' before the import will resolve. This ensures developers understand the prerequisite step."
+          "description": "Add a new useResetAgents mutation hook that calls actor.reset_agents() using useMutation from React Query. On successful mutation, invalidate the 'agentStatuses' query key to trigger a refresh of the agent registry table. Export the hook for use in components. Follow the existing pattern used by other mutation hooks in the file (useAbortDebate, useClearBoardroom, useToggleAgentStatus)."
         }
       ]
     },
     {
-      "id": "REQ-28",
-      "summary": "Correct the import path in useActor.ts from '../../../declarations/telemetry' to the actual location of generated declarations",
+      "id": "REQ-32",
+      "summary": "Add a 'Reset Agents' button in the Swarm Health tab positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
       "acceptanceCriteria": [
-        "Import path in useActor.ts correctly points to the generated telemetry declarations",
-        "No import path errors during build",
-        "The import resolves to the actual location of generated declarations"
+        "A clearly labeled 'Reset Agents' button is visible in the Swarm Health tab",
+        "The button is positioned above the System Vitals section for easy access",
+        "Clicking the button executes the useResetAgents mutation",
+        "The button shows appropriate loading state during mutation execution",
+        "The agent table automatically refreshes after successful reset"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useActor.ts",
+          "path": "frontend/src/components/AgentRegistryTable.tsx",
           "operation": "modify",
-          "description": "Update the import statement from '../../../declarations/telemetry' to the correct relative path. Based on typical dfx project structure, declarations are generated at the project root in a 'declarations' folder, so the correct path from frontend/src/hooks/ should be '../../../declarations/telemetry' (three levels up to project root). However, verify the actual folder structure after running 'dfx generate telemetry' and adjust to '../../declarations/telemetry' if declarations are inside the src directory, or '../declarations/telemetry' if they're in the frontend directory."
-        }
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
-      "acceptanceCriteria": [
-        "Build completes successfully without declaration-related errors",
-        "Frontend builds with correct telemetry actor imports"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useActor.ts",
-          "operation": "modify",
-          "description": "Ensure the telemetry actor import and initialization code in useActor.ts is ready for the rebuild. Verify that the telemetry actor is properly integrated into the dual-actor pattern without modifying the core authentication or access control initialization logic."
+          "description": "Import the useResetAgents hook from hooks/useQueries.ts. Add a 'Reset Agents' button positioned above the System Vitals section heading. Wire the button's onClick handler to trigger the mutation using resetAgents.mutate(). Display loading state on the button during mutation execution using resetAgents.isPending. The agent table will automatically refresh when the mutation succeeds due to the query invalidation in the hook. Follow the existing UI patterns and styling used for other buttons in the component."
         }
       ]
     }

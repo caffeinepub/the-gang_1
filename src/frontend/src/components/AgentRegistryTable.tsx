@@ -3,15 +3,17 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { useGetAgentStatuses, useToggleAgentStatus } from '../hooks/useQueries';
+import { useGetAgentStatuses, useToggleAgentStatus, useResetAgents } from '../hooks/useQueries';
 import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import type { Agent } from '../backend';
 import { CrashLogModal } from './CrashLogModal';
+import { RotateCcw } from 'lucide-react';
 
 export function AgentRegistryTable() {
   const { data: agents, isLoading } = useGetAgentStatuses();
   const toggleAgent = useToggleAgentStatus();
+  const resetAgents = useResetAgents();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,6 +43,16 @@ export function AgentRegistryTable() {
     }
   };
 
+  const handleResetAgents = async () => {
+    try {
+      await resetAgents.mutateAsync();
+      toast.success('All agents have been reset successfully');
+    } catch (error) {
+      console.error('Reset agents error:', error);
+      toast.error(`Failed to reset agents: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   const handleViewLogs = (agent: Agent) => {
     setSelectedAgent(agent);
     setIsModalOpen(true);
@@ -64,6 +76,38 @@ export function AgentRegistryTable() {
 
   return (
     <>
+      {/* Reset Agents Button */}
+      <div className="mb-6 flex justify-end">
+        <Button
+          onClick={handleResetAgents}
+          disabled={resetAgents.isPending}
+          style={{
+            backgroundColor: 'transparent',
+            borderColor: '#FFA500',
+            color: '#FFA500',
+            fontSize: '13px',
+            padding: '8px 16px',
+            fontFamily: 'monospace',
+            textTransform: 'uppercase',
+            fontWeight: 'bold',
+          }}
+          className="hover:bg-[#FFA500] hover:text-black transition-colors"
+          variant="outline"
+        >
+          {resetAgents.isPending ? (
+            <>
+              <RotateCcw className="mr-2 h-4 w-4 animate-spin" />
+              Resetting...
+            </>
+          ) : (
+            <>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset Agents
+            </>
+          )}
+        </Button>
+      </div>
+
       {/* System Vitals Section */}
       <div className="mb-6">
         <h2 
