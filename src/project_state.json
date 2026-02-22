@@ -2,39 +2,34 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [],
+  "architectural_notes": [
+    "Backend agents map must be mutable (var) to persist toggle state changes",
+    "Frontend React UI is stable and should not be modified"
+  ],
   "known_issues": [
-    "Frozen UI state when backend.start_boardroom_debate() fails - missing error handler causing Push-to-Talk button to remain disabled"
+    "toggleAgentStatus fails to save changes due to immutable agents map"
   ],
   "isFixRequest": true,
-  "existing_features": [
+  "existing_features": [],
+  "new_feature_requests": [
     {
-      "id": "feature-in-frontend-src-app-tsx-wrap-the-backend-start-boardroom-debate-call-inside-the-handletranscriptcomplete-function-with-a-try-catch-finally-block-to-handle-connection-failures",
-      "title": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
+      "id": "AR-1",
+      "summary": "Change the agents map declaration in backend/main.mo from 'let agents = Map.empty<Nat, Agent>();' to 'var agents = Map.empty<Nat, Agent>();' to make it mutable",
       "reqIds": [
         "REQ-1"
       ],
-      "version": 1
+      "status": "pending"
     },
     {
-      "id": "feature-inside-the-catch-block-of-the-handletranscriptcomplete-error-handler-add-console-error-logging-to-capture-any-connection-issues-or-errors-from-the-backend-call",
-      "title": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
+      "id": "AR-2",
+      "summary": "In the toggleAgentStatus function in backend/main.mo, explicitly reassign the updated map to the agents state variable using 'agents := agents.put(agent.id, updatedAgent);' or equivalent syntax for the Map library",
       "reqIds": [
         "REQ-2"
       ],
-      "version": 1
-    },
-    {
-      "id": "feature-inside-the-finally-block-of-the-handletranscriptcomplete-error-handler-reset-the-debating-loading-state-to-false-e-g-setisdebating-false-to-re-enable-the-push-to-talk-button",
-      "title": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
+      "status": "pending"
     }
   ],
-  "new_feature_requests": [],
-  "projectName": "Boardroom Debate",
+  "projectName": "Fix agent registry mutability in backend",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

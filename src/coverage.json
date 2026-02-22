@@ -1,56 +1,40 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T23:30:32.351Z",
+  "generatedAt": "2026-02-22T01:23:57.749Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 2,
+    "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "summary": "Change the agents map declaration in backend/main.mo from 'let agents = Map.empty<Nat, Agent>();' to 'var agents = Map.empty<Nat, Agent>();' to make it mutable",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
-        ]
+        "summary": "In the toggleAgentStatus function in backend/main.mo, explicitly reassign the updated map to the agents state variable using 'agents := agents.put(agent.id, updatedAgent);' or equivalent syntax for the Map library",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,73 +1,53 @@
 {
   "kind": "build_request",
-  "title": "Fix Frozen UI State with try/catch/finally",
-  "projectName": "Boardroom Debate",
+  "title": "Fix agent registry mutability in backend",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "In frontend/src/App.tsx, wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try/catch/finally block to handle connection failures",
-      "target": "frontend",
+      "text": "Change the agents map declaration in backend/main.mo from 'let agents = Map.empty<Nat, Agent>();' to 'var agents = Map.empty<Nat, Agent>();' to make it mutable",
+      "target": "backend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Wrap the backend.start_boardroom_debate() call inside a strict try/catch/finally block"
+          "Find the declaration: let agents = Map.empty<Nat, Agent>(); Change it to be mutable: var agents = Map.empty<Nat, Agent>();"
         ]
       },
       "acceptanceCriteria": [
-        "The backend.start_boardroom_debate() call is wrapped in a try block",
-        "A catch block is present to handle any thrown errors"
+        "The agents map is declared with 'var' instead of 'let'",
+        "The map can be reassigned during runtime"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Inside the catch block of the handleTranscriptComplete error handler, add console.error logging to capture any connection issues or errors from the backend call",
-      "target": "frontend",
+      "text": "In the toggleAgentStatus function in backend/main.mo, explicitly reassign the updated map to the agents state variable using 'agents := agents.put(agent.id, updatedAgent);' or equivalent syntax for the Map library",
+      "target": "backend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Inside the catch block, add a console.error to log any connection issues"
+          "In toggleAgentStatus, ensure the updated map is explicitly reassigned to the state variable. For example: agents := agents.put(agent.id, updatedAgent);"
         ]
       },
       "acceptanceCriteria": [
-        "console.error is called in the catch block with error details",
-        "Error information is visible in browser console for debugging"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Inside the finally block of the handleTranscriptComplete error handler, reset the debating/loading state to false (e.g., setIsDebating(false)) to re-enable the Push-to-Talk button",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Inside the finally block, you MUST reset the loading/debating state to false (e.g., setIsDebating(false) or whatever state is disabling the Push-to-Talk button)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The finally block executes regardless of success or failure",
-        "The debating state is reset to false in the finally block",
-        "The Push-to-Talk button becomes enabled again after an error occurs",
-        "UI does not remain frozen when backend calls fail"
+        "The toggleAgentStatus function reassigns the agents variable after updating",
+        "Agent status changes persist after the function completes",
+        "Kill switch toggles maintain their state across function calls"
       ]
     }
   ],
   "constraints": [
-    "CRITICAL: Frontend React changes only. Do not touch the backend logic",
-    "Do not modify backend/main.mo or any backend files",
-    "Only modify frontend/src/App.tsx"
+    "Do NOT modify ANY frontend files - the React UI is stable and should not be touched",
+    "Only modify backend/main.mo",
+    "Preserve all existing backend functionality and data structures"
   ],
   "nonGoals": [
-    "Backend changes",
-    "Modifying debate orchestration logic",
-    "Changing API contracts or response formats",
-    "Adding new features beyond error handling"
+    "Changing the frontend components",
+    "Modifying the UI behavior or styling",
+    "Altering the Map library choice or data structure beyond mutability"
   ],
   "imageRequirements": {
     "required": [],

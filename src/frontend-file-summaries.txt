@@ -12,5 +12,9 @@
   "frontend/src/main.tsx": "Application entry point with QueryClientProvider and Sonner Toaster for toast notifications.",
   "frontend/src/components/SensoryCortexTab.tsx": "File ingestion interface with strict early return pattern at the very top (isFetching, !isAuthenticated, !backend checks), tactical dark aesthetic, drag-and-drop zone, camera capture, manual upload button with comprehensive console logging, sequential 1.8MB chunking engine with progress tracking, and document routing with visual notifications.",
   "frontend/src/components/AgentRegistryTable.tsx": "Agent registry table component with kill switch toggles using proper arrow function syntax in onCheckedChange handlers, comprehensive try/catch/finally error handling that always resets updatingId state in the finally block to prevent stuck buttons, and tactical dark aesthetic with real-time status indicators.",
-  "frontend/src/hooks/useActor.ts": "React Query hook for backend actor initialization with strict try/catch error handling around createActorWithConfig, console logging of actor creation failures, retry logic (3 attempts with 1s delay), and proper error propagation to React Query's error state."
+  "frontend/src/hooks/useActor.ts": "React Query hook for backend actor initialization that creates the actor with identity-based authentication and invalidates dependent queries when the actor changes.",
+  "frontend/src/config.ts": "Configuration file that exports backend Canister ID and network settings, reading from environment variables with fallback to local development defaults.",
+  "frontend/vite.config.ts": "Vite configuration with React plugin, path aliases, environment variable injection for canister IDs, and local API proxy setup.",
+  "frontend/.env": "Development environment file containing the backend Canister ID and network configuration for local development.",
+  "frontend/.env.production": "Production environment file containing the backend Canister ID and network configuration for IC mainnet deployment."
 }

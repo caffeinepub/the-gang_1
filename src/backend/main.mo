@@ -59,7 +59,7 @@ actor {
     emergencyMode = false;
   };
 
-  let agents = Map.empty<Nat, Agent>();
+  var agents = Map.empty<Nat, Agent>();
   var nextAgentId = 0;
 
   let fileRegistry = Map.empty<Text, FileMetadata>();
@@ -82,8 +82,8 @@ actor {
       agents.add(
         id,
         {
-          id = id;
-          name = name;
+          id;
+          name;
           isEnabled = true;
           lastCycles = ?0;
           principalId = ?"";
@@ -98,7 +98,7 @@ actor {
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
+      Runtime.trap("Unauthorized: Only users can view profiles");
     };
     userProfiles.get(caller);
   };
@@ -118,15 +118,12 @@ actor {
   };
 
   public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can toggle agent status");
     };
-
     let agentOpt = getAgentByName(agentName);
     switch (agentOpt) {
-      case (null) {
-        Runtime.trap("Agent with name " # agentName # " not found.");
-      };
+      case (null) {};
       case (?agent) {
         let updatedAgent = { agent with isEnabled = status };
         agents.add(agent.id, updatedAgent);
@@ -136,7 +133,7 @@ actor {
 
   public query ({ caller }) func getStatus() : async DebateState {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access debate status");
+      Runtime.trap("Unauthorized: Only users can view debate status");
     };
     currentState;
   };
@@ -145,7 +142,6 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can abort debates");
     };
-
     currentState := {
       currentState with isDebating = false; transcript = currentState.transcript # "\n" # userInterruption;
     };
@@ -166,16 +162,15 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can start debates");
     };
-
     var systemMessage = "SYSTEM: Routing input to boardroom panel agents...\n\n";
     systemMessage #= "Prompt: " # prompt # "\n\n";
-
     systemMessage #= processAgent("Skippy", "This is a stubbed response.");
     systemMessage #= processAgent("GLaDOS", "This is a stubbed response.");
     systemMessage #= processAgent("Robby", "This is a stubbed response.");
-
     systemMessage #= "SYSTEM: Boardroom debate initiated.\n";
-
+    currentState := {
+      currentState with transcript = currentState.transcript # "\n" # systemMessage;
+    };
     systemMessage;
   };
 
@@ -199,7 +194,6 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can route documents");
     };
-
     fileRegistry.add(
       filename,
       {
@@ -208,39 +202,36 @@ actor {
         assignedAgent = "StubAgent";
       },
     );
-
     currentState := {
       currentState with transcript = currentState.transcript # "\nSYSTEM: File [" # filename # "] processed and routed to StubAgent";
     };
-
     "StubAgent";
   };
 
   public query ({ caller }) func getFileRegistry() : async [(Text, FileMetadata)] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access file registry");
+      Runtime.trap("Unauthorized: Only users can view file registry");
     };
     fileRegistry.toArray();
   };
 
   public shared ({ caller }) func topUpSwarm(targetCanister : Principal, amount : Nat) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can top up canisters");
     };
-
     ignore targetCanister;
     ignore amount;
   };
 
   public query ({ caller }) func getAgentRegistry() : async [Agent] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access agent registry");
+      Runtime.trap("Unauthorized: Only users can view agent registry");
     };
     agents.values().toArray();
   };
 
   public shared ({ caller }) func initializeAgents() : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can initialize agents");
     };
     prePopulateAgents();

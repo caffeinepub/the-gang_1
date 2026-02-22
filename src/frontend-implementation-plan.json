@@ -1,54 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix Frozen UI State with try/catch/finally",
-  "requirements": [
-    {
-      "id": "REQ-1",
-      "summary": "Wrap the backend.start_boardroom_debate() call in handleTranscriptComplete with a try/catch/finally block to handle connection failures",
-      "acceptanceCriteria": [
-        "The backend.start_boardroom_debate() call is wrapped in a try block",
-        "A catch block is present to handle any thrown errors"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wrap the backend.start_boardroom_debate() call inside the handleTranscriptComplete function with a try block to isolate the async operation and prepare for error handling"
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Add console.error logging in the catch block to capture connection issues or errors from the backend call",
-      "acceptanceCriteria": [
-        "console.error is called in the catch block with error details",
-        "Error information is visible in browser console for debugging"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add a catch block to the try/catch structure in handleTranscriptComplete that logs errors using console.error, capturing any connection issues or backend call failures for debugging purposes"
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Reset the debating/loading state to false in the finally block to re-enable the Push-to-Talk button after errors",
-      "acceptanceCriteria": [
-        "The finally block executes regardless of success or failure",
-        "The debating state is reset to false in the finally block",
-        "The Push-to-Talk button becomes enabled again after an error occurs",
-        "UI does not remain frozen when backend calls fail"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add a finally block to the try/catch structure in handleTranscriptComplete that unconditionally resets the debating state (setIsDebating(false)) to ensure the Push-to-Talk button is re-enabled regardless of whether the backend call succeeds or fails, preventing frozen UI states"
-        }
-      ]
-    }
-  ]
+  "title": "Fix agent registry mutability in backend",
+  "requirements": []
 }
