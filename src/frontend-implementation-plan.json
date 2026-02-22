@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend Implementation Plan - No Frontend Changes Required",
+  "title": "Remove Access Control Traps and Add Boardroom Clear Function",
   "requirements": []
 }

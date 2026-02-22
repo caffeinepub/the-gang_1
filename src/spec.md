@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix backend map persistence for agent status toggles and remove all access control authentication barriers.
+**Goal:** Remove all access control restrictions from backend functions and add boardroom transcript clearing capability.
 
 **Planned changes:**
-- Change the map update logic in toggleAgentStatus to use agents.put() or agents.remove() + agents.add() pattern to ensure proper overwriting of existing entries
-- Remove all AccessControl trap blocks from every backend function to allow execution without authentication checks
+- Remove all AccessControl trap blocks from backend/main.mo across all functions (getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, initializeAgents)
+- Fix toggleAgentStatus function to match exact implementation without traps or access control
+- Add clearBoardroom function to clear transcript from currentState
+- Regenerate frontend declarations after backend changes
 
-**User-visible outcome:** Agent status toggles will persist correctly without duplicates or stale data, and all backend functions will execute successfully from the UI without access control errors.
+**User-visible outcome:** Users can access all backend functions without authentication restrictions, toggle agent status freely, and clear the boardroom transcript on demand.

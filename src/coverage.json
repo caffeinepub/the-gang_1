@@ -1,25 +1,32 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T01:33:11.756Z",
+  "generatedAt": "2026-02-22T01:55:17.660Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
+    "total": 3,
     "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In backend/main.mo, locate the toggleAgentStatus function and change the map update logic from agents.add(agent.id, updatedAgent) to agents.put(agent.id, updatedAgent) to explicitly overwrite existing entries. If the Map implementation does not support .put(), use agents.remove(agent.id) immediately before agents.add(agent.id, updatedAgent) to ensure proper overwriting.",
+        "summary": "Remove all AccessControl trap blocks from backend/main.mo. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; statement from the entire file, including those in getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, and initializeAgents functions.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "In backend/main.mo, remove all AccessControl trap blocks from every function including toggleAgentStatus, start_boardroom_debate, getStatus, and any other functions. Delete every if (not (AccessControl...)) { Runtime.trap(...) } statement to allow functions to execute without authentication checks.",
+        "summary": "Fix toggleAgentStatus function in backend/main.mo to match the exact implementation provided: public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () { let agentOpt = getAgentByName(agentName); switch (agentOpt) { case (null) {}; case (?agent) { let updatedAgent = { agent with isEnabled = status }; agents.remove(agent.id); agents.add(agent.id, updatedAgent); }; }; };",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Add clearBoardroom function to the bottom of the actor in backend/main.mo with exact implementation: public shared ({ caller }) func clearBoardroom() : async () { currentState := { currentState with transcript = \"\" }; };",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []

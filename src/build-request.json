@@ -1,54 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Fix backend map persistence and remove access control traps",
+  "title": "Remove Access Control Traps and Add Boardroom Clear Function",
+  "projectName": "The Gang",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "In backend/main.mo, locate the toggleAgentStatus function and change the map update logic from agents.add(agent.id, updatedAgent) to agents.put(agent.id, updatedAgent) to explicitly overwrite existing entries. If the Map implementation does not support .put(), use agents.remove(agent.id) immediately before agents.add(agent.id, updatedAgent) to ensure proper overwriting.",
+      "text": "Remove all AccessControl trap blocks from backend/main.mo. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; statement from the entire file, including those in getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, and initializeAgents functions.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-4"
         ],
         "quotes": [
-          "Fix the Map Persistence: In toggleAgentStatus, change agents.add(agent.id, updatedAgent); so it explicitly OVERWRITES the existing entry. Use agents.put(agent.id, updatedAgent);. If your specific Map implementation lacks .put, explicitly use agents.remove(agent.id); right before agents.add(...)."
+          "Fire the Bouncers: Delete EVERY SINGLE if (not (AccessControl...)) { Runtime.trap(...) }; block from the ENTIRE file."
         ]
       },
       "acceptanceCriteria": [
-        "The toggleAgentStatus function uses agents.put() or agents.remove() + agents.add() pattern",
-        "Agent status toggles persist correctly across function calls",
-        "No duplicate or stale entries exist in the agents map"
+        "No AccessControl trap statements remain in any function in backend/main.mo",
+        "All listed functions (getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, initializeAgents) have their trap blocks removed",
+        "Backend compiles successfully without the trap statements"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "In backend/main.mo, remove all AccessControl trap blocks from every function including toggleAgentStatus, start_boardroom_debate, getStatus, and any other functions. Delete every if (not (AccessControl...)) { Runtime.trap(...) } statement to allow functions to execute without authentication checks.",
+      "text": "Fix toggleAgentStatus function in backend/main.mo to match the exact implementation provided: public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () { let agentOpt = getAgentByName(agentName); switch (agentOpt) { case (null) {}; case (?agent) { let updatedAgent = { agent with isEnabled = status }; agents.remove(agent.id); agents.add(agent.id, updatedAgent); }; }; };",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-4"
         ],
         "quotes": [
-          "Remove the Access Control Traps: You restored the AccessControl checks, which is locking the UI out. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; block from EVERY function (toggleAgentStatus, start_boardroom_debate, getStatus, etc.). Let them execute freely."
+          "Fix the Kill Switch: Ensure toggleAgentStatus looks exactly like this, with NO traps"
         ]
       },
       "acceptanceCriteria": [
-        "No Runtime.trap() calls related to AccessControl remain in any function",
-        "All backend functions execute without authentication barriers",
-        "UI can successfully call backend functions without access control errors"
+        "toggleAgentStatus function matches the exact signature and implementation provided",
+        "Function contains no trap statements or access control checks",
+        "Function correctly updates agent status using agents.remove and agents.add",
+        "Function handles null case silently without errors"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add clearBoardroom function to the bottom of the actor in backend/main.mo with exact implementation: public shared ({ caller }) func clearBoardroom() : async () { currentState := { currentState with transcript = \"\" }; };",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Add the Eraser: Add this exact function to the bottom of the actor so we can clear the transcript"
+        ]
+      },
+      "acceptanceCriteria": [
+        "clearBoardroom function is added to backend/main.mo",
+        "Function matches the exact signature and implementation provided",
+        "Function clears the transcript field in currentState by setting it to empty string",
+        "Function is public and shared, accepting caller parameter"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any frontend React files",
-    "Only modify backend/main.mo",
-    "Preserve all existing agent data and debate functionality"
+    "Do NOT modify ANY frontend files",
+    "Do NOT add security or access control back to any functions",
+    "Use exact function implementations as specified in the user request",
+    "Regenerate frontend declarations (.did files) after backend changes"
   ],
   "nonGoals": [
-    "Adding new features or functionality",
-    "Refactoring unrelated code",
-    "Modifying frontend components or hooks"
+    "Adding security features or access control",
+    "Modifying frontend components",
+    "Changing any logic beyond the specified trap removal and function updates"
   ],
   "imageRequirements": {
     "required": [],

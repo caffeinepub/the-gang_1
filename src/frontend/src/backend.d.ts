@@ -49,6 +49,7 @@ export enum UserRole {
 export interface backendInterface {
     abortDebate(userInterruption: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    clearBoardroom(): Promise<void>;
     getAgentRegistry(): Promise<Array<Agent>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;

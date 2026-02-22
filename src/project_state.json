@@ -2,32 +2,59 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [],
-  "known_issues": [
-    "Map persistence issue: agents.add() not overwriting existing entries in toggleAgentStatus",
-    "AccessControl traps blocking UI from executing backend functions"
+  "architectural_notes": [
+    "Backend security layer (AccessControl traps) being removed from all functions",
+    "toggleAgentStatus modified to update agent status without authentication",
+    "clearBoardroom function added to reset transcript state"
   ],
+  "known_issues": [],
   "isFixRequest": true,
   "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "In backend/main.mo, locate the toggleAgentStatus function and change the map update logic from agents.add(agent.id, updatedAgent) to agents.put(agent.id, updatedAgent) to explicitly overwrite existing entries. If the Map implementation does not support .put(), use agents.remove(agent.id) immediately before agents.add(agent.id, updatedAgent) to ensure proper overwriting.",
+      "summary": "Remove all AccessControl traps from backend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Fix toggleAgentStatus to work without traps",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add clearBoardroom function to clear transcript",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Remove all AccessControl trap blocks from backend/main.mo. Delete every single if (not (AccessControl...)) { Runtime.trap(...) }; statement from the entire file, including those in getCallerUserProfile, getUserProfile, saveCallerUserProfile, toggleAgentStatus, abortDebate, start_boardroom_debate, routeDocument, getFileRegistry, topUpSwarm, and initializeAgents functions.",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-2",
-      "summary": "In backend/main.mo, remove all AccessControl trap blocks from every function including toggleAgentStatus, start_boardroom_debate, getStatus, and any other functions. Delete every if (not (AccessControl...)) { Runtime.trap(...) } statement to allow functions to execute without authentication checks.",
+      "id": "AR-5",
+      "summary": "Fix toggleAgentStatus function in backend/main.mo to match the exact implementation provided: public shared ({ caller }) func toggleAgentStatus(agentName : Text, status : Bool) : async () { let agentOpt = getAgentByName(agentName); switch (agentOpt) { case (null) {}; case (?agent) { let updatedAgent = { agent with isEnabled = status }; agents.remove(agent.id); agents.add(agent.id, updatedAgent); }; }; };",
       "reqIds": [
         "REQ-2"
       ],
       "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add clearBoardroom function to the bottom of the actor in backend/main.mo with exact implementation: public shared ({ caller }) func clearBoardroom() : async () { currentState := { currentState with transcript = \"\" }; };",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
     }
   ],
-  "projectName": "Fix backend map persistence and remove access control traps",
+  "projectName": "The Gang",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
