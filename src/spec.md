@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Reset workspace to baseline state by clearing useActor.ts and reverting backend to Version 56 Golden Master.
+**Goal:** Implement dual-actor system with main backend actor and telemetry actor initialization.
 
 **Planned changes:**
-- Empty the file frontend/src/hooks/useActor.ts, removing all current content
-- Remove reset_agents() function from backend/main.mo if it exists and was added after Version 56
-- Revert backend/main.mo to match the Golden Master state
+- Populate useActor.ts with dual-actor initialization logic (main backend actor with Identity authentication and telemetry actor via dynamic import)
+- Remove all references to reset_agents() function from useQueries.ts
+- Update useResetAgents mutation to call actor.initializeAgents() instead of reset_agents()
+- Generate telemetry canister declarations using dfx generate telemetry command
 
-**User-visible outcome:** The workspace will be in a clean baseline state with useActor.ts empty and the backend matching the original Version 56 configuration.
+**User-visible outcome:** The Reset Agents button continues to function correctly using the updated actor initialization system with dual-actor support.

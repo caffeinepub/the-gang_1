@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 31,
+  "projectStateVersion": 33,
   "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
   "architectural_notes": [
     "Single-user application secured exclusively via Internet Identity",
@@ -12,7 +12,7 @@
     "Multi-canister architecture: telemetry canister isolates health monitoring from main backend",
     "telemetry.mo is a NO-AUTH actor with no access control or Runtime.trap checks",
     "Frontend-only telemetry UI: Cycles, Memory gauges, and Diagnostics modal with mock data (backends are locked)",
-    "useActor.ts implements defensive dual-actor initialization: main actor (Golden Master) + telemetry actor with isolated try/catch fallback"
+    "useActor.ts implements dual-actor initialization: Actor 1 (Main Backend) with Identity + _initializeAccessControlWithSecret; Actor 2 (Telemetry) with defensive try/catch + dynamic import pattern"
   ],
   "known_issues": [],
   "isFixRequest": true,
@@ -270,52 +270,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-25",
-      "summary": "Rebuild frontend/src/hooks/useActor.ts with dual-actor pattern: main actor + defensive telemetry actor with try/catch isolation",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-26",
-      "summary": "Create frontend/src/hooks/useActor.ts from scratch with the following imports: useQuery and useQueryClient from @tanstack/react-query, useEffect from react, useInternetIdentity from ./useInternetIdentity, createActorWithConfig and getSecretParameter from ../utils/urlParams, backend interface types from ../../../declarations/backend, and createActor factory from ../../../declarations/telemetry",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Implement a useQuery block named actorQuery for the main backend actor that initializes it using createActorWithConfig with the user's identity when authenticated, fetches caffeineAdminToken from URL parameters using getSecretParameter, calls _initializeAccessControlWithSecret(adminToken) on the actor, and sets staleTime to Infinity",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Implement a second useQuery block named telemetryActorQuery that wraps all initialization logic in a try/catch block, checks for telemetry canister ID using process.env.CANISTER_ID_TELEMETRY or process.env.VITE_TELEMETRY_CANISTER_ID, console.warns and returns null if the ID is undefined, initializes the telemetry actor using the imported createActor factory if the ID exists, and console.errors and returns null in the catch block without crashing the app",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Add a useEffect hook that invalidates and refetches other queries when the main actor data changes, using a predicate that ignores both the main actor query key and the telemetry actor query key to prevent infinite loops",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-30",
-      "summary": "Return an object from the useActor hook with exactly three properties: actor (from actorQuery), telemetryActor (from telemetryActorQuery), and isFetching (combined fetching state from both queries)",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "status": "pending"
-    },
-    {
       "id": "AR-32",
       "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
       "reqIds": [
@@ -332,18 +286,46 @@
       "status": "pending"
     },
     {
-      "id": "AR-34",
-      "summary": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+      "id": "AR-36",
+      "summary": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization: Actor 1 (Main Backend) with Identity + _initializeAccessControlWithSecret, Actor 2 (Telemetry) with try/catch + dynamic import",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Update frontend/src/hooks/useQueries.ts: remove reset_agents() references and modify useResetAgents mutation to call actor.initializeAgents() instead",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization logic: Initialize Actor 1 (Main Backend) with Identity and call _initializeAccessControlWithSecret, then initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic import (await import('../../declarations/telemetry')), and return { actor, telemetryActor, isFetching }",
       "reqIds": [
         "REQ-33"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-35",
-      "summary": "Remove the reset_agents() function from backend/main.mo if it exists and was added after Version 56, reverting the file to match the Golden Master state",
+      "id": "AR-39",
+      "summary": "Update frontend/src/hooks/useQueries.ts to remove all references to reset_agents() function",
       "reqIds": [
         "REQ-34"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Update the useResetAgents mutation in frontend/src/hooks/useQueries.ts to call actor.initializeAgents() instead of the previous reset_agents() function",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Run dfx generate telemetry command to generate declarations for the telemetry canister before completing the build",
+      "reqIds": [
+        "REQ-36"
       ],
       "status": "pending"
     }

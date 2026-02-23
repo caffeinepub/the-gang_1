@@ -1,7 +1,7 @@
 {
   "frontend/src/App.tsx": "Main application component with Header, Navbar, and three tabs (Boardroom, Sensory Cortex, Swarm Health) with useActor import and usage removed.",
   "frontend/src/index.css": "Updated design system with neutral grayscale OKLCH color palette suitable for a technical backend infrastructure project, supporting both light and dark modes.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend operations including debate status, agent registry, and mutations for toggling agent status, clearing boardroom, and resetting agents using initializeAgents() method with proper actor initialization, double type assertion to resolve @dfinity/agent naming conflicts, and query invalidation.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend operations including debate status, agent registry, and mutations for toggling agent status, clearing boardroom, and resetting agents using initializeAgents() method with proper actor initialization and query invalidation.",
   "frontend/src/hooks/useSpeechRecognition.ts": "Custom hook managing browser's native SpeechRecognition API with start/stop controls, functional update pattern for setTranscript to prevent stale closure issues, comprehensive try/catch error handling in all event handlers, and transcript clearing removed from startListening function to allow persistence across recordings.",
   "frontend/src/hooks/useSpeechSynthesis.ts": "Custom hook managing browser's native SpeechSynthesis API with British Male voice preference for Robby's responses and speech cancellation support.",
   "frontend/src/hooks/useWakeWordStub.ts": "Commented-out placeholder hook for future Porcupine wake-word detection integration with TODO comment as specified.",
@@ -12,7 +12,7 @@
   "frontend/src/main.tsx": "Application entry point with QueryClientProvider and Sonner Toaster for toast notifications.",
   "frontend/src/components/SensoryCortexTab.tsx": "File ingestion interface with drag-and-drop zone, camera capture, and chunked upload functionality with useActor import and usage removed.",
   "frontend/src/components/AgentRegistryTable.tsx": "Agent registry table component displaying system infrastructure vitals and agent status with kill switch toggles, cycles/memory/diagnostics columns, Logistics Lead badge, and a Reset Agents button positioned above the System Vitals section.",
-  "frontend/src/hooks/useActor.ts": "Empty file cleared of all content, ready for Phase 2 rebuild.",
+  "frontend/src/hooks/useActor.ts": "Dual-actor initialization hook that creates the main backend actor with Identity authentication and _initializeAccessControlWithSecret, and dynamically imports the telemetry actor within a try/catch block, returning { actor, telemetryActor, isFetching }.",
   "frontend/src/config.ts": "Configuration file that exports backend Canister ID and network settings, reading from environment variables with fallback to local development defaults.",
   "frontend/vite.config.ts": "Vite configuration with React plugin, path aliases, environment variable injection for canister IDs, and local API proxy setup.",
   "frontend/.env": "Development environment file containing the backend Canister ID and network configuration for local development.",

@@ -1,54 +1,93 @@
 {
   "kind": "build_request",
-  "title": "Workspace Maintenance - Reset to Baseline",
+  "title": "Phase 2: Dual-Actor System Implementation",
   "projectName": "The Gang",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-33",
-      "text": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+      "text": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization logic: Initialize Actor 1 (Main Backend) with Identity and call _initializeAccessControlWithSecret, then initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic import (await import('../../declarations/telemetry')), and return { actor, telemetryActor, isFetching }",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "Remove the current content of frontend/src/hooks/useActor.ts so it is an empty file."
+          "Populate frontend/src/hooks/useActor.ts with the following logic: Initialize Actor 1 (Main Backend) with Identity and _initializeAccessControlWithSecret. Initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic imports (await import('../../../declarations/telemetry')). Return { actor, telemetryActor, isFetching }."
         ]
       },
       "acceptanceCriteria": [
-        "frontend/src/hooks/useActor.ts exists but contains no code",
-        "The file is completely empty (0 bytes or only whitespace)"
+        "useActor.ts initializes the main backend actor with Identity authentication",
+        "useActor.ts calls _initializeAccessControlWithSecret on the main actor",
+        "useActor.ts initializes the telemetry actor using dynamic import within a try/catch block",
+        "useActor.ts returns an object containing actor, telemetryActor, and isFetching",
+        "The telemetry actor import uses the correct relative path to declarations"
       ]
     },
     {
       "id": "REQ-34",
-      "text": "Remove the reset_agents() function from backend/main.mo if it exists and was added after Version 56, reverting the file to match the Golden Master state",
-      "target": "backend",
+      "text": "Update frontend/src/hooks/useQueries.ts to remove all references to reset_agents() function",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-5"
         ],
         "quotes": [
-          "Review backend/main.mo. If there are any administrative functions added after Version 56 (such as reset_agents), please revert the file to its original state to match the Golden Master."
+          "Update frontend/src/hooks/useQueries.ts: Remove any reference to reset_agents()."
         ]
       },
       "acceptanceCriteria": [
-        "backend/main.mo does not contain a reset_agents() function",
-        "The backend/main.mo file matches the Version 56 Golden Master state",
-        "All other functions and logic in backend/main.mo remain intact"
+        "All calls to reset_agents() are removed from useQueries.ts",
+        "No import statements reference reset_agents",
+        "The file compiles without errors after removal"
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "text": "Update the useResetAgents mutation in frontend/src/hooks/useQueries.ts to call actor.initializeAgents() instead of the previous reset_agents() function",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "Update the useResetAgents mutation to call the original actor.initializeAgents() function."
+        ]
+      },
+      "acceptanceCriteria": [
+        "useResetAgents mutation calls actor.initializeAgents()",
+        "The mutation still invalidates the agentStatuses query upon success",
+        "The Reset Agents button in AgentRegistryTable.tsx continues to function correctly"
+      ]
+    },
+    {
+      "id": "REQ-36",
+      "text": "Run dfx generate telemetry command to generate declarations for the telemetry canister before completing the build",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "Final Command: Run dfx generate telemetry to ensure declarations exist before the build completes."
+        ]
+      },
+      "acceptanceCriteria": [
+        "dfx generate telemetry executes successfully",
+        "Telemetry canister declarations are generated in the declarations directory",
+        "The generated declarations are accessible for frontend import"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any other files beyond frontend/src/hooks/useActor.ts and backend/main.mo",
-    "Preserve the Golden Master backend (Version 56) state",
-    "Only remove functions explicitly added after Version 56"
+    "Do not modify backend/main.mo (Golden Master v56)",
+    "Preserve existing useActor.ts hook interface expectations throughout the codebase",
+    "Maintain backward compatibility with existing query hooks in useQueries.ts"
   ],
   "nonGoals": [
-    "Rebuilding or reimplementing useActor.ts with new logic",
-    "Adding new functionality to the backend",
-    "Modifying frontend components or other hooks"
+    "Creating new backend functions or modifying backend logic",
+    "Adding new UI components or visual changes",
+    "Implementing actual telemetry data flow or agent communication"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,20 +1,55 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Workspace Maintenance - Reset to Baseline",
+  "title": "Phase 2: Dual-Actor System Implementation",
   "requirements": [
     {
       "id": "REQ-33",
-      "summary": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+      "summary": "Implement dual-actor initialization logic in useActor hook with main backend actor and telemetry actor support",
       "acceptanceCriteria": [
-        "frontend/src/hooks/useActor.ts exists but contains no code",
-        "The file is completely empty (0 bytes or only whitespace)"
+        "useActor.ts initializes the main backend actor with Identity authentication",
+        "useActor.ts calls _initializeAccessControlWithSecret on the main actor",
+        "useActor.ts initializes the telemetry actor using dynamic import within a try/catch block",
+        "useActor.ts returns an object containing actor, telemetryActor, and isFetching",
+        "The telemetry actor import uses the correct relative path to declarations"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Remove all content from useActor.ts, leaving it as a completely empty file with no imports, exports, or logic"
+          "description": "Modify the useActor hook to initialize both the main backend actor (Actor 1) and the telemetry actor (Actor 2). Initialize Actor 1 with Identity authentication and call _initializeAccessControlWithSecret after actor creation. Add telemetry actor initialization inside a try/catch block using dynamic import: await import('../../declarations/telemetry'). Update the return type to include { actor, telemetryActor, isFetching } where telemetryActor may be null if initialization fails. Ensure isFetching reflects loading state for both actors. Preserve existing identity and authentication flow. Maintain query invalidation logic for dependent queries."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Remove all references to reset_agents() function from useQueries hook",
+      "acceptanceCriteria": [
+        "All calls to reset_agents() are removed from useQueries.ts",
+        "No import statements reference reset_agents",
+        "The file compiles without errors after removal"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Remove all references to the reset_agents() function from useQueries.ts. Search for any calls to reset_agents() and remove them. Remove any import statements that reference reset_agents. Ensure the file compiles without errors after these removals. Do not modify the useResetAgents mutation at this stage."
+        }
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "summary": "Update useResetAgents mutation to call actor.initializeAgents() instead of reset_agents()",
+      "acceptanceCriteria": [
+        "useResetAgents mutation calls actor.initializeAgents()",
+        "The mutation still invalidates the agentStatuses query upon success",
+        "The Reset Agents button in AgentRegistryTable.tsx continues to function correctly"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Update the useResetAgents mutation to call actor.initializeAgents() instead of the previous reset_agents() function. Preserve the existing mutation structure including error handling and query invalidation. Ensure that upon successful mutation, the agentStatuses query is invalidated to reflect updated agent states. Maintain compatibility with the Reset Agents button in AgentRegistryTable.tsx."
         }
       ]
     }
