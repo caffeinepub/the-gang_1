@@ -158,7 +158,6 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    reset_agents(): Promise<void>;
     routeDocument(filename: string, _filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     start_boardroom_debate(prompt: string): Promise<string>;
@@ -417,20 +416,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
-            return result;
-        }
-    }
-    async reset_agents(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.reset_agents();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.reset_agents();
             return result;
         }
     }

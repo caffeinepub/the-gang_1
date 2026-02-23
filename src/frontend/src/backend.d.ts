@@ -58,7 +58,6 @@ export interface backendInterface {
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    reset_agents(): Promise<void>;
     routeDocument(filename: string, _filePreview: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     start_boardroom_debate(prompt: string): Promise<string>;

@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add functionality to reset and repopulate agents in the canister to their original configuration.
+**Goal:** Reset workspace to baseline state by clearing useActor.ts and reverting backend to Version 56 Golden Master.
 
 **Planned changes:**
-- Add a `reset_agents()` function in the backend that clears and repopulates the agent registry with the original pre-configured agents
-- Create a `useResetAgents` mutation hook in the frontend that calls the backend function and refreshes the agent list
-- Add a "Reset Agents" button in the Swarm Health tab above the System Vitals section
+- Empty the file frontend/src/hooks/useActor.ts, removing all current content
+- Remove reset_agents() function from backend/main.mo if it exists and was added after Version 56
+- Revert backend/main.mo to match the Golden Master state
 
-**User-visible outcome:** Users can click a "Reset Agents" button in the Swarm Health tab to restore all agents to their original configuration, with the agent table automatically refreshing to show the reset agents.
+**User-visible outcome:** The workspace will be in a clean baseline state with useActor.ts empty and the backend matching the original Version 56 configuration.

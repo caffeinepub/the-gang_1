@@ -82,7 +82,6 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'initializeAgents' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'reset_agents' : ActorMethod<[], undefined>,
   'routeDocument' : ActorMethod<[string, string, bigint], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'start_boardroom_debate' : ActorMethod<[string], string>,

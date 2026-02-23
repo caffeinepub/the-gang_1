@@ -1,70 +1,54 @@
 {
   "kind": "build_request",
-  "title": "Add command to repopulate agents in the canister",
+  "title": "Workspace Maintenance - Reset to Baseline",
+  "projectName": "The Gang",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-30",
-      "text": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
+      "id": "REQ-33",
+      "text": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Remove the current content of frontend/src/hooks/useActor.ts so it is an empty file."
+        ]
+      },
+      "acceptanceCriteria": [
+        "frontend/src/hooks/useActor.ts exists but contains no code",
+        "The file is completely empty (0 bytes or only whitespace)"
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "text": "Remove the reset_agents() function from backend/main.mo if it exists and was added after Version 56, reverting the file to match the Golden Master state",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "can you help me create a command that will so I can repopulate my agents in the canister?"
+          "Review backend/main.mo. If there are any administrative functions added after Version 56 (such as reset_agents), please revert the file to its original state to match the Golden Master."
         ]
       },
       "acceptanceCriteria": [
-        "The reset_agents() function is publicly accessible and callable from the frontend",
-        "Calling reset_agents() clears all existing agents from the registry",
-        "The function repopulates the registry with the same agents that were present in the original implementation",
-        "All repopulated agents have their original configurations (name, role, status, etc.)"
-      ]
-    },
-    {
-      "id": "REQ-31",
-      "text": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The useResetAgents hook uses useMutation from React Query",
-        "The mutation calls actor.reset_agents() when triggered",
-        "On successful execution, the hook invalidates the agentStatuses query to refresh the UI",
-        "The hook is exported and available for use in components"
-      ]
-    },
-    {
-      "id": "REQ-32",
-      "text": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A clearly labeled 'Reset Agents' button is visible in the Swarm Health tab",
-        "The button is positioned above the System Vitals section for easy access",
-        "Clicking the button executes the useResetAgents mutation",
-        "The button shows appropriate loading state during mutation execution",
-        "The agent table automatically refreshes after successful reset"
+        "backend/main.mo does not contain a reset_agents() function",
+        "The backend/main.mo file matches the Version 56 Golden Master state",
+        "All other functions and logic in backend/main.mo remain intact"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the single-actor architecture in backend/main.mo",
-    "Do not change the existing agent data structure or types",
-    "Preserve all existing agent registry functionality"
+    "Do not modify any other files beyond frontend/src/hooks/useActor.ts and backend/main.mo",
+    "Preserve the Golden Master backend (Version 56) state",
+    "Only remove functions explicitly added after Version 56"
   ],
   "nonGoals": [
-    "Adding selective agent reset (all agents must be reset together)",
-    "Creating backup/restore functionality for agent states",
-    "Adding confirmation dialogs before reset"
+    "Rebuilding or reimplementing useActor.ts with new logic",
+    "Adding new functionality to the backend",
+    "Modifying frontend components or other hooks"
   ],
   "imageRequirements": {
     "required": [],

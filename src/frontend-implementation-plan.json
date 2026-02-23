@@ -1,40 +1,20 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add command to repopulate agents in the canister",
+  "title": "Workspace Maintenance - Reset to Baseline",
   "requirements": [
     {
-      "id": "REQ-31",
-      "summary": "Add a mutation hook useResetAgents that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
+      "id": "REQ-33",
+      "summary": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
       "acceptanceCriteria": [
-        "The useResetAgents hook uses useMutation from React Query",
-        "The mutation calls actor.reset_agents() when triggered",
-        "On successful execution, the hook invalidates the agentStatuses query to refresh the UI",
-        "The hook is exported and available for use in components"
+        "frontend/src/hooks/useActor.ts exists but contains no code",
+        "The file is completely empty (0 bytes or only whitespace)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Add a new useResetAgents mutation hook that calls actor.reset_agents() using useMutation from React Query. On successful mutation, invalidate the 'agentStatuses' query key to trigger a refresh of the agent registry table. Export the hook for use in components. Follow the existing pattern used by other mutation hooks in the file (useAbortDebate, useClearBoardroom, useToggleAgentStatus)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-32",
-      "summary": "Add a 'Reset Agents' button in the Swarm Health tab positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
-      "acceptanceCriteria": [
-        "A clearly labeled 'Reset Agents' button is visible in the Swarm Health tab",
-        "The button is positioned above the System Vitals section for easy access",
-        "Clicking the button executes the useResetAgents mutation",
-        "The button shows appropriate loading state during mutation execution",
-        "The agent table automatically refreshes after successful reset"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/AgentRegistryTable.tsx",
-          "operation": "modify",
-          "description": "Import the useResetAgents hook from hooks/useQueries.ts. Add a 'Reset Agents' button positioned above the System Vitals section heading. Wire the button's onClick handler to trigger the mutation using resetAgents.mutate(). Display loading state on the button during mutation execution using resetAgents.isPending. The agent table will automatically refresh when the mutation succeeds due to the query invalidation in the hook. Follow the existing UI patterns and styling used for other buttons in the component."
+          "description": "Remove all content from useActor.ts, leaving it as a completely empty file with no imports, exports, or logic"
         }
       ]
     }

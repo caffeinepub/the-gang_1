@@ -1,43 +1,30 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T23:10:58.291Z",
+  "generatedAt": "2026-02-22T23:53:02.209Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 2,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-30",
-        "summary": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
-        "status": "unknown",
-        "plannedFiles": [],
+        "id": "REQ-33",
+        "summary": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/hooks/useActor.ts"
+        ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-31",
-        "summary": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-32",
-        "summary": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/AgentRegistryTable.tsx"
-        ]
+        "id": "REQ-34",
+        "summary": "Remove the reset_agents() function from backend/main.mo if it exists and was added after Version 56, reverting the file to match the Golden Master state",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
@@ -49,7 +36,6 @@
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/AgentRegistryTable.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",

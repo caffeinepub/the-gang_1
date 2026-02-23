@@ -127,7 +127,7 @@ export function useResetAgents() {
   return useMutation({
     mutationFn: async () => {
       if (!actor) throw new Error('Actor not initialized');
-      return actor.reset_agents();
+      return actor.initializeAgents();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agentStatuses'] });

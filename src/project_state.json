@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
+  "projectStateVersion": 31,
   "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
   "architectural_notes": [
     "Single-user application secured exclusively via Internet Identity",
@@ -316,14 +316,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-31",
-      "summary": "Run the terminal command 'dfx generate telemetry' (or platform equivalent) to generate TypeScript declarations for the telemetry canister",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
       "id": "AR-32",
       "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
       "reqIds": [
@@ -341,15 +333,17 @@
     },
     {
       "id": "AR-34",
-      "summary": "Create a command or function to repopulate agents in the canister",
-      "reqIds": [],
+      "summary": "Empty the file frontend/src/hooks/useActor.ts by removing all current content, leaving it as a blank file",
+      "reqIds": [
+        "REQ-33"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-35",
-      "summary": "Add a public shared function reset_agents() : async () in backend/main.mo that clears the existing agentRegistry variable and repopulates it with the original pre-configured agents (Skippy, GLaDOS, Robby, Deep Thought, and any others that were initially present)",
+      "summary": "Remove the reset_agents() function from backend/main.mo if it exists and was added after Version 56, reverting the file to match the Golden Master state",
       "reqIds": [
-        "REQ-30"
+        "REQ-34"
       ],
       "status": "pending"
     }
