@@ -1,55 +1,51 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Phase 2: Dual-Actor System Implementation",
+  "title": "Update useActor hook to prepare telemetry actor state",
   "requirements": [
     {
-      "id": "REQ-33",
-      "summary": "Implement dual-actor initialization logic in useActor hook with main backend actor and telemetry actor support",
+      "id": "REQ-1",
+      "summary": "Update React import statement in useActor.ts to include useState",
       "acceptanceCriteria": [
-        "useActor.ts initializes the main backend actor with Identity authentication",
-        "useActor.ts calls _initializeAccessControlWithSecret on the main actor",
-        "useActor.ts initializes the telemetry actor using dynamic import within a try/catch block",
-        "useActor.ts returns an object containing actor, telemetryActor, and isFetching",
-        "The telemetry actor import uses the correct relative path to declarations"
+        "The import statement at the top of useActor.ts includes both useEffect and useState"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Modify the useActor hook to initialize both the main backend actor (Actor 1) and the telemetry actor (Actor 2). Initialize Actor 1 with Identity authentication and call _initializeAccessControlWithSecret after actor creation. Add telemetry actor initialization inside a try/catch block using dynamic import: await import('../../declarations/telemetry'). Update the return type to include { actor, telemetryActor, isFetching } where telemetryActor may be null if initialization fails. Ensure isFetching reflects loading state for both actors. Preserve existing identity and authentication flow. Maintain query invalidation logic for dependent queries."
+          "description": "Update the React import statement at the top of the file to include useState alongside useEffect: import { useEffect, useState } from 'react';"
         }
       ]
     },
     {
-      "id": "REQ-34",
-      "summary": "Remove all references to reset_agents() function from useQueries hook",
+      "id": "REQ-2",
+      "summary": "Add telemetryActor state variable in useActor function",
       "acceptanceCriteria": [
-        "All calls to reset_agents() are removed from useQueries.ts",
-        "No import statements reference reset_agents",
-        "The file compiles without errors after removal"
+        "The telemetryActor state variable is declared immediately after the queryClient declaration",
+        "The state is initialized to null with type annotation <any>"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Remove all references to the reset_agents() function from useQueries.ts. Search for any calls to reset_agents() and remove them. Remove any import statements that reference reset_agents. Ensure the file compiles without errors after these removals. Do not modify the useResetAgents mutation at this stage."
+          "description": "Inside the useActor function, immediately below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);"
         }
       ]
     },
     {
-      "id": "REQ-35",
-      "summary": "Update useResetAgents mutation to call actor.initializeAgents() instead of reset_agents()",
+      "id": "REQ-3",
+      "summary": "Update return statement to include telemetryActor and isFetching properties",
       "acceptanceCriteria": [
-        "useResetAgents mutation calls actor.initializeAgents()",
-        "The mutation still invalidates the agentStatuses query upon success",
-        "The Reset Agents button in AgentRegistryTable.tsx continues to function correctly"
+        "The return statement includes all three properties: actor, telemetryActor, and isFetching",
+        "The actor property uses the existing actorQuery.data with null fallback",
+        "The telemetryActor property is included in the return object",
+        "The isFetching property uses actorQuery.isFetching"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Update the useResetAgents mutation to call actor.initializeAgents() instead of the previous reset_agents() function. Preserve the existing mutation structure including error handling and query invalidation. Ensure that upon successful mutation, the agentStatuses query is invalidated to reflect updated agent states. Maintain compatibility with the Reset Agents button in AgentRegistryTable.tsx."
+          "description": "Update the return statement at the very bottom of the useActor function to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };"
         }
       ]
     }

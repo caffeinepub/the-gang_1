@@ -1,93 +1,72 @@
 {
   "kind": "build_request",
-  "title": "Phase 2: Dual-Actor System Implementation",
-  "projectName": "The Gang",
+  "title": "Update useActor hook to prepare telemetry actor state",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-33",
-      "text": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization logic: Initialize Actor 1 (Main Backend) with Identity and call _initializeAccessControlWithSecret, then initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic import (await import('../../declarations/telemetry')), and return { actor, telemetryActor, isFetching }",
+      "id": "REQ-1",
+      "text": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-user-final"
         ],
         "quotes": [
-          "Populate frontend/src/hooks/useActor.ts with the following logic: Initialize Actor 1 (Main Backend) with Identity and _initializeAccessControlWithSecret. Initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic imports (await import('../../../declarations/telemetry')). Return { actor, telemetryActor, isFetching }."
+          "Update the React import at the top to include useState: import { useEffect, useState } from 'react';"
         ]
       },
       "acceptanceCriteria": [
-        "useActor.ts initializes the main backend actor with Identity authentication",
-        "useActor.ts calls _initializeAccessControlWithSecret on the main actor",
-        "useActor.ts initializes the telemetry actor using dynamic import within a try/catch block",
-        "useActor.ts returns an object containing actor, telemetryActor, and isFetching",
-        "The telemetry actor import uses the correct relative path to declarations"
+        "The import statement at the top of useActor.ts includes both useEffect and useState"
       ]
     },
     {
-      "id": "REQ-34",
-      "text": "Update frontend/src/hooks/useQueries.ts to remove all references to reset_agents() function",
+      "id": "REQ-2",
+      "text": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-user-final"
         ],
         "quotes": [
-          "Update frontend/src/hooks/useQueries.ts: Remove any reference to reset_agents()."
+          "Inside the useActor function, right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);"
         ]
       },
       "acceptanceCriteria": [
-        "All calls to reset_agents() are removed from useQueries.ts",
-        "No import statements reference reset_agents",
-        "The file compiles without errors after removal"
+        "The telemetryActor state variable is declared immediately after the queryClient declaration",
+        "The state is initialized to null with type annotation <any>"
       ]
     },
     {
-      "id": "REQ-35",
-      "text": "Update the useResetAgents mutation in frontend/src/hooks/useQueries.ts to call actor.initializeAgents() instead of the previous reset_agents() function",
+      "id": "REQ-3",
+      "text": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-user-final"
         ],
         "quotes": [
-          "Update the useResetAgents mutation to call the original actor.initializeAgents() function."
+          "At the very bottom, update the return statement to output three things exactly like this: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };"
         ]
       },
       "acceptanceCriteria": [
-        "useResetAgents mutation calls actor.initializeAgents()",
-        "The mutation still invalidates the agentStatuses query upon success",
-        "The Reset Agents button in AgentRegistryTable.tsx continues to function correctly"
-      ]
-    },
-    {
-      "id": "REQ-36",
-      "text": "Run dfx generate telemetry command to generate declarations for the telemetry canister before completing the build",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-5"
-        ],
-        "quotes": [
-          "Final Command: Run dfx generate telemetry to ensure declarations exist before the build completes."
-        ]
-      },
-      "acceptanceCriteria": [
-        "dfx generate telemetry executes successfully",
-        "Telemetry canister declarations are generated in the declarations directory",
-        "The generated declarations are accessible for frontend import"
+        "The return statement includes all three properties: actor, telemetryActor, and isFetching",
+        "The actor property uses the existing actorQuery.data with null fallback",
+        "The telemetryActor property is included in the return object",
+        "The isFetching property uses actorQuery.isFetching"
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend/main.mo (Golden Master v56)",
-    "Preserve existing useActor.ts hook interface expectations throughout the codebase",
-    "Maintain backward compatibility with existing query hooks in useQueries.ts"
+    "Do not modify backend/main.mo under any circumstances",
+    "Do not modify the existing actorQuery in useActor.ts",
+    "Do not modify the existing useEffect in useActor.ts",
+    "Only modify frontend/src/hooks/useActor.ts"
   ],
   "nonGoals": [
-    "Creating new backend functions or modifying backend logic",
-    "Adding new UI components or visual changes",
-    "Implementing actual telemetry data flow or agent communication"
+    "Implementing telemetry actor initialization logic",
+    "Connecting telemetry actor to any backend canister",
+    "Modifying any other frontend files",
+    "Adding additional functionality beyond the three specified changes"
   ],
   "imageRequirements": {
     "required": [],

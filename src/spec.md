@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Implement dual-actor system with main backend actor and telemetry actor initialization.
+**Goal:** Prepare the useActor hook to support telemetry actor state management.
 
 **Planned changes:**
-- Populate useActor.ts with dual-actor initialization logic (main backend actor with Identity authentication and telemetry actor via dynamic import)
-- Remove all references to reset_agents() function from useQueries.ts
-- Update useResetAgents mutation to call actor.initializeAgents() instead of reset_agents()
-- Generate telemetry canister declarations using dfx generate telemetry command
+- Add useState to the React import statement in useActor.ts
+- Add a telemetryActor state variable initialized to null after the queryClient declaration
+- Update the return statement to include actor, telemetryActor, and isFetching properties
 
-**User-visible outcome:** The Reset Agents button continues to function correctly using the updated actor initialization system with dual-actor support.
+**User-visible outcome:** The useActor hook will expose a telemetryActor property (currently null) alongside the existing actor data, preparing the foundation for future telemetry integration.

@@ -1,336 +1,38 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 33,
-  "summary": "A private prototype application for a single user, secured behind Internet Identity. All internal admin/user permission checks and Runtime.trap calls have been removed from backend functions to enable direct frontend access.",
-  "architectural_notes": [
-    "Single-user application secured exclusively via Internet Identity",
-    "All internal #admin and #user permission checks removed from backend",
-    "No Runtime.trap calls in backend functions (toggleAgentStatus, start_boardroom_debate, abortDebate, initializeAgents, clearBoardroom)",
-    "toggleAgentStatus uses agents.remove then agents.add pattern for Map persistence",
-    "clearBoardroom only resets transcript field in currentState",
-    "Version 56 backend is the 'Golden Master' and must not be altered or rebuilt",
-    "Multi-canister architecture: telemetry canister isolates health monitoring from main backend",
-    "telemetry.mo is a NO-AUTH actor with no access control or Runtime.trap checks",
-    "Frontend-only telemetry UI: Cycles, Memory gauges, and Diagnostics modal with mock data (backends are locked)",
-    "useActor.ts implements dual-actor initialization: Actor 1 (Main Backend) with Identity + _initializeAccessControlWithSecret; Actor 2 (Telemetry) with defensive try/catch + dynamic import pattern"
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [],
-  "isFixRequest": true,
-  "existing_features": [
+  "isFixRequest": false,
+  "existing_features": [],
+  "new_feature_requests": [
     {
-      "id": "feature-add-a-text-input-field-textarea-or-input-to-the-boardroom-tab-ui-for-manual-command-entry-positioned-alongside-the-existing-push-to-talk-feature",
-      "title": "Add a text input field (textarea or input) to the Boardroom tab UI for manual command entry, positioned alongside the existing Push-to-Talk feature",
+      "id": "AR-1",
+      "summary": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
       "reqIds": [
         "REQ-1"
       ],
-      "version": 1
+      "status": "pending"
     },
     {
-      "id": "feature-add-a-send-button-next-to-the-text-input-field-that-triggers-the-start-boardroom-debate-backend-function-with-the-typed-text-as-the-prompt-parameter",
-      "title": "Add a Send button next to the text input field that triggers the start_boardroom_debate backend function with the typed text as the prompt parameter",
+      "id": "AR-2",
+      "summary": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
       "reqIds": [
         "REQ-2"
       ],
-      "version": 1
+      "status": "pending"
     },
     {
-      "id": "feature-clear-the-text-input-field-after-successfully-sending-a-command",
-      "title": "Clear the text input field after successfully sending a command",
+      "id": "AR-3",
+      "summary": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
       "reqIds": [
         "REQ-3"
       ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-textarea-in-the-boardroom-text-command-console-frontend-src-app-tsx-to-add-an-onkeydown-event-handler-that-prevents-the-default-new-line-behavior-when-the-enter-key-is-pressed-without-holding-shift-and-instead-triggers-handlesendcommand-to-submit-the-command",
-      "title": "Update the <Textarea> in the Boardroom Text Command Console (frontend/src/App.tsx) to add an onKeyDown event handler that prevents the default new line behavior when the Enter key is pressed without holding Shift, and instead triggers handleSendCommand() to submit the command.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-auto-scroll-in-the-debatedisplay-component-or-the-transcript-container-in-frontend-src-app-tsx-create-a-useref-pointing-to-an-element-at-the-bottom-of-the-transcript-container-and-add-a-useeffect-hook-that-smoothly-scrolls-that-ref-into-view-whenever-debatestate-transcript-updates",
-      "title": "Implement auto-scroll in the DebateDisplay component (or the transcript container in frontend/src/App.tsx). Create a useRef pointing to an element at the bottom of the transcript container, and add a useEffect hook that smoothly scrolls that ref into view whenever debateState.transcript updates.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-three-new-columns-to-the-agent-table-in-frontend-src-components-agentregistrytable-tsx-cycles-gas-memory-and-diagnostics",
-      "title": "Add three new columns to the agent table in frontend/src/components/AgentRegistryTable.tsx: 'Cycles (Gas)', 'Memory', and 'Diagnostics'",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-a-placeholder-cycles-value-e-g-1-5t-cycles-in-the-cycles-gas-column-with-a-small-top-up-button-next-to-it-for-each-agent-row",
-      "title": "Display a placeholder cycles value (e.g., '1.5T Cycles') in the Cycles (Gas) column with a small 'Top Up' button next to it for each agent row",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-render-a-visual-progress-bar-in-the-memory-column-showing-a-random-percentage-between-10-and-40-to-simulate-wasm-heap-usage-for-each-agent",
-      "title": "Render a visual progress bar in the Memory column showing a random percentage between 10% and 40% to simulate Wasm Heap usage for each agent",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-view-logs-button-in-the-diagnostics-column-that-opens-a-modal-dialog-overlay-specific-to-the-clicked-agent",
-      "title": "Add a 'View Logs' button in the Diagnostics column that opens a Modal/Dialog overlay specific to the clicked agent",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-a-crash-log-terminal-view-inside-the-modal-with-a-black-background-and-green-white-monospace-text-displaying-the-hardcoded-mock-log-entry-sys-telemetry-link-established-agent-nominal-zero-traps-recorded",
-      "title": "Build a 'Crash Log Terminal' view inside the modal with a black background and green/white monospace text displaying the hardcoded mock log entry: '[SYS] Telemetry link established. Agent nominal. Zero traps recorded.'",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-system-vitals-section-above-the-agent-table-in-frontend-src-components-agentregistrytable-tsx-containing-a-responsive-row-with-two-cards-displaying-infrastructure-component-health",
-      "title": "Add a 'System Vitals' section above the agent table in frontend/src/components/AgentRegistryTable.tsx containing a responsive row with two cards displaying infrastructure component health",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-card-1-in-the-system-vitals-section-labeled-orchestrator-core-displaying-a-cycles-gauge-with-a-mock-value-of-4-2t-cycles",
-      "title": "Create Card 1 in the System Vitals section labeled 'Orchestrator Core' displaying a Cycles Gauge with a mock value of 4.2T Cycles",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-card-2-in-the-system-vitals-section-labeled-telemetry-side-master-displaying-a-cycles-gauge-with-a-mock-value-of-5-0t-cycles",
-      "title": "Create Card 2 in the System Vitals section labeled 'Telemetry Side Master' displaying a Cycles Gauge with a mock value of 5.0T Cycles",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-small-logistics-lead-badge-next-to-deep-thought-s-name-in-the-agent-table-within-frontend-src-components-agentregistrytable-tsx",
-      "title": "Add a small 'Logistics Lead' badge next to Deep Thought's name in the agent table within frontend/src/components/AgentRegistryTable.tsx",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-delete-the-file-frontend-src-hooks-useactor-ts-from-the-project",
-      "title": "Delete the file frontend/src/hooks/useActor.ts from the project",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-mutation-hook-useresetagents-in-frontend-src-hooks-usequeries-ts-that-calls-the-reset-agents-backend-function-and-invalidates-the-agentstatuses-query-upon-success",
-      "title": "Add a mutation hook useResetAgents in frontend/src/hooks/useQueries.ts that calls the reset_agents backend function and invalidates the agentStatuses query upon success",
-      "reqIds": [
-        "REQ-31"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-reset-agents-button-in-the-swarm-health-tab-frontend-src-components-agentregistrytable-tsx-positioned-above-the-system-vitals-section-that-triggers-the-useresetagents-mutation-when-clicked",
-      "title": "Add a 'Reset Agents' button in the Swarm Health tab (frontend/src/components/AgentRegistryTable.tsx) positioned above the System Vitals section that triggers the useResetAgents mutation when clicked",
-      "reqIds": [
-        "REQ-32"
-      ],
-      "version": 1
-    }
-  ],
-  "new_feature_requests": [
-    {
-      "id": "AR-8",
-      "summary": "Add text input field and Send button to Boardroom UI that triggers start_boardroom_debate with typed text (frontend only)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Enter key to send in Boardroom text command console (without Shift for new line)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Auto-scroll in Boardroom transcript display when new messages arrive",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Create Side Master telemetry canister (backend/telemetry.mo) with AgentTelemetry type, updateTelemetry/getTelemetry functions, and register in dfx.json",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Create a new file backend/telemetry.mo containing a minimalist Motoko actor with no authorization or access control imports",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Define a type AgentTelemetry in backend/telemetry.mo with fields: agentId : Nat; cycles : Nat; memoryUsed : Nat; status : Text; crashLogs : [Text]",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Create a var telemetryData = Map.empty<Nat, AgentTelemetry>() in backend/telemetry.mo to store telemetry data indexed by agent ID",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Implement a public shared function updateTelemetry(data: AgentTelemetry) in backend/telemetry.mo that stores the provided telemetry data in the map",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Implement a public query function getTelemetry(agentId: Nat) in backend/telemetry.mo that returns the telemetry data for the specified agent ID",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Register a new backend canister named 'telemetry' in dfx.json pointing to backend/telemetry.mo without modifying the existing main backend canister configuration",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Add Cycles (Gas), Memory, and Diagnostics columns to agent table in AgentRegistryTable.tsx",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Display placeholder cycles value with Top Up button in agent table",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Render visual progress bar for Memory (Wasm Heap) showing random 10-40% usage",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-21",
-      "summary": "Add View Logs button in Diagnostics column that opens Modal/Dialog for specific agent",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Build Crash Log Terminal view inside Modal with hardcoded mock log entry in monospace green/white text on black background",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Add System Vitals section above agent table with two cards: Orchestrator Core (4.2T Cycles) and Telemetry Side Master (5.0T Cycles)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Add 'Logistics Lead' badge next to Deep Thought's name in agent table",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-32",
-      "summary": "Verify the actual folder structure for generated declarations and correct the import path in frontend/src/hooks/useActor.ts from '../../../declarations/telemetry' to the correct relative path (likely '../../declarations/telemetry' if declarations are inside src)",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-33",
-      "summary": "Trigger a rebuild after declarations are generated and import paths are verified",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-36",
-      "summary": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization: Actor 1 (Main Backend) with Identity + _initializeAccessControlWithSecret, Actor 2 (Telemetry) with try/catch + dynamic import",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-37",
-      "summary": "Update frontend/src/hooks/useQueries.ts: remove reset_agents() references and modify useResetAgents mutation to call actor.initializeAgents() instead",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-38",
-      "summary": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization logic: Initialize Actor 1 (Main Backend) with Identity and call _initializeAccessControlWithSecret, then initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic import (await import('../../declarations/telemetry')), and return { actor, telemetryActor, isFetching }",
-      "reqIds": [
-        "REQ-33"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-39",
-      "summary": "Update frontend/src/hooks/useQueries.ts to remove all references to reset_agents() function",
-      "reqIds": [
-        "REQ-34"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-40",
-      "summary": "Update the useResetAgents mutation in frontend/src/hooks/useQueries.ts to call actor.initializeAgents() instead of the previous reset_agents() function",
-      "reqIds": [
-        "REQ-35"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-41",
-      "summary": "Run dfx generate telemetry command to generate declarations for the telemetry canister before completing the build",
-      "reqIds": [
-        "REQ-36"
-      ],
       "status": "pending"
     }
   ],
-  "projectName": "The Gang",
+  "projectName": "Update useActor hook to prepare telemetry actor state",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

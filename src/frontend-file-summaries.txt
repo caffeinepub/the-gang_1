@@ -12,7 +12,7 @@
   "frontend/src/main.tsx": "Application entry point with QueryClientProvider and Sonner Toaster for toast notifications.",
   "frontend/src/components/SensoryCortexTab.tsx": "File ingestion interface with drag-and-drop zone, camera capture, and chunked upload functionality with useActor import and usage removed.",
   "frontend/src/components/AgentRegistryTable.tsx": "Agent registry table component displaying system infrastructure vitals and agent status with kill switch toggles, cycles/memory/diagnostics columns, Logistics Lead badge, and a Reset Agents button positioned above the System Vitals section.",
-  "frontend/src/hooks/useActor.ts": "Dual-actor initialization hook that creates the main backend actor with Identity authentication and _initializeAccessControlWithSecret, and dynamically imports the telemetry actor within a try/catch block, returning { actor, telemetryActor, isFetching }.",
+  "frontend/src/hooks/useActor.ts": "Dual-actor initialization hook that creates the main backend actor with Identity authentication and _initializeAccessControlWithSecret, includes telemetryActor state placeholder, and returns { actor, telemetryActor, isFetching }.",
   "frontend/src/config.ts": "Configuration file that exports backend Canister ID and network settings, reading from environment variables with fallback to local development defaults.",
   "frontend/vite.config.ts": "Vite configuration with React plugin, path aliases, environment variable injection for canister IDs, and local API proxy setup.",
   "frontend/.env": "Development environment file containing the backend Canister ID and network configuration for local development.",

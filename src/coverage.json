@@ -1,18 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T00:02:34.657Z",
+  "generatedAt": "2026-02-24T00:11:23.168Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
+    "total": 3,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-33",
-        "summary": "Populate frontend/src/hooks/useActor.ts with dual-actor initialization logic: Initialize Actor 1 (Main Backend) with Identity and call _initializeAccessControlWithSecret, then initialize Actor 2 (Telemetry Actor) inside a try/catch block using dynamic import (await import('../../declarations/telemetry')), and return { actor, telemetryActor, isFetching }",
+        "id": "REQ-1",
+        "summary": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
         "status": "missing",
         "plannedFiles": [
           "frontend/src/hooks/useActor.ts"
@@ -20,28 +20,21 @@
         "matchedFiles": []
       },
       {
-        "id": "REQ-34",
-        "summary": "Update frontend/src/hooks/useQueries.ts to remove all references to reset_agents() function",
+        "id": "REQ-2",
+        "summary": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
         "status": "missing",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useActor.ts"
         ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-35",
-        "summary": "Update the useResetAgents mutation in frontend/src/hooks/useQueries.ts to call actor.initializeAgents() instead of the previous reset_agents() function",
+        "id": "REQ-3",
+        "summary": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
         "status": "missing",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useActor.ts"
         ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-36",
-        "summary": "Run dfx generate telemetry command to generate declarations for the telemetry canister before completing the build",
-        "status": "unknown",
-        "plannedFiles": [],
         "matchedFiles": []
       }
     ]
