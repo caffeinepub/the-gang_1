@@ -1,72 +1,43 @@
 {
   "kind": "build_request",
-  "title": "Update useActor hook to prepare telemetry actor state",
-  "priority": "normal",
+  "title": "Fix telemetry actor initialization in useActor hook",
+  "projectName": "The Gang",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
+      "text": "Add a new useEffect hook in frontend/src/hooks/useActor.ts to initialize the telemetry actor connection. The hook must dynamically import the telemetry declarations module, create the actor using process.env.CANISTER_ID_TELEMETRY or the module's canisterId as fallback, pass identity-based agentOptions when identity exists, call setTelemetryActor with the created actor instance, handle errors with console.warn for offline telemetry, and trigger only when actorQuery.data is available. Position this new useEffect immediately above the existing useEffect that contains invalidateQueries logic.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-7"
         ],
         "quotes": [
-          "Update the React import at the top to include useState: import { useEffect, useState } from 'react';"
+          "There is a bug in frontend/src/hooks/useActor.ts. We added telemetryActor to state, but we forgot to actually initialize the connection, so it remains null.",
+          "Right ABOVE that existing useEffect, insert a NEW useEffect block"
         ]
       },
       "acceptanceCriteria": [
-        "The import statement at the top of useActor.ts includes both useEffect and useState"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-final"
-        ],
-        "quotes": [
-          "Inside the useActor function, right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The telemetryActor state variable is declared immediately after the queryClient declaration",
-        "The state is initialized to null with type annotation <any>"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-user-final"
-        ],
-        "quotes": [
-          "At the very bottom, update the return statement to output three things exactly like this: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The return statement includes all three properties: actor, telemetryActor, and isFetching",
-        "The actor property uses the existing actorQuery.data with null fallback",
-        "The telemetryActor property is included in the return object",
-        "The isFetching property uses actorQuery.isFetching"
+        "The telemetry actor is successfully initialized using dynamic import of ../../../declarations/telemetry",
+        "The actor uses process.env.CANISTER_ID_TELEMETRY with telemetryModule.canisterId as fallback",
+        "Identity-based agentOptions are passed when identity exists",
+        "setTelemetryActor is called with the created actor instance",
+        "Errors are caught and logged with console.warn('Telemetry offline:', e)",
+        "The useEffect depends on [actorQuery.data, identity]",
+        "The new useEffect is positioned above the existing invalidateQueries useEffect",
+        "The telemetryActor state is no longer null after initialization"
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend/main.mo under any circumstances",
-    "Do not modify the existing actorQuery in useActor.ts",
-    "Do not modify the existing useEffect in useActor.ts",
-    "Only modify frontend/src/hooks/useActor.ts"
+    "Do not modify backend/main.mo",
+    "Do not touch the main actorQuery logic in useActor.ts",
+    "Position the new useEffect above the existing invalidateQueries useEffect"
   ],
   "nonGoals": [
-    "Implementing telemetry actor initialization logic",
-    "Connecting telemetry actor to any backend canister",
-    "Modifying any other frontend files",
-    "Adding additional functionality beyond the three specified changes"
+    "Refactoring other parts of the useActor hook",
+    "Modifying telemetry backend logic",
+    "Changing the telemetry state interface"
   ],
   "imageRequirements": {
     "required": [],

@@ -2,37 +2,25 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [],
+  "architectural_notes": [
+    "Telemetry actor uses dynamic import pattern with environment-based canister ID resolution",
+    "Golden Master (backend/main.mo) is locked and must not be modified",
+    "Frontend hooks initialize telemetry connection only after main actor is ready"
+  ],
   "known_issues": [],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
+      "summary": "Add a new useEffect hook in frontend/src/hooks/useActor.ts to initialize the telemetry actor connection. The hook must dynamically import the telemetry declarations module, create the actor using process.env.CANISTER_ID_TELEMETRY or the module's canisterId as fallback, pass identity-based agentOptions when identity exists, call setTelemetryActor with the created actor instance, handle errors with console.warn for offline telemetry, and trigger only when actorQuery.data is available. Position this new useEffect immediately above the existing useEffect that contains invalidateQueries logic.",
       "reqIds": [
         "REQ-1"
       ],
       "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "status": "pending"
     }
   ],
-  "projectName": "Update useActor hook to prepare telemetry actor state",
+  "projectName": "The Gang",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

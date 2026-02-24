@@ -1,36 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T00:11:23.168Z",
+  "generatedAt": "2026-02-24T00:50:31.429Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
+    "total": 1,
     "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "In frontend/src/hooks/useActor.ts, update the React import statement to include useState: import { useEffect, useState } from 'react';",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-2",
-        "summary": "In frontend/src/hooks/useActor.ts, inside the useActor function right below the queryClient declaration, add a new state variable: const [telemetryActor, setTelemetryActor] = useState<any>(null);",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useActor.ts"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-3",
-        "summary": "In frontend/src/hooks/useActor.ts, update the return statement at the very bottom to return three properties: return { actor: actorQuery.data || null, telemetryActor, isFetching: actorQuery.isFetching };",
+        "summary": "Add a new useEffect hook in frontend/src/hooks/useActor.ts to initialize the telemetry actor connection. The hook must dynamically import the telemetry declarations module, create the actor using process.env.CANISTER_ID_TELEMETRY or the module's canisterId as fallback, pass identity-based agentOptions when identity exists, call setTelemetryActor with the created actor instance, handle errors with console.warn for offline telemetry, and trigger only when actorQuery.data is available. Position this new useEffect immediately above the existing useEffect that contains invalidateQueries logic.",
         "status": "missing",
         "plannedFiles": [
           "frontend/src/hooks/useActor.ts"
@@ -42,7 +24,6 @@
   "changedFiles": [
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "project_state.json",
     "scratch/component-selection.json",
