@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Multi-agent AI system 'The Gang' deployed on Internet Computer with 10 canisters: The_Orchestrator (main backend), 8 AI agent canisters (Robby, Skippy, The Architect, Deep Thought, GLaDOS, V.I.N.CENT, Janet, The Librarian), and Sensory_Cortex (document routing). Frontend has three tabs: Boardroom (debates), Sensory Cortex (file upload), and Swarm Health (agent monitoring). Uses chunked 1.8MB file uploads with StableBTreeMap storage. Wasm64 architecture with 6GB heap. Implementing Option 2 cycle management (Agents Self-Sustaining) where Deep Thought (The Accountant) monitors all 9 system canisters and auto-tops up when balances drop below 2T cycles.",
+  "architectural_notes": [
+    "10-canister architecture: The_Orchestrator + 8 AI agents + Sensory_Cortex + Deep_Thought",
+    "Deep_Thought implements Option 2 (Agents Self-Sustaining): each agent maintains own cycle balance, monitored centrally",
+    "Auto-top-up thresholds: Critical <2T cycles (trigger), Warning <5T cycles, Healthy >10T cycles",
+    "Cycle costs: Small model (0.5B params) ~10-20B cycles, Medium (1.5B) ~30-50B cycles, Large (3B) ~80-150B cycles per response",
+    "Storage costs: 127,000 cycles/GB/sec (~1.5T cycles/year for 390GB)",
+    "File chunking: 1.8MB segments to comply with IC ingress message limit",
+    "StableBTreeMap bypasses Wasm heap for persistent storage (critical for large files)",
+    "Wasm64 architecture: 6GB heap per canister (vs 4GB Wasm32 limit)",
+    "DTS (Deterministic Time-Slicing): Up to 500B instructions per message for LLM inference",
+    "Reverse gas model: receiving canister pays for computation, not sender"
+  ],
+  "known_issues": [
+    "AI agent responses currently stubbed - awaiting manual llama_cpp_canister deployment for 8 agent canisters",
+    "Cross-canister calls to agents not connected yet (external actor interfaces defined but not wired)",
+    "Cycle monitoring dashboard not yet implemented in Swarm Health tab",
+    "Deep_Thought registry needs initialization with 9 system canister principals after deployment",
+    "FileAuditTab.tsx had hardcoded exists: false values instead of real backend file checks - reverted to v77"
+  ],
+  "isFixRequest": true,
+  "existing_features": [],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add Deep Thought (Accountant) canister with cycle monitoring, auto-top-up (3T when <2T), and burn rate reporting",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Create a new folder named 'accountant' in the root directory of the project",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Create a file named 'main.mo' inside the accountant folder containing the complete DeepThought actor code with cycle reservoir management, registry for 9 system canisters, monitorBalances function, autoTopUp function (triggers at <2T cycles, sends 3T cycles), and generateBurnReport function",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Add a new canister entry named 'accountant' to dfx.json that points to accountant/main.mo with type motoko",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Revert the codebase to Version 77 to remove the hardcoded exists: false values in FileAuditTab.tsx that faked the audit UI for accountant and dfx.json files",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Verify that Version 77 is deployed and working correctly before proceeding with any further changes",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "The Gang",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

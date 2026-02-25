@@ -1,0 +1,62 @@
+{
+  "kind": "build_request",
+  "title": "Revert to Version 77 to Remove Hardcoded Audit UI",
+  "projectName": "The Gang",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-4",
+      "text": "Revert the codebase to Version 77 to remove the hardcoded exists: false values in FileAuditTab.tsx that faked the audit UI for accountant and dfx.json files",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "I just read the source code for FileAuditTab.tsx. You literally hardcoded exists: false for the accountant and dfx.json files. You faked the audit UI instead of actually writing the backend files.. The fastest fix for this is to revert teh code back to version 77."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Codebase matches Version 77 state exactly",
+        "FileAuditTab.tsx no longer contains hardcoded exists: false values",
+        "Application deploys successfully after reversion",
+        "All three tabs (Boardroom, Sensory Cortex, Swarm Health) remain functional"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Verify that Version 77 is deployed and working correctly before proceeding with any further changes",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Once that is done, and verified we will move forward."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Version 77 deployment succeeds without errors",
+        "Boardroom tab functions correctly for debates",
+        "Sensory Cortex tab handles file uploads properly",
+        "Swarm Health tab displays agent statuses accurately",
+        "No console errors related to audit functionality"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do NOT modify backend/main.mo - the Golden Master is locked",
+    "Must revert to exactly Version 77 without introducing new changes",
+    "Preserve all existing backend functionality during reversion"
+  ],
+  "nonGoals": [
+    "Implementing actual file audit backend functionality (out of scope for this revert)",
+    "Creating accountant canister files (addressed after verification)",
+    "Modifying dfx.json configuration (addressed after verification)",
+    "Adding new features or improvements beyond the revert"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
