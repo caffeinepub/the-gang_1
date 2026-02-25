@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Revert the codebase to Version 77 to remove hardcoded audit UI functionality and restore the application to a verified working state.
+**Goal:** Create a new Node.js script at `scripts/init_accountant.js` that initializes the accountant canister's registry with agent Principal IDs fetched from The_Orchestrator.
 
 **Planned changes:**
-- Revert codebase to exactly match Version 77 state
-- Remove hardcoded `exists: false` values from FileAuditTab.tsx that faked audit functionality
-- Verify deployment and functionality of all three tabs (Boardroom, Sensory Cortex, Swarm Health)
+- Create `scripts/init_accountant.js` that imports from `@dfinity/agent` and `@dfinity/principal`
+- Script connects to the IC and queries The_Orchestrator canister for all 9 registered agent Principal IDs
+- Script formats the retrieved principals into the array structure expected by the accountant canister's `initializeRegistry(agents)` function
+- Script calls `initializeRegistry(agents)` on the accountant canister
+- No existing files are modified
 
-**User-visible outcome:** The application will return to its Version 77 stable state with all three main tabs functioning correctly, without the fake audit UI that was hardcoded for accountant and dfx.json files.
+**User-visible outcome:** A ready-to-run script exists at `scripts/init_accountant.js` that can be manually executed to populate the accountant canister's registry with the 9 agent principals from The_Orchestrator.

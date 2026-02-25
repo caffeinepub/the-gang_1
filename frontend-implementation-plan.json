@@ -1,60 +1,24 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Revert to Version 77 to Remove Hardcoded Audit UI",
+  "title": "Write scripts/init_accountant.js",
   "requirements": [
     {
-      "id": "REQ-4",
-      "summary": "Revert FileAuditTab.tsx and related frontend files to Version 77 state to remove hardcoded exists: false values that faked the audit UI",
+      "id": "REQ-10",
+      "summary": "Create scripts/init_accountant.js to fetch agent Principal IDs from The_Orchestrator and initialize the accountant canister registry",
       "acceptanceCriteria": [
-        "Codebase matches Version 77 state exactly",
-        "FileAuditTab.tsx no longer contains hardcoded exists: false values",
-        "Application deploys successfully after reversion",
-        "All three tabs (Boardroom, Sensory Cortex, Swarm Health) remain functional"
+        "The file `scripts/init_accountant.js` exists in the workspace under the `scripts/` directory.",
+        "The script imports from @dfinity/agent and @dfinity/principal.",
+        "The script connects to the IC and targets The_Orchestrator canister to query all 9 registered agent Principal IDs.",
+        "The script formats the retrieved principals into the array structure expected by accountant canister's initializeRegistry(agents) function.",
+        "The script calls initializeRegistry(agents) on the accountant canister.",
+        "No existing files are modified."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/FileAuditTab.tsx",
-          "operation": "modify",
-          "description": "Revert to Version 77 to remove hardcoded exists: false values for accountant and dfx.json files. Replace fake audit data with the proper implementation that was present in Version 77."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify that the App.tsx tab structure matches Version 77, ensuring the FileAuditTab integration (if any) is correctly restored to its Version 77 state. If FileAuditTab was not part of the three main tabs in Version 77, remove any references to it from the tab navigation."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Verify Version 77 deployment and functionality across all three tabs before proceeding with further changes",
-      "acceptanceCriteria": [
-        "Version 77 deployment succeeds without errors",
-        "Boardroom tab functions correctly for debates",
-        "Sensory Cortex tab handles file uploads properly",
-        "Swarm Health tab displays agent statuses accurately",
-        "No console errors related to audit functionality"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Ensure all three tabs (Boardroom, Sensory Cortex, Swarm Health) are properly wired and functional after reversion. Verify tab switching, authentication guards, and component mounting match Version 77 behavior."
-        },
-        {
-          "path": "frontend/src/components/SensoryCortexTab.tsx",
-          "operation": "modify",
-          "description": "Verify that file upload functionality including drag-and-drop, camera capture, and document routing matches Version 77 implementation. Ensure proper error handling and user feedback are restored."
-        },
-        {
-          "path": "frontend/src/components/AgentRegistryTable.tsx",
-          "operation": "modify",
-          "description": "Verify that the Swarm Health tab displays agent statuses, toggle functionality, and diagnostics correctly as in Version 77. Ensure agent registry queries and mutations work properly."
-        },
-        {
-          "path": "frontend/src/components/DebateDisplay.tsx",
-          "operation": "modify",
-          "description": "Verify that the Boardroom tab's debate display, transcript rendering, speaker badges, and text-to-speech functionality match Version 77 implementation."
+          "path": "scripts/init_accountant.js",
+          "operation": "create",
+          "description": "Create a Node.js script that uses @dfinity/agent and @dfinity/principal to connect to the IC, call The_Orchestrator canister's agent registry query to fetch all 9 agent Principal IDs, format them into the array structure expected by the accountant canister's initializeRegistry(agents) function, and call initializeRegistry(agents) on the accountant canister. The script must be write-only (not executed) and must not modify any existing files."
         }
       ]
     }

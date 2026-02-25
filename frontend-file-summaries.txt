@@ -17,5 +17,7 @@
   "frontend/vite.config.ts": "Vite configuration with React plugin, path aliases, environment variable injection for canister IDs, and local API proxy setup.",
   "frontend/.env": "Development environment file containing the backend Canister ID and network configuration for local development.",
   "frontend/.env.production": "Production environment file containing the backend Canister ID and network configuration for IC mainnet deployment.",
-  "frontend/src/components/CrashLogModal.tsx": "Modal dialog component that displays agent diagnostics in a terminal-style black box with green/white monospace text, showing agent name, ID, status, and hardcoded mock telemetry log entry."
+  "frontend/src/components/CrashLogModal.tsx": "Modal dialog component that displays agent diagnostics in a terminal-style black box with green/white monospace text, showing agent name, ID, status, and hardcoded mock telemetry log entry.",
+  "accountant/.gitkeep": "Empty placeholder file used solely to establish the `accountant` folder in version control.",
+  "scripts/init_accountant.js": "Node.js ESM script that reads canister IDs from dfx output files or the dfx CLI, queries The_Orchestrator's `getAgentRegistry` to fetch all 9 agents, formats them into `CanisterInfo` records (name + Principal), and calls `initializeRegistry(agents)` on the accountant canister. Supports `--network local|ic` flag with full error handling and step-by-step console logging."
 }

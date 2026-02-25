@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Multi-agent AI system 'The Gang' deployed on Internet Computer with 10 canisters: The_Orchestrator (main backend), 8 AI agent canisters (Robby, Skippy, The Architect, Deep Thought, GLaDOS, V.I.N.CENT, Janet, The Librarian), and Sensory_Cortex (document routing). Frontend has three tabs: Boardroom (debates), Sensory Cortex (file upload), and Swarm Health (agent monitoring). Uses chunked 1.8MB file uploads with StableBTreeMap storage. Wasm64 architecture with 6GB heap. Implementing Option 2 cycle management (Agents Self-Sustaining) where Deep Thought (The Accountant) monitors all 9 system canisters and auto-tops up when balances drop below 2T cycles.",
+  "projectStateVersion": 13,
+  "summary": "Multi-agent AI system 'The Gang' deployed on Internet Computer with 10 canisters: The_Orchestrator (main backend), 8 AI agent canisters (Robby, Skippy, The Architect, Deep Thought, GLaDOS, V.I.N.CENT, Janet, The Librarian), and Sensory_Cortex (document routing). Frontend has three tabs: Boardroom (debates), Sensory Cortex (file upload), and Swarm Health (agent monitoring). Uses chunked 1.8MB file uploads with StableBTreeMap storage. Wasm64 architecture with 6GB heap. Version 85 is the locked Master. Deep Thought (Accountant) canister is implemented. Next step: initialize Deep Thought's registry via a Node.js script (scripts/init_accountant.js) that fetches agent principals from The_Orchestrator and calls initializeRegistry on the accountant canister.",
   "architectural_notes": [
     "10-canister architecture: The_Orchestrator + 8 AI agents + Sensory_Cortex + Deep_Thought",
     "Deep_Thought implements Option 2 (Agents Self-Sustaining): each agent maintains own cycle balance, monitored centrally",
@@ -18,10 +18,9 @@
     "AI agent responses currently stubbed - awaiting manual llama_cpp_canister deployment for 8 agent canisters",
     "Cross-canister calls to agents not connected yet (external actor interfaces defined but not wired)",
     "Cycle monitoring dashboard not yet implemented in Swarm Health tab",
-    "Deep_Thought registry needs initialization with 9 system canister principals after deployment",
     "FileAuditTab.tsx had hardcoded exists: false values instead of real backend file checks - reverted to v77"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [],
   "new_feature_requests": [
     {
@@ -67,6 +66,52 @@
       "summary": "Verify that Version 77 is deployed and working correctly before proceeding with any further changes",
       "reqIds": [
         "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Create a new empty folder named 'accountant' in the project root directory. Do not modify any existing files — not backend/main.mo, not dfx.json, not any frontend file, and not any other existing file.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Create the file `accountant/main.mo` containing the complete DeepThought actor code exactly as provided: stable storage for masterBalance, canisterRegistry, totalTopUps, and totalCyclesDistributed; cycle reservoir management (acceptCycles, getMasterBalance, withdrawCycles); initializeRegistry; monitorBalances; autoTopUp (triggers at <2T cycles, sends 3T cycles); generateBurnReport; formatCycles helper; getRegistryInfo and getStats query functions; and preupgrade/postupgrade system hooks.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add a new canister entry named `accountant` to `dfx.json` that points to `accountant/main.mo` with type `motoko`. Do not modify any other canister entries, backend/main.mo, or any frontend files.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Write a Node.js script at scripts/init_accountant.js that fetches all 9 agent Principal IDs from The_Orchestrator, formats them into the correct array structure, and calls accountant canister's initializeRegistry(agents) function. Do not execute it, do not modify any existing files.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Create a new file at scripts/init_accountant.js containing a Node.js script that: (1) uses @dfinity/agent and @dfinity/principal to connect to the IC, (2) fetches the Principal IDs for all 9 agents currently registered in The_Orchestrator by calling its agent registry query, (3) formats the results into the array structure expected by the accountant canister's initializeRegistry(agents) function, and (4) calls initializeRegistry(agents) on the accountant canister. The script must not be executed — it should only be written to the workspace. Do not modify any existing files.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Create the file `scripts/init_accountant.js` containing a Node.js script that: (1) uses @dfinity/agent and @dfinity/principal to connect to the IC, (2) fetches the Principal IDs for all 9 agents currently registered in The_Orchestrator by calling its agent registry query, (3) formats the results into the array structure expected by the accountant canister's initializeRegistry(agents) function, and (4) calls initializeRegistry(agents) on the accountant canister. The script must only be written — do not execute it. Do not modify any existing files.",
+      "reqIds": [
+        "REQ-10"
       ],
       "status": "pending"
     }

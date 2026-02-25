@@ -1,59 +1,44 @@
 {
   "kind": "build_request",
-  "title": "Revert to Version 77 to Remove Hardcoded Audit UI",
+  "title": "Write scripts/init_accountant.js",
   "projectName": "The Gang",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-4",
-      "text": "Revert the codebase to Version 77 to remove the hardcoded exists: false values in FileAuditTab.tsx that faked the audit UI for accountant and dfx.json files",
-      "target": "frontend",
+      "id": "REQ-10",
+      "text": "Create the file `scripts/init_accountant.js` containing a Node.js script that: (1) uses @dfinity/agent and @dfinity/principal to connect to the IC, (2) fetches the Principal IDs for all 9 agents currently registered in The_Orchestrator by calling its agent registry query, (3) formats the results into the array structure expected by the accountant canister's initializeRegistry(agents) function, and (4) calls initializeRegistry(agents) on the accountant canister. The script must only be written — do not execute it. Do not modify any existing files.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-1",
+          "msg-5"
         ],
         "quotes": [
-          "I just read the source code for FileAuditTab.tsx. You literally hardcoded exists: false for the accountant and dfx.json files. You faked the audit UI instead of actually writing the backend files.. The fastest fix for this is to revert teh code back to version 77."
+          "write only scripts/init_accountant.js. Nothing else.",
+          "Write a Node.js script at scripts/init_accountant.js that fetches all 9 agent Principal IDs from The_Orchestrator, formats them into the correct array structure, and calls accountant canister's initializeRegistry(agents) function. Do not execute it, do not modify any existing files."
         ]
       },
       "acceptanceCriteria": [
-        "Codebase matches Version 77 state exactly",
-        "FileAuditTab.tsx no longer contains hardcoded exists: false values",
-        "Application deploys successfully after reversion",
-        "All three tabs (Boardroom, Sensory Cortex, Swarm Health) remain functional"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Verify that Version 77 is deployed and working correctly before proceeding with any further changes",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Once that is done, and verified we will move forward."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Version 77 deployment succeeds without errors",
-        "Boardroom tab functions correctly for debates",
-        "Sensory Cortex tab handles file uploads properly",
-        "Swarm Health tab displays agent statuses accurately",
-        "No console errors related to audit functionality"
+        "The file `scripts/init_accountant.js` exists in the workspace under the `scripts/` directory.",
+        "The script imports from @dfinity/agent and @dfinity/principal.",
+        "The script connects to the IC and targets The_Orchestrator canister to query all 9 registered agent Principal IDs.",
+        "The script formats the retrieved principals into the array structure expected by accountant canister's initializeRegistry(agents) function.",
+        "The script calls initializeRegistry(agents) on the accountant canister.",
+        "No existing files are modified."
       ]
     }
   ],
   "constraints": [
-    "Do NOT modify backend/main.mo - the Golden Master is locked",
-    "Must revert to exactly Version 77 without introducing new changes",
-    "Preserve all existing backend functionality during reversion"
+    "Do not modify any existing files — not backend/main.mo, not dfx.json, not any frontend file, and not any other existing file.",
+    "Do not execute the script — only write it to the workspace.",
+    "Write only scripts/init_accountant.js and nothing else."
   ],
   "nonGoals": [
-    "Implementing actual file audit backend functionality (out of scope for this revert)",
-    "Creating accountant canister files (addressed after verification)",
-    "Modifying dfx.json configuration (addressed after verification)",
-    "Adding new features or improvements beyond the revert"
+    "Executing or running the init_accountant.js script.",
+    "Modifying dfx.json or any canister configuration.",
+    "Modifying backend/main.mo or any Motoko source file.",
+    "Modifying any frontend files.",
+    "Creating any files other than scripts/init_accountant.js."
   ],
   "imageRequirements": {
     "required": [],
