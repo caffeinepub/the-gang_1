@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SpeechRecognitionHook {
   isListening: boolean;
@@ -11,20 +11,22 @@ interface SpeechRecognitionHook {
 
 export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (typeof window !== "undefined") {
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         setIsSupported(true);
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-US';
+        recognitionRef.current.lang = "en-US";
 
         // CRITICAL FIX: Use functional update pattern to prevent stale closure issues
         recognitionRef.current.onresult = (event: any) => {
@@ -34,19 +36,19 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
             setTranscript(() => speechResult);
             setError(null);
           } catch (err) {
-            console.error('Speech recognition result error:', err);
-            setError('Failed to process speech result');
+            console.error("Speech recognition result error:", err);
+            setError("Failed to process speech result");
           }
         };
 
         recognitionRef.current.onerror = (event: any) => {
           try {
-            console.error('Speech recognition error:', event.error);
+            console.error("Speech recognition error:", event.error);
             setError(`Speech recognition error: ${event.error}`);
             setIsListening(false);
           } catch (err) {
-            console.error('Error handler failed:', err);
-            setError('Critical speech recognition error');
+            console.error("Error handler failed:", err);
+            setError("Critical speech recognition error");
             setIsListening(false);
           }
         };
@@ -55,7 +57,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
           try {
             setIsListening(false);
           } catch (err) {
-            console.error('Speech recognition end error:', err);
+            console.error("Speech recognition end error:", err);
             setIsListening(false);
           }
         };
@@ -69,7 +71,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         try {
           recognitionRef.current.stop();
         } catch (err) {
-          console.error('Cleanup error:', err);
+          console.error("Cleanup error:", err);
         }
       }
     };
@@ -82,8 +84,8 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         recognitionRef.current.start();
         setIsListening(true);
       } catch (err) {
-        console.error('Failed to start speech recognition:', err);
-        setError('Failed to start recording');
+        console.error("Failed to start speech recognition:", err);
+        setError("Failed to start recording");
       }
     }
   }, [isListening]);
@@ -93,8 +95,8 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
       try {
         recognitionRef.current.stop();
       } catch (err) {
-        console.error('Failed to stop speech recognition:', err);
-        setError('Failed to stop recording');
+        console.error("Failed to stop speech recognition:", err);
+        setError("Failed to stop recording");
         setIsListening(false);
       }
     }

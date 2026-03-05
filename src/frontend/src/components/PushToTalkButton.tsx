@@ -1,40 +1,53 @@
-import { Button } from '@/components/ui/button';
-import { Mic, MicOff } from 'lucide-react';
-import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
-import { useEffect, useRef } from 'react';
+import { Button } from "@/components/ui/button";
+import { Mic, MicOff } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 
 interface PushToTalkButtonProps {
   onTranscriptComplete: (transcript: string) => void;
   disabled?: boolean;
 }
 
-export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkButtonProps) {
-  const { isListening, transcript, error, isSupported, startListening, stopListening } =
-    useSpeechRecognition();
+export function PushToTalkButton({
+  onTranscriptComplete,
+  disabled,
+}: PushToTalkButtonProps) {
+  const {
+    isListening,
+    transcript,
+    error,
+    isSupported,
+    startListening,
+    stopListening,
+  } = useSpeechRecognition();
 
   // Track the last processed transcript to avoid duplicate processing
-  const lastProcessedTranscriptRef = useRef<string>('');
+  const lastProcessedTranscriptRef = useRef<string>("");
 
   // Process transcript when speech recognition stops and we have new content
-  // FIX 1: Removed 'transcript' from dependency array to prevent infinite loop
+  // lastProcessedTranscriptRef guards against duplicate processing on re-renders
   useEffect(() => {
-    if (!isListening && transcript && transcript !== lastProcessedTranscriptRef.current) {
+    if (
+      !isListening &&
+      transcript &&
+      transcript !== lastProcessedTranscriptRef.current
+    ) {
       // Speech recognition has stopped and we have a new transcript
       lastProcessedTranscriptRef.current = transcript;
       try {
         onTranscriptComplete(transcript);
       } catch (error) {
-        console.error('Error in onTranscriptComplete callback:', error);
+        console.error("Error in onTranscriptComplete callback:", error);
       }
     }
-  }, [isListening, onTranscriptComplete]);
+  }, [isListening, transcript, onTranscriptComplete]);
 
   const handlePushToTalk = () => {
     if (isListening) {
       stopListening();
     } else {
       // Reset the last processed transcript when starting new recording
-      lastProcessedTranscriptRef.current = '';
+      lastProcessedTranscriptRef.current = "";
       startListening();
     }
   };
@@ -53,8 +66,8 @@ export function PushToTalkButton({ onTranscriptComplete, disabled }: PushToTalkB
       <Button
         onClick={() => handlePushToTalk()}
         disabled={disabled}
-        variant={isListening ? 'destructive' : 'default'}
-        className={`w-full ${isListening ? 'animate-pulse' : ''}`}
+        variant={isListening ? "destructive" : "default"}
+        className={`w-full ${isListening ? "animate-pulse" : ""}`}
         size="lg"
       >
         {isListening ? (

@@ -1,15 +1,15 @@
-import { useState, useRef } from 'react';
-import { useRouteDocument } from '../hooks/useQueries';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { toast } from 'sonner';
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useRouteDocument } from "../hooks/useQueries";
 
 const CHUNK_SIZE = 1_800_000;
-const TEXT_FILE_EXTENSIONS = ['.txt', '.csv', '.json', '.md', '.log'];
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'];
+const TEXT_FILE_EXTENSIONS = [".txt", ".csv", ".json", ".md", ".log"];
+const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"];
 
 export function SensoryCortexTab() {
   const { identity } = useInternetIdentity();
-  
+
   const isAuthenticated = !!identity && !identity.getPrincipal().isAnonymous();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -20,13 +20,18 @@ export function SensoryCortexTab() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  
+
   const routeDocument = useRouteDocument();
 
-  if (!isAuthenticated) return <div className="mt-10 text-center text-yellow-500">Please authenticate.</div>;
+  if (!isAuthenticated)
+    return (
+      <div className="mt-10 text-center text-yellow-500">
+        Please authenticate.
+      </div>
+    );
 
   const handleFileSelect = (file: File) => {
-    console.log('[SensoryCortex] File selected:', {
+    console.log("[SensoryCortex] File selected:", {
       name: file.name,
       size: file.size,
       type: file.type,
@@ -58,7 +63,7 @@ export function SensoryCortexTab() {
   const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log('[SensoryCortex] Camera capture:', {
+      console.log("[SensoryCortex] Camera capture:", {
         name: file.name,
         size: file.size,
         type: file.type,
@@ -70,7 +75,7 @@ export function SensoryCortexTab() {
   const handleManualUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log('[SensoryCortex] Manual upload selected:', {
+      console.log("[SensoryCortex] Manual upload selected:", {
         name: file.name,
         size: file.size,
         type: file.type,
@@ -80,7 +85,7 @@ export function SensoryCortexTab() {
   };
 
   const processFileInChunks = async (file: File) => {
-    console.log('[SensoryCortex] Starting chunked upload:', {
+    console.log("[SensoryCortex] Starting chunked upload:", {
       filename: file.name,
       totalSize: file.size,
       chunkSize: CHUNK_SIZE,
@@ -99,39 +104,54 @@ export function SensoryCortexTab() {
         const end = Math.min(start + CHUNK_SIZE, file.size);
         const chunk = file.slice(start, end);
 
-        console.log(`[SensoryCortex] Processing chunk ${chunkIndex + 1}/${totalChunks}:`, {
-          start,
-          end,
-          chunkSize: chunk.size,
-        });
+        console.log(
+          `[SensoryCortex] Processing chunk ${chunkIndex + 1}/${totalChunks}:`,
+          {
+            start,
+            end,
+            chunkSize: chunk.size,
+          },
+        );
 
         const arrayBuffer = await chunk.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        let preview = '';
+        const fileExtension = file.name
+          .substring(file.name.lastIndexOf("."))
+          .toLowerCase();
+        let preview = "";
 
         if (TEXT_FILE_EXTENSIONS.includes(fileExtension)) {
-          const decoder = new TextDecoder('utf-8');
-          const text = decoder.decode(uint8Array.slice(0, Math.min(500, uint8Array.length)));
+          const decoder = new TextDecoder("utf-8");
+          const text = decoder.decode(
+            uint8Array.slice(0, Math.min(500, uint8Array.length)),
+          );
           preview = text;
-          console.log('[SensoryCortex] Text preview generated:', preview.substring(0, 100));
+          console.log(
+            "[SensoryCortex] Text preview generated:",
+            preview.substring(0, 100),
+          );
         } else if (IMAGE_EXTENSIONS.includes(fileExtension)) {
           preview = `[Image: ${file.name}, ${file.size} bytes]`;
-          console.log('[SensoryCortex] Image preview generated:', preview);
+          console.log("[SensoryCortex] Image preview generated:", preview);
         } else {
           preview = `[Binary file: ${file.name}, ${file.size} bytes]`;
-          console.log('[SensoryCortex] Binary preview generated:', preview);
+          console.log("[SensoryCortex] Binary preview generated:", preview);
         }
 
-        console.log(`[SensoryCortex] Calling backend routeDocument for chunk ${chunkIndex + 1}...`);
+        console.log(
+          `[SensoryCortex] Calling backend routeDocument for chunk ${chunkIndex + 1}...`,
+        );
         const assignedAgent = await routeDocument.mutateAsync({
           filename: `${file.name}_chunk_${chunkIndex + 1}_of_${totalChunks}`,
           filePreview: preview,
           fileSize: BigInt(chunk.size),
         });
 
-        console.log(`[SensoryCortex] Chunk ${chunkIndex + 1} routed to:`, assignedAgent);
+        console.log(
+          `[SensoryCortex] Chunk ${chunkIndex + 1} routed to:`,
+          assignedAgent,
+        );
 
         processedBytes += chunk.size;
         const progress = Math.round((processedBytes / file.size) * 100);
@@ -143,12 +163,14 @@ export function SensoryCortexTab() {
         }
       }
 
-      console.log('[SensoryCortex] All chunks processed successfully');
+      console.log("[SensoryCortex] All chunks processed successfully");
       setUploadComplete(true);
       toast.success(`File "${file.name}" uploaded and routed successfully!`);
     } catch (error) {
-      console.error('[SensoryCortex] Upload failed:', error);
-      toast.error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("[SensoryCortex] Upload failed:", error);
+      toast.error(
+        `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
@@ -157,7 +179,7 @@ export function SensoryCortexTab() {
 
   const handleUploadClick = () => {
     if (selectedFile && !isUploading) {
-      console.log('[SensoryCortex] Upload button clicked, starting upload...');
+      console.log("[SensoryCortex] Upload button clicked, starting upload...");
       processFileInChunks(selectedFile);
     }
   };
@@ -167,21 +189,21 @@ export function SensoryCortexTab() {
       <div
         className="border-2 border-dashed rounded-none p-12 text-center transition-colors"
         style={{
-          borderColor: isDragging ? '#39FF14' : '#333',
-          backgroundColor: isDragging ? '#2a2a2a' : '#1a1a1a',
+          borderColor: isDragging ? "#39FF14" : "#333",
+          backgroundColor: isDragging ? "#2a2a2a" : "#1a1a1a",
         }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         <div className="space-y-4">
-          <div className="text-6xl" style={{ color: '#39FF14' }}>
+          <div className="text-6xl" style={{ color: "#39FF14" }}>
             📁
           </div>
-          <h3 className="text-xl font-bold" style={{ color: '#39FF14' }}>
+          <h3 className="text-xl font-bold" style={{ color: "#39FF14" }}>
             Drop File Here
           </h3>
-          <p className="text-sm" style={{ color: '#888' }}>
+          <p className="text-sm" style={{ color: "#888" }}>
             or use the buttons below
           </p>
         </div>
@@ -189,16 +211,17 @@ export function SensoryCortexTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
+          type="button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={isUploading}
           style={{
-            backgroundColor: '#2a2a2a',
-            color: '#39FF14',
-            border: '2px solid #39FF14',
-            borderRadius: '0px',
-            padding: '16px',
-            cursor: isUploading ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
+            backgroundColor: "#2a2a2a",
+            color: "#39FF14",
+            border: "2px solid #39FF14",
+            borderRadius: "0px",
+            padding: "16px",
+            cursor: isUploading ? "not-allowed" : "pointer",
+            fontWeight: "bold",
             opacity: isUploading ? 0.5 : 1,
           }}
           className="flex items-center justify-center gap-2"
@@ -211,20 +234,21 @@ export function SensoryCortexTab() {
           accept="image/*"
           capture="environment"
           onChange={handleCameraCapture}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
         />
 
         <button
+          type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
           style={{
-            backgroundColor: '#2a2a2a',
-            color: '#39FF14',
-            border: '2px solid #39FF14',
-            borderRadius: '0px',
-            padding: '16px',
-            cursor: isUploading ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
+            backgroundColor: "#2a2a2a",
+            color: "#39FF14",
+            border: "2px solid #39FF14",
+            borderRadius: "0px",
+            padding: "16px",
+            cursor: isUploading ? "not-allowed" : "pointer",
+            fontWeight: "bold",
             opacity: isUploading ? 0.5 : 1,
           }}
           className="flex items-center justify-center gap-2"
@@ -235,7 +259,7 @@ export function SensoryCortexTab() {
           ref={fileInputRef}
           type="file"
           onChange={handleManualUpload}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
         />
       </div>
 
@@ -243,16 +267,16 @@ export function SensoryCortexTab() {
         <div
           className="border rounded-none p-6 space-y-4"
           style={{
-            borderColor: '#333',
-            backgroundColor: '#2a2a2a',
+            borderColor: "#333",
+            backgroundColor: "#2a2a2a",
           }}
         >
           <div>
-            <h4 className="font-bold mb-2" style={{ color: '#39FF14' }}>
+            <h4 className="font-bold mb-2" style={{ color: "#39FF14" }}>
               Selected File
             </h4>
-            <p style={{ color: '#FFA500' }}>{selectedFile.name}</p>
-            <p className="text-sm" style={{ color: '#888' }}>
+            <p style={{ color: "#FFA500" }}>{selectedFile.name}</p>
+            <p className="text-sm" style={{ color: "#888" }}>
               Size: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
             </p>
           </div>
@@ -260,18 +284,18 @@ export function SensoryCortexTab() {
           {isUploading && (
             <div>
               <div className="flex justify-between mb-2">
-                <span style={{ color: '#39FF14' }}>Uploading...</span>
-                <span style={{ color: '#39FF14' }}>{uploadProgress}%</span>
+                <span style={{ color: "#39FF14" }}>Uploading...</span>
+                <span style={{ color: "#39FF14" }}>{uploadProgress}%</span>
               </div>
               <div
                 className="h-2 rounded-none overflow-hidden"
-                style={{ backgroundColor: '#1a1a1a' }}
+                style={{ backgroundColor: "#1a1a1a" }}
               >
                 <div
                   className="h-full transition-all duration-300"
                   style={{
                     width: `${uploadProgress}%`,
-                    backgroundColor: '#39FF14',
+                    backgroundColor: "#39FF14",
                   }}
                 />
               </div>
@@ -282,11 +306,11 @@ export function SensoryCortexTab() {
             <div
               className="border rounded-none p-4"
               style={{
-                borderColor: '#39FF14',
-                backgroundColor: '#1a1a1a',
+                borderColor: "#39FF14",
+                backgroundColor: "#1a1a1a",
               }}
             >
-              <p className="font-bold" style={{ color: '#39FF14' }}>
+              <p className="font-bold" style={{ color: "#39FF14" }}>
                 ✓ Routed to: {routedAgent}
               </p>
             </div>
@@ -294,16 +318,17 @@ export function SensoryCortexTab() {
 
           {!isUploading && !uploadComplete && (
             <button
+              type="button"
               onClick={handleUploadClick}
               style={{
-                backgroundColor: '#39FF14',
-                color: '#1a1a1a',
-                border: 'none',
-                borderRadius: '0px',
-                padding: '12px 24px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '100%',
+                backgroundColor: "#39FF14",
+                color: "#1a1a1a",
+                border: "none",
+                borderRadius: "0px",
+                padding: "12px 24px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                width: "100%",
               }}
             >
               Upload & Route

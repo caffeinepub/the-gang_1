@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { StopCircle } from 'lucide-react';
-import { useAbortDebate } from '../hooks/useQueries';
-import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import { Button } from "@/components/ui/button";
+import { StopCircle } from "lucide-react";
+import { useAbortDebate } from "../hooks/useQueries";
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
 interface InterruptButtonProps {
   disabled?: boolean;
@@ -16,7 +16,7 @@ export function InterruptButton({ disabled }: InterruptButtonProps) {
     cancel();
 
     // Call backend to abort debate
-    abortDebate.mutate('User interrupted');
+    abortDebate.mutate("User interrupted");
   };
 
   return (
@@ -28,7 +28,7 @@ export function InterruptButton({ disabled }: InterruptButtonProps) {
       className="w-full font-bold"
     >
       <StopCircle className="h-5 w-5 mr-2" />
-      {abortDebate.isPending ? 'Interrupting...' : 'Interrupt / Stop'}
+      {abortDebate.isPending ? "Interrupting..." : "Interrupt / Stop"}
     </Button>
   );
 }

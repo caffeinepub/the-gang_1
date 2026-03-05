@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 export function useSpeechSynthesis() {
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -6,7 +6,7 @@ export function useSpeechSynthesis() {
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
       setIsSupported(true);
 
       const loadVoices = () => {
@@ -25,18 +25,19 @@ export function useSpeechSynthesis() {
     // Try to find a British Male voice
     const britishMale = voices.find(
       (voice) =>
-        voice.lang.startsWith('en-GB') &&
-        (voice.name.toLowerCase().includes('male') || voice.name.toLowerCase().includes('daniel'))
+        voice.lang.startsWith("en-GB") &&
+        (voice.name.toLowerCase().includes("male") ||
+          voice.name.toLowerCase().includes("daniel")),
     );
 
     if (britishMale) return britishMale;
 
     // Fallback to any British voice
-    const britishVoice = voices.find((voice) => voice.lang.startsWith('en-GB'));
+    const britishVoice = voices.find((voice) => voice.lang.startsWith("en-GB"));
     if (britishVoice) return britishVoice;
 
     // Fallback to any English voice
-    const englishVoice = voices.find((voice) => voice.lang.startsWith('en'));
+    const englishVoice = voices.find((voice) => voice.lang.startsWith("en"));
     if (englishVoice) return englishVoice;
 
     // Last resort: first available voice
@@ -65,7 +66,7 @@ export function useSpeechSynthesis() {
 
       window.speechSynthesis.speak(utterance);
     },
-    [isSupported, getBritishMaleVoice]
+    [isSupported, getBritishMaleVoice],
   );
 
   const cancel = useCallback(() => {
