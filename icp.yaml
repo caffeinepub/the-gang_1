@@ -2,3 +2,5 @@
 canisters:
   - src/frontend
   - src/backend
+  - src/accountant
+  - src/skippy

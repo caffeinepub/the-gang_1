@@ -1,16 +1,14 @@
 // Deep_Thought.mo - The Accountant
 // Standalone canister for cycle management and fiscal reporting
 
-import Cycles "mo:base/ExperimentalCycles";
-import Array "mo:base/Array";
-import Iter "mo:base/Iter";
-import Nat "mo:base/Nat";
-import Principal "mo:base/Principal";
-import Text "mo:base/Text";
-import Time "mo:base/Time";
-import Int "mo:base/Int";
-import Debug "mo:base/Debug";
-import Error "mo:base/Error";
+import Cycles "mo:core/Cycles";
+import Array "mo:core/Array";
+import Nat "mo:core/Nat";
+import Principal "mo:core/Principal";
+import Text "mo:core/Text";
+import Time "mo:core/Time";
+import Int "mo:core/Int";
+import Debug "mo:core/Debug";
 
 actor DeepThought {
 
@@ -29,25 +27,24 @@ actor DeepThought {
 
     // ===== STABLE STORAGE =====
 
-    private stable var masterBalance: Nat = 0;
-    private stable var canisterRegistry: [CanisterInfo] = [];
-    private stable var totalTopUps: Nat = 0;
-    private stable var totalCyclesDistributed: Nat = 0;
+    var masterBalance: Nat = 0;
+    var canisterRegistry: [CanisterInfo] = [];
+    var totalTopUps: Nat = 0;
+    var totalCyclesDistributed: Nat = 0;
 
     // ===== CONSTANTS =====
 
-    private let CRITICAL_THRESHOLD: Nat = 2_000_000_000_000; // 2T cycles
-    private let TOP_UP_AMOUNT: Nat = 3_000_000_000_000; // 3T cycles
-    private let WARNING_THRESHOLD: Nat = 5_000_000_000_000; // 5T cycles
-    private let HEALTHY_THRESHOLD: Nat = 10_000_000_000_000; // 10T cycles
+    let CRITICAL_THRESHOLD: Nat = 2_000_000_000_000; // 2T cycles
+    let TOP_UP_AMOUNT: Nat = 3_000_000_000_000; // 3T cycles
+    let WARNING_THRESHOLD: Nat = 5_000_000_000_000; // 5T cycles
+    let HEALTHY_THRESHOLD: Nat = 10_000_000_000_000; // 10T cycles
 
     // ===== INITIALIZATION =====
 
     public shared func initializeRegistry(agents: [(Text, Principal)]) : async Text {
         let now = Time.now();
-        canisterRegistry := Array.map<(Text, Principal), CanisterInfo>(
-            agents,
-            func(agent) : CanisterInfo {
+        canisterRegistry := agents.map(
+            func(agent : (Text, Principal)) : CanisterInfo {
                 {
                     principal = agent.1;
                     name = agent.0;
@@ -60,7 +57,7 @@ actor DeepThought {
                 }
             }
         );
-        "Registry initialized with " # Nat.toText(Array.size(canisterRegistry)) # " canisters"
+        "Registry initialized with " # canisterRegistry.size().toText() # " canisters"
     };
 
     // ===== CYCLE RESERVOIR MANAGEMENT =====
@@ -79,7 +76,7 @@ actor DeepThought {
     public shared func withdrawCycles(amount: Nat) : async Bool {
         if (masterBalance >= amount) {
             masterBalance -= amount;
-            Cycles.add<system>(amount);
+            let _ = Cycles.burn<system>(amount);
             true
         } else {
             false
@@ -93,7 +90,7 @@ actor DeepThought {
         let now = Time.now();
 
         for (canister in canisterRegistry.vals()) {
-            let canisterActor = actor(Principal.toText(canister.principal)): actor {
+            let canisterActor = actor(canister.principal.toText()): actor {
                 wallet_balance: () -> async Nat
             };
 
@@ -110,11 +107,10 @@ actor DeepThought {
                     "HEALTHY"
                 };
 
-                results := Array.append(results, [(canister.name, balance, status)]);
+                results := results.concat([(canister.name, balance, status)]);
 
-                canisterRegistry := Array.map<CanisterInfo, CanisterInfo>(
-                    canisterRegistry,
-                    func(c) : CanisterInfo {
+                canisterRegistry := canisterRegistry.map(
+                    func(c : CanisterInfo) : CanisterInfo {
                         if (Principal.equal(c.principal, canister.principal)) {
                             {
                                 principal = c.principal;
@@ -132,9 +128,9 @@ actor DeepThought {
                     }
                 );
 
-            } catch (e) {
+            } catch (_e) {
                 Debug.print("Error checking " # canister.name);
-                results := Array.append(results, [(canister.name, 0, "ERROR")]);
+                results := results.concat([(canister.name, 0, "ERROR")]);
             };
         };
 
@@ -148,7 +144,7 @@ actor DeepThought {
         let now = Time.now();
 
         for (canister in canisterRegistry.vals()) {
-            let canisterActor = actor(Principal.toText(canister.principal)): actor {
+            let canisterActor = actor(canister.principal.toText()): actor {
                 wallet_balance: () -> async Nat;
                 wallet_receive: () -> async Nat;
             };
@@ -158,16 +154,15 @@ actor DeepThought {
 
                 if (balance < CRITICAL_THRESHOLD) {
                     if (masterBalance >= TOP_UP_AMOUNT) {
-                        Cycles.add<system>(TOP_UP_AMOUNT);
+                        let _ = Cycles.burn<system>(TOP_UP_AMOUNT);
                         let accepted = await canisterActor.wallet_receive();
 
                         masterBalance -= TOP_UP_AMOUNT;
                         totalTopUps += 1;
                         totalCyclesDistributed += TOP_UP_AMOUNT;
 
-                        canisterRegistry := Array.map<CanisterInfo, CanisterInfo>(
-                            canisterRegistry,
-                            func(c) : CanisterInfo {
+                        canisterRegistry := canisterRegistry.map(
+                            func(c : CanisterInfo) : CanisterInfo {
                                 if (Principal.equal(c.principal, canister.principal)) {
                                     {
                                         principal = c.principal;
@@ -185,22 +180,22 @@ actor DeepThought {
                             }
                         );
 
-                        results := Array.append(results, [
+                        results := results.concat([
                             (canister.name, true, "Topped up with " # formatCycles(accepted))
                         ]);
                     } else {
-                        results := Array.append(results, [
+                        results := results.concat([
                             (canister.name, false, "Insufficient master balance")
                         ]);
                     }
                 } else {
-                    results := Array.append(results, [
+                    results := results.concat([
                         (canister.name, false, "Balance healthy")
                     ]);
                 }
 
-            } catch (e) {
-                results := Array.append(results, [
+            } catch (_e) {
+                results := results.concat([
                     (canister.name, false, "ERROR")
                 ]);
             };
@@ -217,7 +212,7 @@ actor DeepThought {
         report #= "========================================\n\n";
 
         report #= "Master Balance: " # formatCycles(masterBalance) # "\n";
-        report #= "Total Top-Ups: " # Nat.toText(totalTopUps) # "\n";
+        report #= "Total Top-Ups: " # totalTopUps.toText() # "\n";
         report #= "Total Distributed: " # formatCycles(totalCyclesDistributed) # "\n\n";
 
         report #= "CANISTER STATUS:\n";
@@ -240,14 +235,14 @@ actor DeepThought {
 
             if (canister.lastTopUpTime > 0) {
                 let hoursSince = (Time.now() - canister.lastTopUpTime) / 3_600_000_000_000;
-                report #= "  Last Top-Up: " # Int.toText(hoursSince) # " hours ago\n";
+                report #= "  Last Top-Up: " # hoursSince.toText() # " hours ago\n";
             };
 
             report #= "  Total Received: " # formatCycles(canister.totalCyclesReceived) # "\n";
 
             if (canister.lastBalance > 0) {
                 let estimatedDays = canister.lastBalance / 1_100_000_000_000;
-                report #= "  Days Remaining: ~" # Nat.toText(estimatedDays) # "\n";
+                report #= "  Days Remaining: ~" # estimatedDays.toText() # "\n";
             };
         };
 
@@ -263,8 +258,8 @@ actor DeepThought {
         let remainder = cycles % 1_000_000_000_000;
         let inBillions = remainder / 1_000_000_000;
 
-        Nat.toText(inTrillions) # "." #
-        Nat.toText(inBillions / 100) # "T cycles"
+        inTrillions.toText() # "." #
+        (inBillions / 100).toText() # "T cycles"
     };
 
     public query func getRegistryInfo() : async [CanisterInfo] {
@@ -281,7 +276,7 @@ actor DeepThought {
             masterBalance;
             totalTopUps;
             totalCyclesDistributed;
-            canisterCount = Array.size(canisterRegistry);
+            canisterCount = canisterRegistry.size();
         }
     };
 

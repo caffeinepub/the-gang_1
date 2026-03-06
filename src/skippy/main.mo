@@ -62,10 +62,10 @@
 // for routine resets or mode switches.
 // ============================================================
 
-import Text "mo:base/Text";
-import Time "mo:base/Time";
-import Int "mo:base/Int";
-import Debug "mo:base/Debug";
+import Text "mo:core/Text";
+import Time "mo:core/Time";
+import Int "mo:core/Int";
+import Debug "mo:core/Debug";
 
 actor Skippy {
 
@@ -96,15 +96,15 @@ actor Skippy {
         lastTask
     };
 
-    public shared func processQuery(query : Text) : async Text {
-        lastTask := query;
+    public shared func processQuery(input : Text) : async Text {
+        lastTask := input;
         lastResponseTime := Time.now();
 
         // Stub response — real LLM inference wired in next phase
         if (currentMode == "A") {
-            "[SKIPPY / MODE A] Query received: '" # query # "'. Awaiting LLM integration for ANSI/MMUCC/NRS analysis."
+            "[SKIPPY / MODE A] Query received: '" # input # "'. Awaiting LLM integration for ANSI/MMUCC/NRS analysis."
         } else {
-            "[SKIPPY / MODE B] Yeah yeah, I heard you. '" # query # "'. Gimme a sec, my nuggets are getting cold. LLM stub."
+            "[SKIPPY / MODE B] Yeah yeah, I heard you. '" # input # "'. Gimme a sec, my nuggets are getting cold. LLM stub."
         }
     };
 

@@ -12,6 +12,8 @@ build:
           {
             "backend_host": "http://localhost:8081",
             "backend_canister_id": "$BACKEND_CANISTER_ID",
+            "accountant_canister_id": "$CANISTER_ID_ACCOUNTANT",
+            "skippy_canister_id": "$CANISTER_ID_SKIPPY",
             "project_id": "undefined",
             "ii_derivation_origin": "undefined"
           }
