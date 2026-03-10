@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
-import { useRouteDocument } from "../hooks/useQueries";
+import { useRegisterFile } from "../hooks/useQueries";
+import { useStorageClient } from "../hooks/useStorageClient";
 
-const CHUNK_SIZE = 1_800_000;
 const TEXT_FILE_EXTENSIONS = [".txt", ".csv", ".json", ".md", ".log"];
 const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"];
 
@@ -16,12 +16,14 @@ export function SensoryCortexTab() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [persistedHash, setPersistedHash] = useState<string | null>(null);
   const [routedAgent, setRoutedAgent] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const routeDocument = useRouteDocument();
+  const storageClient = useStorageClient();
+  const registerFile = useRegisterFile();
 
   if (!isAuthenticated)
     return (
@@ -39,6 +41,7 @@ export function SensoryCortexTab() {
     setSelectedFile(file);
     setUploadComplete(false);
     setRoutedAgent(null);
+    setPersistedHash(null);
     setUploadProgress(0);
   };
 
@@ -84,88 +87,75 @@ export function SensoryCortexTab() {
     }
   };
 
-  const processFileInChunks = async (file: File) => {
-    console.log("[SensoryCortex] Starting chunked upload:", {
+  /**
+   * Two-phase upload:
+   * Phase 1 -- StorageClient.putFile(): builds BlobHashTree, fetches certificate
+   *            from backend, then sends chunks via PUT to the Caffeine storage
+   *            gateway. Wasm heap is never touched -- bytes go directly to the
+   *            IC storage layer.
+   * Phase 2 -- registerFile(): calls routeDocument() on the backend to record
+   *            the blob hash + metadata in the StableBTreeMap so agents can
+   *            retrieve the file by hash later.
+   */
+  const uploadFile = async (file: File) => {
+    if (!storageClient) {
+      toast.error("Storage client not ready. Please try again.");
+      return;
+    }
+
+    console.log("[SensoryCortex] Starting blob-storage upload:", {
       filename: file.name,
-      totalSize: file.size,
-      chunkSize: CHUNK_SIZE,
-      estimatedChunks: Math.ceil(file.size / CHUNK_SIZE),
+      size: file.size,
     });
 
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-      let processedBytes = 0;
+      // --- Phase 1: Persist bytes to the IC storage gateway (Wasm heap bypass) ---
+      console.log(
+        "[SensoryCortex] Phase 1: Uploading to blob-storage gateway...",
+      );
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
 
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex * CHUNK_SIZE;
-        const end = Math.min(start + CHUNK_SIZE, file.size);
-        const chunk = file.slice(start, end);
+      const { hash } = await storageClient.putFile(bytes, (pct) => {
+        setUploadProgress(pct);
+        console.log(`[SensoryCortex] Upload progress: ${pct}%`);
+      });
 
-        console.log(
-          `[SensoryCortex] Processing chunk ${chunkIndex + 1}/${totalChunks}:`,
-          {
-            start,
-            end,
-            chunkSize: chunk.size,
-          },
+      console.log("[SensoryCortex] Phase 1 complete. Blob hash:", hash);
+      setPersistedHash(hash);
+
+      // --- Phase 2: Register hash + metadata in backend StableBTreeMap ---
+      console.log(
+        "[SensoryCortex] Phase 2: Registering file in backend registry...",
+      );
+
+      const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+      let preview = `blob-hash:${hash}`;
+      if (TEXT_FILE_EXTENSIONS.includes(ext)) {
+        const decoder = new TextDecoder("utf-8");
+        const snippet = decoder.decode(
+          bytes.slice(0, Math.min(500, bytes.length)),
         );
-
-        const arrayBuffer = await chunk.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-
-        const fileExtension = file.name
-          .substring(file.name.lastIndexOf("."))
-          .toLowerCase();
-        let preview = "";
-
-        if (TEXT_FILE_EXTENSIONS.includes(fileExtension)) {
-          const decoder = new TextDecoder("utf-8");
-          const text = decoder.decode(
-            uint8Array.slice(0, Math.min(500, uint8Array.length)),
-          );
-          preview = text;
-          console.log(
-            "[SensoryCortex] Text preview generated:",
-            preview.substring(0, 100),
-          );
-        } else if (IMAGE_EXTENSIONS.includes(fileExtension)) {
-          preview = `[Image: ${file.name}, ${file.size} bytes]`;
-          console.log("[SensoryCortex] Image preview generated:", preview);
-        } else {
-          preview = `[Binary file: ${file.name}, ${file.size} bytes]`;
-          console.log("[SensoryCortex] Binary preview generated:", preview);
-        }
-
-        console.log(
-          `[SensoryCortex] Calling backend routeDocument for chunk ${chunkIndex + 1}...`,
-        );
-        const assignedAgent = await routeDocument.mutateAsync({
-          filename: `${file.name}_chunk_${chunkIndex + 1}_of_${totalChunks}`,
-          filePreview: preview,
-          fileSize: BigInt(chunk.size),
-        });
-
-        console.log(
-          `[SensoryCortex] Chunk ${chunkIndex + 1} routed to:`,
-          assignedAgent,
-        );
-
-        processedBytes += chunk.size;
-        const progress = Math.round((processedBytes / file.size) * 100);
-        setUploadProgress(progress);
-        console.log(`[SensoryCortex] Upload progress: ${progress}%`);
-
-        if (chunkIndex === 0) {
-          setRoutedAgent(assignedAgent);
-        }
+        preview = `blob-hash:${hash} | preview:${snippet}`;
+      } else if (IMAGE_EXTENSIONS.includes(ext)) {
+        preview = `blob-hash:${hash} | type:image`;
       }
 
-      console.log("[SensoryCortex] All chunks processed successfully");
+      const agent = await registerFile.mutateAsync({
+        filename: file.name,
+        blobHash: preview,
+        fileSize: BigInt(file.size),
+      });
+
+      console.log("[SensoryCortex] Phase 2 complete. Assigned agent:", agent);
+      setRoutedAgent(agent);
       setUploadComplete(true);
-      toast.success(`File "${file.name}" uploaded and routed successfully!`);
+      toast.success(
+        `"${file.name}" persisted to IC storage. Hash: ${hash.substring(0, 20)}...`,
+      );
     } catch (error) {
       console.error("[SensoryCortex] Upload failed:", error);
       toast.error(
@@ -180,13 +170,14 @@ export function SensoryCortexTab() {
   const handleUploadClick = () => {
     if (selectedFile && !isUploading) {
       console.log("[SensoryCortex] Upload button clicked, starting upload...");
-      processFileInChunks(selectedFile);
+      uploadFile(selectedFile);
     }
   };
 
   return (
     <div className="space-y-6">
       <div
+        data-ocid="sensory.dropzone"
         className="border-2 border-dashed rounded-none p-12 text-center transition-colors"
         style={{
           borderColor: isDragging ? "#39FF14" : "#333",
@@ -212,6 +203,7 @@ export function SensoryCortexTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
           type="button"
+          data-ocid="sensory.camera.button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={isUploading}
           style={{
@@ -239,6 +231,7 @@ export function SensoryCortexTab() {
 
         <button
           type="button"
+          data-ocid="sensory.upload_button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
           style={{
@@ -282,9 +275,15 @@ export function SensoryCortexTab() {
           </div>
 
           {isUploading && (
-            <div>
+            <div data-ocid="sensory.loading_state">
               <div className="flex justify-between mb-2">
-                <span style={{ color: "#39FF14" }}>Uploading...</span>
+                <span style={{ color: "#39FF14" }}>
+                  {uploadProgress < 5
+                    ? "Certifying with IC backend..."
+                    : uploadProgress < 100
+                      ? "Uploading to IC storage gateway..."
+                      : "Registering in agent registry..."}
+                </span>
                 <span style={{ color: "#39FF14" }}>{uploadProgress}%</span>
               </div>
               <div
@@ -302,16 +301,32 @@ export function SensoryCortexTab() {
             </div>
           )}
 
-          {uploadComplete && routedAgent && (
+          {uploadComplete && persistedHash && (
             <div
-              className="border rounded-none p-4"
+              data-ocid="sensory.success_state"
+              className="border rounded-none p-4 space-y-2"
               style={{
                 borderColor: "#39FF14",
                 backgroundColor: "#1a1a1a",
               }}
             >
               <p className="font-bold" style={{ color: "#39FF14" }}>
-                ✓ Routed to: {routedAgent}
+                ✓ Persisted to IC Blob Storage
+              </p>
+              {routedAgent && (
+                <p className="text-sm" style={{ color: "#FFA500" }}>
+                  Assigned agent: {routedAgent}
+                </p>
+              )}
+              <p
+                className="text-xs font-mono break-all"
+                style={{ color: "#888" }}
+              >
+                Hash: {persistedHash}
+              </p>
+              <p className="text-xs" style={{ color: "#555" }}>
+                File bytes stored via IC storage gateway (Wasm heap bypassed).
+                Agents can retrieve this file by hash.
               </p>
             </div>
           )}
@@ -319,19 +334,23 @@ export function SensoryCortexTab() {
           {!isUploading && !uploadComplete && (
             <button
               type="button"
+              data-ocid="sensory.primary_button"
               onClick={handleUploadClick}
+              disabled={!storageClient}
               style={{
-                backgroundColor: "#39FF14",
+                backgroundColor: storageClient ? "#39FF14" : "#555",
                 color: "#1a1a1a",
                 border: "none",
                 borderRadius: "0px",
                 padding: "12px 24px",
-                cursor: "pointer",
+                cursor: storageClient ? "pointer" : "not-allowed",
                 fontWeight: "bold",
                 width: "100%",
               }}
             >
-              Upload & Route
+              {storageClient
+                ? "Upload & Persist to IC"
+                : "Initializing Storage..."}
             </button>
           )}
         </div>

@@ -92,6 +92,7 @@ export class ExternalBlob {
 export interface FileMetadata {
     assignedAgent: string;
     size: bigint;
+    blobHash: string;
     filename: string;
 }
 export interface _CaffeineStorageRefillInformation {
@@ -156,12 +157,14 @@ export interface backendInterface {
     getFileRegistry(): Promise<Array<[string, FileMetadata]>>;
     getStatus(): Promise<DebateState>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    get_steel_rain_status(): Promise<boolean>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    routeDocument(filename: string, _filePreview: string, fileSize: bigint): Promise<string>;
+    routeDocument(filename: string, blobHash: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     start_boardroom_debate(prompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
+    toggle_steel_rain(): Promise<boolean>;
     topUpSwarm(_targetCanister: Principal, _amount: bigint): Promise<void>;
 }
 import type { Agent as _Agent, AgentType as _AgentType, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
@@ -391,6 +394,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
         }
     }
+    async get_steel_rain_status(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.get_steel_rain_status();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.get_steel_rain_status();
+            return result;
+        }
+    }
     async initializeAgents(): Promise<void> {
         if (this.processError) {
             try {
@@ -472,6 +489,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.toggleAgentStatus(arg0, arg1);
+            return result;
+        }
+    }
+    async toggle_steel_rain(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.toggle_steel_rain();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.toggle_steel_rain();
             return result;
         }
     }

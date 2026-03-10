@@ -138,7 +138,7 @@ export function AgentRegistryTable() {
           System Infrastructure Vitals
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1: Orchestrator Core */}
+          {/* Card 1: Accountant (Deep Thought) */}
           <div
             style={{
               backgroundColor: "#2a2a2a",
@@ -147,56 +147,71 @@ export function AgentRegistryTable() {
               padding: "20px",
             }}
           >
-            <h3
-              className="text-lg font-bold mb-3"
-              style={{ color: "#FFA500", fontFamily: "monospace" }}
-            >
-              Orchestrator Core
-            </h3>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 mb-3">
+              <h3
+                className="text-lg font-bold"
+                style={{ color: "#FFA500", fontFamily: "monospace" }}
+              >
+                Deep Thought (Accountant)
+              </h3>
+              <Badge
+                variant="outline"
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "#39FF14",
+                  color: "#39FF14",
+                  fontSize: "9px",
+                  padding: "2px 6px",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                }}
+              >
+                LIVE
+              </Badge>
+            </div>
+            <div className="flex items-center gap-3 mb-3">
               <div
                 style={{
                   width: "16px",
                   height: "16px",
                   borderRadius: "50%",
-                  backgroundColor: "#39FF14",
-                  boxShadow: "0 0 12px #39FF14",
+                  backgroundColor: process.env.CANISTER_ID_ACCOUNTANT
+                    ? "#39FF14"
+                    : "#FFA500",
+                  boxShadow: process.env.CANISTER_ID_ACCOUNTANT
+                    ? "0 0 12px #39FF14"
+                    : "0 0 12px #FFA500",
                 }}
               />
               <span
                 style={{
-                  color: "#39FF14",
+                  color: process.env.CANISTER_ID_ACCOUNTANT
+                    ? "#39FF14"
+                    : "#FFA500",
                   fontFamily: "monospace",
-                  fontSize: "18px",
+                  fontSize: "14px",
                   fontWeight: "bold",
                 }}
               >
-                4.2T Cycles
+                {process.env.CANISTER_ID_ACCOUNTANT ? "DEPLOYED" : "PENDING"}
               </span>
             </div>
-            <div className="mt-3">
-              <Progress
-                value={84}
-                className="h-3"
-                style={{
-                  backgroundColor: "#1a1a1a",
-                }}
-              />
-              <span
-                style={{
-                  color: "#888",
-                  fontFamily: "monospace",
-                  fontSize: "11px",
-                  marginTop: "4px",
-                  display: "block",
-                }}
-              >
-                Fuel Level: 84%
+            <div
+              style={{
+                color: "#888",
+                fontFamily: "monospace",
+                fontSize: "11px",
+                wordBreak: "break-all",
+              }}
+            >
+              <span style={{ color: "#555" }}>CANISTER ID: </span>
+              <span style={{ color: "#39FF14" }}>
+                {process.env.CANISTER_ID_ACCOUNTANT || "not injected"}
               </span>
             </div>
           </div>
 
-          {/* Card 2: Telemetry Side Master */}
+          {/* Card 2: Skippy Agent */}
           <div
             style={{
               backgroundColor: "#2a2a2a",
@@ -205,51 +220,64 @@ export function AgentRegistryTable() {
               padding: "20px",
             }}
           >
-            <h3
-              className="text-lg font-bold mb-3"
-              style={{ color: "#FFA500", fontFamily: "monospace" }}
-            >
-              Telemetry Side Master
-            </h3>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 mb-3">
+              <h3
+                className="text-lg font-bold"
+                style={{ color: "#FFA500", fontFamily: "monospace" }}
+              >
+                Skippy (Agent Shell)
+              </h3>
+              <Badge
+                variant="outline"
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "#39FF14",
+                  color: "#39FF14",
+                  fontSize: "9px",
+                  padding: "2px 6px",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                }}
+              >
+                LIVE
+              </Badge>
+            </div>
+            <div className="flex items-center gap-3 mb-3">
               <div
                 style={{
                   width: "16px",
                   height: "16px",
                   borderRadius: "50%",
-                  backgroundColor: "#39FF14",
-                  boxShadow: "0 0 12px #39FF14",
+                  backgroundColor: process.env.CANISTER_ID_SKIPPY
+                    ? "#39FF14"
+                    : "#FFA500",
+                  boxShadow: process.env.CANISTER_ID_SKIPPY
+                    ? "0 0 12px #39FF14"
+                    : "0 0 12px #FFA500",
                 }}
               />
               <span
                 style={{
-                  color: "#39FF14",
+                  color: process.env.CANISTER_ID_SKIPPY ? "#39FF14" : "#FFA500",
                   fontFamily: "monospace",
-                  fontSize: "18px",
+                  fontSize: "14px",
                   fontWeight: "bold",
                 }}
               >
-                5.0T Cycles
+                {process.env.CANISTER_ID_SKIPPY ? "DEPLOYED" : "PENDING"}
               </span>
             </div>
-            <div className="mt-3">
-              <Progress
-                value={100}
-                className="h-3"
-                style={{
-                  backgroundColor: "#1a1a1a",
-                }}
-              />
-              <span
-                style={{
-                  color: "#888",
-                  fontFamily: "monospace",
-                  fontSize: "11px",
-                  marginTop: "4px",
-                  display: "block",
-                }}
-              >
-                Fuel Level: 100%
+            <div
+              style={{
+                color: "#888",
+                fontFamily: "monospace",
+                fontSize: "11px",
+                wordBreak: "break-all",
+              }}
+            >
+              <span style={{ color: "#555" }}>CANISTER ID: </span>
+              <span style={{ color: "#39FF14" }}>
+                {process.env.CANISTER_ID_SKIPPY || "not injected"}
               </span>
             </div>
           </div>

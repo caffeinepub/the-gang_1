@@ -47,6 +47,7 @@ actor {
   };
 
   type FileMetadata = {
+    blobHash : Text;
     filename : Text;
     size : Nat;
     assignedAgent : Text;
@@ -62,6 +63,9 @@ actor {
     transcript = "";
     emergencyMode = false;
   };
+  // Implicitly stable via --default-persistent-actors
+  var is_steel_rain_active : Bool = false;
+  var initialized : Bool = false;
 
   func prePopulateAgents() {
     let coreAgents : [(Nat, Text, AgentType)] = [
@@ -93,6 +97,12 @@ actor {
   };
 
   prePopulateAgents();
+
+  system func postupgrade() {
+    if (agents.size() == 0) {
+      prePopulateAgents();
+    };
+  };
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -193,21 +203,20 @@ actor {
     };
   };
 
-  public shared ({ caller }) func routeDocument(filename : Text, _filePreview : Text, fileSize : Nat) : async Text {
+  public shared ({ caller }) func routeDocument(filename : Text, blobHash : Text, fileSize : Nat) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can route documents");
     };
+    // PILLAR 3: Silent uploads - DO NOT append to transcript
     fileRegistry.add(
       filename,
       {
         filename;
         size = fileSize;
         assignedAgent = "StubAgent";
+        blobHash;
       },
     );
-    currentState := {
-      currentState with transcript = currentState.transcript # "\nSYSTEM: File [" # filename # "] processed and routed to StubAgent";
-    };
     "StubAgent";
   };
 
@@ -243,5 +252,19 @@ actor {
       Runtime.trap("Unauthorized: Only admins can perform this action");
     };
     currentState := { currentState with transcript = "" };
+  };
+
+  // Steel Rain Protocol -- emergency mode toggle. Admin only.
+  public shared ({ caller }) func toggle_steel_rain() : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can activate Steel Rain");
+    };
+    is_steel_rain_active := not is_steel_rain_active;
+    is_steel_rain_active;
+  };
+
+  // Returns current Steel Rain status. No auth required per specification.
+  public query func get_steel_rain_status() : async Bool {
+    is_steel_rain_active;
   };
 };

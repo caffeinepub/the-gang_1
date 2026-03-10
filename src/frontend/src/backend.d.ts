@@ -10,6 +10,7 @@ export type Option<T> = Some<T> | None;
 export interface FileMetadata {
     assignedAgent: string;
     size: bigint;
+    blobHash: string;
     filename: string;
 }
 export interface DebateState {
@@ -56,11 +57,13 @@ export interface backendInterface {
     getFileRegistry(): Promise<Array<[string, FileMetadata]>>;
     getStatus(): Promise<DebateState>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    get_steel_rain_status(): Promise<boolean>;
     initializeAgents(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
-    routeDocument(filename: string, _filePreview: string, fileSize: bigint): Promise<string>;
+    routeDocument(filename: string, blobHash: string, fileSize: bigint): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     start_boardroom_debate(prompt: string): Promise<string>;
     toggleAgentStatus(agentName: string, status: boolean): Promise<void>;
+    toggle_steel_rain(): Promise<boolean>;
     topUpSwarm(_targetCanister: Principal, _amount: bigint): Promise<void>;
 }

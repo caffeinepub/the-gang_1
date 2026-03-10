@@ -48,6 +48,7 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const FileMetadata = IDL.Record({
   'assignedAgent' : IDL.Text,
   'size' : IDL.Nat,
+  'blobHash' : IDL.Text,
   'filename' : IDL.Text,
 });
 export const DebateState = IDL.Record({
@@ -102,12 +103,14 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'get_steel_rain_status' : IDL.Func([], [IDL.Bool], ['query']),
   'initializeAgents' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'start_boardroom_debate' : IDL.Func([IDL.Text], [IDL.Text], []),
   'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
+  'toggle_steel_rain' : IDL.Func([], [IDL.Bool], []),
   'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
 });
 
@@ -154,6 +157,7 @@ export const idlFactory = ({ IDL }) => {
   const FileMetadata = IDL.Record({
     'assignedAgent' : IDL.Text,
     'size' : IDL.Nat,
+    'blobHash' : IDL.Text,
     'filename' : IDL.Text,
   });
   const DebateState = IDL.Record({
@@ -208,12 +212,14 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'get_steel_rain_status' : IDL.Func([], [IDL.Bool], ['query']),
     'initializeAgents' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'routeDocument' : IDL.Func([IDL.Text, IDL.Text, IDL.Nat], [IDL.Text], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'start_boardroom_debate' : IDL.Func([IDL.Text], [IDL.Text], []),
     'toggleAgentStatus' : IDL.Func([IDL.Text, IDL.Bool], [], []),
+    'toggle_steel_rain' : IDL.Func([], [IDL.Bool], []),
     'topUpSwarm' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   });
 };

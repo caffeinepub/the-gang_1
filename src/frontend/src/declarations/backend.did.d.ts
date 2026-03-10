@@ -37,6 +37,7 @@ export interface DebateState {
 export interface FileMetadata {
   'assignedAgent' : string,
   'size' : bigint,
+  'blobHash' : string,
   'filename' : string,
 }
 export interface UserProfile { 'name' : string }
@@ -80,12 +81,14 @@ export interface _SERVICE {
   'getFileRegistry' : ActorMethod<[], Array<[string, FileMetadata]>>,
   'getStatus' : ActorMethod<[], DebateState>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'get_steel_rain_status' : ActorMethod<[], boolean>,
   'initializeAgents' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'routeDocument' : ActorMethod<[string, string, bigint], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'start_boardroom_debate' : ActorMethod<[string], string>,
   'toggleAgentStatus' : ActorMethod<[string, boolean], undefined>,
+  'toggle_steel_rain' : ActorMethod<[], boolean>,
   'topUpSwarm' : ActorMethod<[Principal, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
